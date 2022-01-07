@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"bytes"
 	"image"
 	"image/jpeg"
 	"image/png"
@@ -31,21 +30,6 @@ func CreateThumbnail(file multipart.File, fileType string, width, height uint) (
 	return thumbnail, nil
 }
 
-func CreateThumbnailFromByteString(imgByte []byte, fileType string,width, height uint) (image.Image, error) {
-	var img image.Image
-	var err error
 
-	if fileType == "image/jpeg" || fileType == "image/jpg" {
-		img, err = jpeg.Decode(bytes.NewReader(imgByte))
-	} else if fileType == "image/png" {
-		img, err = png.Decode(bytes.NewReader(imgByte))
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	thumbnail := resize.Resize(width, height, img, resize.Lanczos3)
-	return thumbnail, nil
-}
 
 

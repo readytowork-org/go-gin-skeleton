@@ -15,18 +15,16 @@ type UtilityController struct {
 	logger  infrastructure.Logger
 	env     infrastructure.Env
 	bucket  services.StorageBucketService
-	service services.UtilityService
 }
 
 func NewUtilityController(logger infrastructure.Logger,
 	env infrastructure.Env,
 	bucket services.StorageBucketService,
-	service services.UtilityService) UtilityController {
+	) UtilityController {
 	return UtilityController{
 		logger:  logger,
 		env:     env,
 		bucket:  bucket,
-		service: service,
 	}
 }
 
