@@ -7,6 +7,5 @@ __debug_bin
 gin-bin
 serviceAccountKey.json
 cloud_sql_proxy
-iap_serviceAccountKey.json
 .DS_Store
 migration/.DS_Store
