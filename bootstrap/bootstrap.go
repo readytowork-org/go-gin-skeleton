@@ -78,8 +78,8 @@ func bootstrap(
 				seeds.Run()
 				if env.ServerPort == "" {
 					handler.Gin.Run()
-				} else {
-					handler.Gin.Run(env.ServerPort)
+					} else {
+					handler.Gin.Run(":" + env.ServerPort)
 				}
 			}()
 			return nil
