@@ -1,4 +1,4 @@
-## API for Boilerplate
+## Boilerplate API
 
 ### Development
 - Copy `.env.example` to `.env` and update according to requirement.
