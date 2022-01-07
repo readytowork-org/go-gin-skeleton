@@ -22,11 +22,6 @@ func NewUserRepository(db infrastructure.Database, logger infrastructure.Logger)
 	}
 }
 
-// Save -> User
-func (c UserRepository) Save(User models.User) error {
-	return c.db.DB.Create(&User).Error
-}
-
 // WithTrx enables repository with transaction
 func (c UserRepository) WithTrx(trxHandle *gorm.DB) UserRepository {
 	if trxHandle == nil {
@@ -35,6 +30,11 @@ func (c UserRepository) WithTrx(trxHandle *gorm.DB) UserRepository {
 	}
 	c.db.DB = trxHandle
 	return c
+}
+
+// Save -> User
+func (c UserRepository) Save(User models.User) error {
+	return c.db.DB.Create(&User).Error
 }
 
 // GetAllUser -> Get All users

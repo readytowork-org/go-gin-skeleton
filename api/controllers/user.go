@@ -17,7 +17,6 @@ import (
 type UserController struct {
 	logger         infrastructure.Logger
 	userService    services.UserService
-	utilityService services.UtilityService
 	env            infrastructure.Env
 }
 
@@ -25,13 +24,11 @@ type UserController struct {
 func NewUserController(
 	logger infrastructure.Logger,
 	userService services.UserService,
-	utilityService services.UtilityService,
 	env infrastructure.Env,
 ) UserController {
 	return UserController{
 		logger:         logger,
 		userService:    userService,
-		utilityService: utilityService,
 		env:            env,
 	}
 }
