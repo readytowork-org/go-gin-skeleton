@@ -28,10 +28,6 @@ func NewUtilityController(logger infrastructure.Logger,
 	}
 }
 
-// Input -> add binding model for input
-type Input struct {
-	Model string `form:"model,omitempty" binding:"required"`
-}
 
 // Response -> response for the util scope
 type Response struct {

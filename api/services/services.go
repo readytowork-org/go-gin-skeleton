@@ -8,6 +8,5 @@ var Module = fx.Options(
 	fx.Provide(NewStorageBucketService),
 	fx.Provide(NewUserService),
 	fx.Provide(NewTwilioService),
-	fx.Provide(NewUtilityService),
 	fx.Provide(NewGmailService),
 )

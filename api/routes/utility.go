@@ -30,6 +30,7 @@ func (u UtilityRoutes) Setup() {
 	utils := u.router.Gin.Group("/utils")
 	{
 		utils.POST("/file-upload", u.UtilityController.FileUploadHandler)
-		utils.GET("/seed-thumbnail", u.UtilityController.SeedThumbnailAll)
 	}
 }
+
+

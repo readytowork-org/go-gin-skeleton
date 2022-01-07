@@ -59,8 +59,8 @@ func (cc UserController) GetAllUser(c *gin.Context) {
 	users, count, err := cc.userService.GetAllUser(pagination)
 
 	if err != nil {
-		cc.logger.Zap.Error("Error finding Inquiries records", err.Error())
-		responses.ErrorJSON(c, http.StatusBadRequest, "Failed to Find Inquiries")
+		cc.logger.Zap.Error("Error finding user records", err.Error())
+		responses.ErrorJSON(c, http.StatusBadRequest, "Failed to Find users")
 		return
 	}
 
