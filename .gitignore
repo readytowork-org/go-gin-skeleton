@@ -1,11 +1,15 @@
 .env
+serviceAccountKey.json
+cloud_sql_proxy
+
 server.log
 clean-gin
 __debug_bin
+gin-bin
+
+#editor based
 .idea
 .vscode
-gin-bin
-serviceAccountKey.json
-cloud_sql_proxy
 .DS_Store
 migration/.DS_Store
+
