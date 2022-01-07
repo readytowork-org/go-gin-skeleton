@@ -14,5 +14,5 @@ gin-bin
 .idea
 .vscode
 .DS_Store
-migration/.DS_Store
+*/.DS_Store
 
