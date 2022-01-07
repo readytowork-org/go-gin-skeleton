@@ -77,7 +77,7 @@ func bootstrap(
 				logger.Zap.Info("🌱 seeding data...")
 				seeds.Run()
 				if env.ServerPort == "" {
-					handler.Gin.Run()
+					handler.Gin.Run(":5000")
 					} else {
 					handler.Gin.Run(":" + env.ServerPort)
 				}
