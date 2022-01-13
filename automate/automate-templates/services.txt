@@ -1,0 +1,32 @@
+package services
+
+import (
+	"boilerplate-api/api/repository"
+	"boilerplate-api/models"
+	"boilerplate-api/utils"
+
+	"gorm.io/gorm"
+)
+
+// UserService -> struct
+type UserService struct {
+	repository repository.UserRepository
+}
+
+// NewUserService -> creates a new Userservice
+func NewUserService(repository repository.UserRepository) UserService {
+	return UserService{
+		repository: repository,
+	}
+}
+
+// CreateUser -> call to create the User
+func (c UserService) CreateUser(user models.User) error {
+	err := c.repository.Save(user)
+	return err
+}
+
+// GetAllUser -> call to get all the User
+func (c UserService) GetAllUser(pagination utils.Pagination) ([]models.User, int64, error) {
+	return c.repository.GetAllUser(pagination)
+}

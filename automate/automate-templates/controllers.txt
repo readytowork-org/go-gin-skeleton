@@ -1,0 +1,18 @@
+package controllers
+
+// UserController -> struct
+type UserController struct {
+	logger         infrastructure.Logger
+	userService    services.UserService
+}
+
+// NewUserController -> constructor
+func NewUserController(
+	logger infrastructure.Logger,
+	userService services.UserService,
+) UserController {
+	return UserController{
+		logger:         logger,
+		userService:    userService,
+	}
+}

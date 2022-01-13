@@ -20,10 +20,10 @@ done
 #  create with a template 
 for str in ${file_create[@]}; do
     if [ "$str" == "models" ]; then
-            sed 's/user/$fileName/g; s/User/$titleFileName/g' "${ROOT}/automate/automate-templates/${str}.txt" > temp.txt 
+            sed 's/user/'"$fileName"'/g; s/User/'"$titleFileName"'/g' "${ROOT}/automate/automate-templates/${str}.txt" > temp.txt 
             mv temp.txt "${ROOT}/${str}/${fileName}.go" 
     else
-        sed 's/user/$fileName/g; s/User/$titleFileName/g' "${ROOT}/automate/automate-templates/${str}.txt" > temp.txt 
+        sed 's/user/'"$fileName"'/g; s/User/'"$titleFileName"'/g' "${ROOT}/automate/automate-templates/${str}.txt" > temp.txt 
         mv temp.txt "${ROOT}/api/${str}/${fileName}.go" 
     fi
                 

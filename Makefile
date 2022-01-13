@@ -22,5 +22,9 @@ create:
 		@read -p  "What is the name of migration?" NAME; \
 		${MIGRATE} create -ext sql -seq -dir migration  $$NAME
 
+crud:
+	@read -p "what is the name of crud?" FILENAME; \
+	bash automate/scripts/crud.sh $$FILENAME
+
 .PHONY: migrate-up migrate-down force goto drop create
 
