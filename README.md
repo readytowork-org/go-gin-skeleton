@@ -34,11 +34,18 @@
 - Models Setup and Automigrate (gorm)
 - Repositories
 - Implementing Basic CRUD Operation
+- CRUD Scaffold Generator
 - Migration Runner Implementation
 - Live code refresh
 - Firebase basic setup.
 - GCP Cloud Storage bucket setup.
 - Twilio Basic setup.
 - Gmail Api Setup.
+
+### GGG(Go Gin GORM) Scaffold generator
+Usage:  
+`cd ggg`  
+`./gin-gorm-gen.sh`  
+and follow the instructions.
 
 **For Debugging 🐞** Debugger runs at `5002`. Vs code configuration is at `.vscode/launch.json` which will attach debugger to remote application.
