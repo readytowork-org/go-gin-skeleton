@@ -14,7 +14,7 @@ import (
 
 // {{ucresource}}Controller -> struct
 type {{ucresource}}Controller struct {
-	logger                  infrastructure.Logger
+	logger                 infrastructure.Logger
 	{{ucresource}}Service  services.{{ucresource}}Service
 }
 

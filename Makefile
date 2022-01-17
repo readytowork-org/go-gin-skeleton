@@ -22,7 +22,9 @@ create:
 		@read -p  "What is the name of migration?" NAME; \
 		${MIGRATE} create -ext sql -seq -dir migration  $$NAME
 
-auto-create:
-		${MIGRATE} create -ext sql -seq -dir migration $(GGG_NAME)
+crud:
+	bash automate/scripts/crud.sh
+
+.PHONY: migrate-up migrate-down force goto drop create
 
 .PHONY: migrate-up migrate-down force goto drop create auto-create
