@@ -10,6 +10,7 @@ else
   resed="sed -i"
 fi
 
+
 first_lower () {
   echo `echo $1 | awk '{$1=tolower(substr($1,0,1))substr($1,2)}1'`
 }
@@ -23,6 +24,7 @@ echo "Enter plural resource name(eg: ProductCategories):"; read plural_resource
 
 lc_resource=$(first_lower $uc_resource)
 plc_resource=$(first_lower $plural_resource)
+ROOT=$(pwd)
 
 printf "\n* Generating Scaffold for ${uc_resource} *\n\n"
 
@@ -61,7 +63,7 @@ for entity in "${entity_path_hash[@]}"; do
   for item in "${placeholder_value_hash[@]}"; do
     placeholder="${item%%:*}"
     value="${item##*:}"
-    resed "" "s/$placeholder/$value/g" $file_to_write
+    $resed "" "s/$placeholder/$value/g" $file_to_write
   done
   echo $file_to_write "created."
 done
@@ -76,15 +78,15 @@ fx_init_string="var Module = fx.Options("
 for deps_value in "${fx_path_hash[@]}"; do
   deps_name="${deps_value%%:*}"
   deps_path="${deps_value##*:}"
-  resed "" "s/${fx_init_string}/${fx_init_string}\n\t  fx.Provide(New${uc_resource}${deps_name}),/g" $deps_path
+  $resed "" "s/${fx_init_string}/${fx_init_string}\n\t  fx.Provide(New${uc_resource}${deps_name}),/g" $deps_path
   echo $deps_path "updated."
 done
 
 # fx routes
 fx_route_path="${ROOT}/api/routes/routes.go"
-resed "" "s/func NewRoutes(/func NewRoutes(\n\t ${lc_resource}Routes ${uc_resource}Routes,/g" $fx_route_path
-resed "" "s/return Routes{/return Routes{\n\t ${lc_resource}Routes,/g" $fx_route_path
-resed "" "s/fx.Provide(NewRoutes),/fx.Provide(NewRoutes),\n  fx.Provide(New${uc_resource}Routes),/g" $fx_route_path
+$resed "" "s/func NewRoutes(/func NewRoutes(\n\t ${lc_resource}Routes ${uc_resource}Routes,/g" $fx_route_path
+$resed "" "s/return Routes{/return Routes{\n\t ${lc_resource}Routes,/g" $fx_route_path
+$resed "" "s/fx.Provide(NewRoutes),/fx.Provide(NewRoutes),\n  fx.Provide(New${uc_resource}Routes),/g" $fx_route_path
 echo $fx_route_path "updated."
 
 printf "\n\n*** Scaffolding Completely Successfully ***\n"

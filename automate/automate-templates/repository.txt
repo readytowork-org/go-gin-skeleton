@@ -22,17 +22,6 @@ func New{{ucresource}}Repository(db infrastructure.Database, logger infrastructu
 	}
 }
 
-// WithTrx enables repository with transaction
-func (c {{ucresource}}Repository) WithTrx(trxHandle *gorm.DB) {{ucresource}}Repository {
-	if trxHandle == nil {
-		c.logger.Zap.Error("Transaction Database not found in gin context. ")
-		return c
-	}
-
-	c.db.DB = trxHandle
-	return c
-}
-
 // Save {{ucresource}}
 func (c {{ucresource}}Repository) Save({{ucresource}} models.{{ucresource}}) (models.{{ucresource}}, error) {
 	return {{ucresource}}, c.db.DB.Create(&{{ucresource}}).Error

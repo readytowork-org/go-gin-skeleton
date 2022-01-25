@@ -20,12 +20,6 @@ func New{{ucresource}}Service(repository repository.{{ucresource}}Repository) {{
 	}
 }
 
-// WithTrx -> enables repository with transaction
-func (c {{ucresource}}Service) WithTrx(trxHandle *gorm.DB) {{ucresource}}Service {
-	c.repository = c.repository.WithTrx(trxHandle)
-	return c
-}
-
 // Create{{ucresource}} -> call to create the {{ucresource}}
 func (c {{ucresource}}Service) Create{{ucresource}}({{lcresource}} models.{{ucresource}}) (models.{{ucresource}}, error) {
 	return c.repository.Save({{lcresource}})
