@@ -4,8 +4,6 @@ import (
 	"{{projectname}}/infrastructure"
 	"{{projectname}}/models"
 	"{{projectname}}/utils"
-
-	"gorm.io/gorm"
 )
 
 // {{ucresource}}Repository database structure
@@ -22,15 +20,6 @@ func New{{ucresource}}Repository(db infrastructure.Database, logger infrastructu
 	}
 }
 
-// WithTrx enables repository with transaction
-func (tx {{ucresource}}Repository) WithTrx(trxHandle *gorm.DB) {{ucresource}}Repository {
-	if trxHandle == nil {
-		tx.logger.Zap.Error("Transaction Database not found in gin context. ")
-		return tx
-	}
-	tx.db.DB = trxHandle
-	return tx
-}
 
 // Create {{ucresource}}
 func (c {{ucresource}}Repository) Create({{ucresource}} models.{{ucresource}}) (models.{{ucresource}}, error) {
