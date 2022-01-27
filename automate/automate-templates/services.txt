@@ -5,7 +5,6 @@ import (
 	"{{projectname}}/models"
 	"{{projectname}}/utils"
 
-	"gorm.io/gorm"
 )
 
 // {{ucresource}}Service -> struct

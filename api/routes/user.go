@@ -20,7 +20,7 @@ func (i UserRoutes) Setup() {
 	i.logger.Zap.Info(" Setting up user routes")
 	users := i.router.Gin.Group("/users")
 	{
-		users.GET("", i.userController.GetAllUser)
+		users.GET("", i.userController.GetAllUsers)
 		users.POST("", i.trxMiddleware.DBTransactionHandle(), i.userController.CreateUser)
 	}
 }

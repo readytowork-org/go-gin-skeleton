@@ -33,12 +33,12 @@ func (c UserRepository) WithTrx(trxHandle *gorm.DB) UserRepository {
 }
 
 // Save -> User
-func (c UserRepository) Save(User models.User) error {
+func (c UserRepository) Create(User models.User) error {
 	return c.db.DB.Create(&User).Error
 }
 
 // GetAllUser -> Get All users
-func (c UserRepository) GetAllUser(pagination utils.Pagination) ([]models.User, int64, error) {
+func (c UserRepository) GetAllUsers(pagination utils.Pagination) ([]models.User, int64, error) {
 	var users []models.User
 	var totalRows int64 = 0
 	queryBuilder := c.db.DB.Limit(pagination.PageSize).Offset(pagination.Offset).Order("created_at desc")
