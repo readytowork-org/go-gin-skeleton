@@ -20,6 +20,7 @@ printf "This scaffolder assumes that you are using RTW clean-gin template.\n"
 echo "Enter project name (eg: ecommerce-api):"; read project_name
 echo "Enter resource name(eg: ProductCategory):"; read uc_resource
 echo "Enter resource table name(eg: product_category):"; read resource_table
+echo "Enter plural resource table name(eg: product_categories):"; read plural_resource_table
 echo "Enter plural resource name(eg: ProductCategories):"; read plural_resource
 
 lc_resource=$(first_lower $uc_resource)
@@ -35,6 +36,7 @@ placeholder_value_hash=(
   "{{lcresource}}:$lc_resource"
   "{{projectname}}:$project_name"
   "{{resourcetable}}:$resource_table"
+  "{{pluralresourcetable}}:$plural_resource_table"
 )
 entity_path_hash=(
   "models:${ROOT}/models"
