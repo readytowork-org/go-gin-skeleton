@@ -8,7 +8,7 @@ type {{ucresource}} struct {
 
 // TableName  -> returns table name of model
 func (c {{ucresource}}) TableName() string {
-	return "{{resourcetable}}"
+	return "{{resourcetable}}s"
 }
 
 // ToMap ->  maps {{plcresource}}
