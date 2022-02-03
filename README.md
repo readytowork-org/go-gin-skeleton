@@ -49,7 +49,13 @@ Boilerplate API template includes all the common packages and setup used for API
 **For Debugging 🐞** Debugger runs at `5002`. Vs code configuration is at `.vscode/launch.json` which will attach debugger to remote application.
 
 ## For auto generate of CRUD(Create, ReaD, Update & Delete) api following informations are needed and will be asked in terminal:
+
 - project-name : The name of the project or the main module name. example: boilerplate-api,watamuki-api etc.
+
 - resource-name: name of CRUD in upper camelCase. examples:Food,Puppy,ProductCategory etc.  
+
 - resource-table-name: name of CRUD in lower snake case. examples:food,puppy,product_category etc.
+
+- plural-resource-table-name: plural name for the table going to be created. example: foods, puppies, product_categories.
+
 - plural-resource-name: plural name of CRUD in Upper camelCase. examples:Foods,Puppies,ProductCategories etc.

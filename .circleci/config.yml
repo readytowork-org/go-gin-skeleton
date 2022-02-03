@@ -1,5 +1,6 @@
 version: 2.1
-
+# this is general circleCI implementation. 
+# This file might need some changes after setting up project for functional CICD
 jobs:
   build:
     docker:
