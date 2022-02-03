@@ -17,7 +17,7 @@ type {{ucresource}}Routes struct {
 // Setup {{lcresource}} routes
 func (c {{ucresource}}Routes) Setup() {
 	c.logger.Zap.Info(" Setting up {{ucresource}} routes")
-	{{lcresource}} := c.router.Gin.Group("/{{resourcetable}}").Use(c.middleware.HandleAdminOnly())
+	{{lcresource}} := c.router.Gin.Group("/{{resourcetable}}")
 	{
 		{{lcresource}}.POST("", c.{{lcresource}}Controller.Create{{ucresource}})
 		{{lcresource}}.GET("", c.{{lcresource}}Controller.GetAll{{ucresource}})

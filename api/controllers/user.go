@@ -15,9 +15,9 @@ import (
 
 // UserController -> struct
 type UserController struct {
-	logger         infrastructure.Logger
-	userService    services.UserService
-	env            infrastructure.Env
+	logger      infrastructure.Logger
+	userService services.UserService
+	env         infrastructure.Env
 }
 
 // NewUserController -> constructor
@@ -27,9 +27,9 @@ func NewUserController(
 	env infrastructure.Env,
 ) UserController {
 	return UserController{
-		logger:         logger,
-		userService:    userService,
-		env:            env,
+		logger:      logger,
+		userService: userService,
+		env:         env,
 	}
 }
 
@@ -38,7 +38,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 	user := models.User{}
 	trx := c.MustGet(constants.DBTransaction).(*gorm.DB)
 
-	if err := c.ShouldBind(&user); err != nil {
+	if err := c.ShouldBindJSON(&user); err != nil {
 		cc.logger.Zap.Error("Error [CreateUser] (ShouldBindJson) : ", err)
 		responses.ErrorJSON(c, http.StatusBadRequest, "Failed To Create User")
 		return
@@ -54,9 +54,9 @@ func (cc UserController) CreateUser(c *gin.Context) {
 }
 
 // GetAllUser -> Get All User
-func (cc UserController) GetAllUser(c *gin.Context) {
+func (cc UserController) GetAllUsers(c *gin.Context) {
 	pagination := utils.BuildPagination(c)
-	users, count, err := cc.userService.GetAllUser(pagination)
+	users, count, err := cc.userService.GetAllUsers(pagination)
 
 	if err != nil {
 		cc.logger.Zap.Error("Error finding user records", err.Error())

@@ -5,7 +5,6 @@ import (
 	"{{projectname}}/models"
 	"{{projectname}}/utils"
 
-	"gorm.io/gorm"
 )
 
 // {{ucresource}}Service -> struct
@@ -22,7 +21,7 @@ func New{{ucresource}}Service(repository repository.{{ucresource}}Repository) {{
 
 // Create{{ucresource}} -> call to create the {{ucresource}}
 func (c {{ucresource}}Service) Create{{ucresource}}({{lcresource}} models.{{ucresource}}) (models.{{ucresource}}, error) {
-	return c.repository.Save({{lcresource}})
+	return c.repository.Create({{lcresource}})
 }
 
 // GetAll{{ucresource}} -> call to create the {{ucresource}}

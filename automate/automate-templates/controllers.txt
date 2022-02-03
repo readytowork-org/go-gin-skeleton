@@ -33,7 +33,7 @@ func New{{ucresource}}Controller(
 func (cc {{ucresource}}Controller) Create{{ucresource}}(c *gin.Context) {
 	{{lcresource}} := models.{{ucresource}}{}
 
-	if err := c.ShouldBind(&{{lcresource}}); err != nil {
+	if err := c.ShouldBindJSON(&{{lcresource}}); err != nil {
 		cc.logger.Zap.Error("Error [Create{{ucresource}}] (ShouldBindJson) : ", err)
 		responses.ErrorJSON(c, http.StatusBadRequest, "Failed To Create {{ucresource}}")
 		return
@@ -83,7 +83,7 @@ func (cc {{ucresource}}Controller) UpdateOne{{ucresource}}(c *gin.Context) {
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 	{{lcresource}} := models.{{ucresource}}{}
 
-	if err := c.ShouldBind(&{{lcresource}}); err != nil {
+	if err := c.ShouldBindJSON(&{{lcresource}}); err != nil {
 		cc.logger.Zap.Error("Error [Update{{ucresource}}] (ShouldBindJson) : ", err)
 		responses.ErrorJSON(c, http.StatusBadRequest, "failed to update {{lcresource}}")
 		return

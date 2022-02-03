@@ -28,11 +28,11 @@ func (c UserService) WithTrx(trxHandle *gorm.DB) UserService {
 
 // CreateUser -> call to create the User
 func (c UserService) CreateUser(user models.User) error {
-	err := c.repository.Save(user)
+	err := c.repository.Create(user)
 	return err
 }
 
 // GetAllUser -> call to get all the User
-func (c UserService) GetAllUser(pagination utils.Pagination) ([]models.User, int64, error) {
-	return c.repository.GetAllUser(pagination)
+func (c UserService) GetAllUsers(pagination utils.Pagination) ([]models.User, int64, error) {
+	return c.repository.GetAllUsers(pagination)
 }
