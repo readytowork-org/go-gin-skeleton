@@ -25,7 +25,6 @@ create:
 crud:
 	bash automate/scripts/crud.sh
 
-
 .PHONY: migrate-up migrate-down force goto drop create
 
 .PHONY: migrate-up migrate-down force goto drop create auto-create
