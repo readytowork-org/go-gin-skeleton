@@ -17,7 +17,6 @@ first_lower () {
 
 printf "\n *** Go Gin GORM Scaffold Generator *** \n"
 printf "This scaffolder assumes that you are using RTW clean-gin template.\n"
-echo "Enter project name (eg: ecommerce-api):"; read project_name
 echo "Enter resource name(eg: ProductCategory):"; read uc_resource
 echo "Enter resource table name(eg: product_category):"; read resource_table
 echo "Enter plural resource table name(eg: product_categories):"; read plural_resource_table
@@ -29,6 +28,9 @@ ROOT=$(pwd)
 
 printf "\n* Generating Scaffold for ${uc_resource} *\n\n"
 
+# getting project name from go.mod file
+# this code will grab second word of first line from file go.mod and store value to the project name
+read -r _ project_name _ < go.mod
 
 placeholder_value_hash=(
   "{{ucresource}}:$uc_resource"
