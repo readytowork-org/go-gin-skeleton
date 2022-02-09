@@ -12,7 +12,7 @@ func NewBucketStorage(logger Logger, env Env) *storage.Client {
 	bucketName := env.StorageBucketName
 	ctx := context.Background()
 	if bucketName == "" {
-		logger.Zap.Error("Please check your env file for StorageBucketName")
+		logger.Zap.Warn("Please check your env file for StorageBucketName")
 	}
 	client, err := storage.NewClient(ctx, option.WithCredentialsFile("serviceAccountKey.json"))
 	if err != nil {
@@ -23,7 +23,7 @@ func NewBucketStorage(logger Logger, env Env) *storage.Client {
 		logger.Zap.Fatalf("Provided bucket %v doesn't exists", bucketName)
 	}
 	if err != nil {
-		logger.Zap.Error("Cloud bucket error: %v", err.Error())
+		logger.Zap.Warnf("Cloud bucket error: %v", err.Error())
 	}
 	return client
 }
