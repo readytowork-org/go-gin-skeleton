@@ -14,19 +14,6 @@ type {{ucresource}}Routes struct {
 	middleware                middlewares.FirebaseAuthMiddleware
 }
 
-// Setup {{lcresource}} routes
-func (c {{ucresource}}Routes) Setup() {
-	c.logger.Zap.Info(" Setting up {{ucresource}} routes")
-	{{lcresource}} := c.router.Gin.Group("/{{resourcetable}}")
-	{
-		{{lcresource}}.POST("", c.{{lcresource}}Controller.Create{{ucresource}})
-		{{lcresource}}.GET("", c.{{lcresource}}Controller.GetAll{{ucresource}})
-		{{lcresource}}.GET("/:id", c.{{lcresource}}Controller.GetOne{{ucresource}})
-		{{lcresource}}.PUT("/:id", c.{{lcresource}}Controller.UpdateOne{{ucresource}})
-		{{lcresource}}.DELETE("/:id", c.{{lcresource}}Controller.DeleteOne{{ucresource}})
-	}
-}
-
 // New{{ucresource}}Routes -> creates new {{ucresource}} controller
 func New{{ucresource}}Routes(
 	logger infrastructure.Logger,
@@ -39,5 +26,18 @@ func New{{ucresource}}Routes(
 		logger:                    logger,
 		{{lcresource}}Controller: {{lcresource}}Controller,
 		middleware:                middleware,
+	}
+}
+
+// Setup {{lcresource}} routes
+func (c {{ucresource}}Routes) Setup() {
+	c.logger.Zap.Info(" Setting up {{ucresource}} routes")
+	{{lcresource}} := c.router.Gin.Group("/{{resourcetable}}")
+	{
+		{{lcresource}}.POST("", c.{{lcresource}}Controller.Create{{ucresource}})
+		{{lcresource}}.GET("", c.{{lcresource}}Controller.GetAll{{ucresource}})
+		{{lcresource}}.GET("/:id", c.{{lcresource}}Controller.GetOne{{ucresource}})
+		{{lcresource}}.PUT("/:id", c.{{lcresource}}Controller.UpdateOne{{ucresource}})
+		{{lcresource}}.DELETE("/:id", c.{{lcresource}}Controller.DeleteOne{{ucresource}})
 	}
 }
