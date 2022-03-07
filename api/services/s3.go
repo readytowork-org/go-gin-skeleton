@@ -1,7 +1,7 @@
 package services
 
 import (
-	"bukenavi-api/infrastructure"
+	"boilerplate-api/infrastructure"
 	"context"
 	"mime/multipart"
 
@@ -11,28 +11,28 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
-// StorageBucketService -> handles the file upload/download functions
+// S3BucketService -> handles the file upload functions
 type S3BucketService struct {
 	logger infrastructure.Logger
 	client *s3.Client
 	env    infrastructure.Env
 }
 
-// NewStorageBucketService -> initilization for the StorageBucketService struct
+// NewS3BucketService -> initilization for the AWS S3 BucketService struct
 func NewS3BucketService(
 	logger infrastructure.Logger,
 	client *s3.Client,
 	env infrastructure.Env,
-) StorageBucketService {
-	return StorageBucketService{
+) S3BucketService {
+	return S3BucketService{
 		logger: logger,
 		client: client,
 		env:    env,
 	}
 }
 
-// UploadFile -> uploads the file to the cloud storage
-func (s StorageBucketService) UploadFile(
+// UploadFile -> uploads the file to the aws s3 bucket
+func (s S3BucketService) UploadtoS3(
 	file multipart.File,
 	fileHeader *multipart.FileHeader,
 	fileName string,
