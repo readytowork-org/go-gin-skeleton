@@ -120,7 +120,7 @@ func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 
 // Input model
 type Input struct {
-	Path *string `form:"path" json:"path"  binding:"required"`
+	Path *string `form:"path" json:"path" binding:"required"`
 }
 
 // FileUploadS3Handler handles aws s3 file upload
