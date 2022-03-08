@@ -138,6 +138,7 @@ func (cc UtilityController) FileUploadS3Handler(ctx *gin.Context) {
 		responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to Bind")
 		return
 	}
+
 	fileExtension := filepath.Ext(fileHeader.Filename)
 	fileName := utils.GenerateRandomFileName() + fileExtension
 	originalFileNamePath := *input.Path + "/" + fileName
