@@ -26,6 +26,11 @@ type Env struct {
 	MailAccesstoken  string
 	MailRefreshToken string
 
+	AWS_S3_REGION  string
+	AWS_S3_BUCKET  string
+	AWS_ACCESS_KEY string
+	AWS_SECRET_KEY string
+
 	TwilioBaseURL   string
 	TwilioSID       string
 	TwilioAuthToken string
@@ -61,6 +66,12 @@ func (env *Env) LoadEnv() {
 	env.MailClientSecret = os.Getenv("MailClientSecret")
 	env.MailAccesstoken = os.Getenv("MailAccesstoken")
 	env.MailRefreshToken = os.Getenv("MailRefreshToken")
+
+	env.AWS_S3_REGION = os.Getenv("AWS_S3_REGION")
+	env.AWS_S3_BUCKET = os.Getenv("AWS_S3_BUCKET")
+	env.AWS_ACCESS_KEY = os.Getenv("AWS_ACCESS_KEY")
+	env.AWS_SECRET_KEY = os.Getenv("AWS_SECRET_KEY")
+
 	env.TwilioBaseURL = os.Getenv("TwilioBaseURL")
 	env.TwilioAuthToken = os.Getenv("TwilioAuthToken")
 	env.TwilioSID = os.Getenv("TwilioSID")

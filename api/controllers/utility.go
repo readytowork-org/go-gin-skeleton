@@ -12,22 +12,24 @@ import (
 )
 
 type UtilityController struct {
-	logger  infrastructure.Logger
-	env     infrastructure.Env
-	bucket  services.StorageBucketService
+	logger   infrastructure.Logger
+	env      infrastructure.Env
+	bucket   services.StorageBucketService
+	s3Bucket services.S3BucketService
 }
 
 func NewUtilityController(logger infrastructure.Logger,
 	env infrastructure.Env,
 	bucket services.StorageBucketService,
-	) UtilityController {
+	s3Bucket services.S3BucketService,
+) UtilityController {
 	return UtilityController{
-		logger:  logger,
-		env:     env,
-		bucket:  bucket,
+		logger:   logger,
+		env:      env,
+		bucket:   bucket,
+		s3Bucket: s3Bucket,
 	}
 }
-
 
 // Response -> response for the util scope
 type Response struct {
@@ -112,6 +114,47 @@ func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 		Message: "Uploaded Successfully",
 		Data:    storageURL + uc.env.StorageBucketName + "/" + uploadedFileURL,
 		Path:    uploadedFileURL,
+	}
+	ctx.JSON(http.StatusOK, response)
+}
+
+// Input model
+type Input struct {
+	Path *string `form:"path" json:"path" binding:"required"`
+}
+
+// FileUploadS3Handler handles aws s3 file upload
+func (cc UtilityController) FileUploadS3Handler(ctx *gin.Context) {
+	file, fileHeader, err := ctx.Request.FormFile("file")
+	if err != nil {
+		cc.logger.Zap.Error("Error Get File from request: ", err.Error())
+		responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to get file form request")
+		return
+	}
+	var input Input
+	err = ctx.ShouldBind(&input)
+	if err != nil {
+		cc.logger.Zap.Error("Error Failed to bind input:: ", err.Error())
+		responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to Bind")
+		return
+	}
+
+	fileExtension := filepath.Ext(fileHeader.Filename)
+	fileName := utils.GenerateRandomFileName() + fileExtension
+	originalFileNamePath := *input.Path + "/" + fileName
+
+	uploadedFileURL, err := cc.s3Bucket.UploadtoS3(file, fileHeader, originalFileNamePath)
+	if err != nil {
+		cc.logger.Zap.Error("Error Failed to upload File:: ", err.Error())
+		responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to upload file")
+		return
+	}
+
+	response := &Response{
+		Success: true,
+		Message: "Uploaded Successfully",
+		Path:    uploadedFileURL,
+		Data:    uploadedFileURL,
 	}
 	ctx.JSON(http.StatusOK, response)
 }
