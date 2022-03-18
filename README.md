@@ -50,7 +50,6 @@ Boilerplate API template includes all the common packages and setup used for API
 
 ## For auto generate of CRUD(Create, ReaD, Update & Delete) api following informations are needed and will be asked in terminal:
 
-- project-name : The name of the project or the main module name. example: boilerplate-api,watamuki-api etc.
 
 - resource-name: name of CRUD in upper camelCase. examples:Food,Puppy,ProductCategory etc.  
 
