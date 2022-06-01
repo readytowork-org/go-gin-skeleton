@@ -1,4 +1,4 @@
-FROM golang:alpine
+FROM golang:1.16-alpine
 
 # Required because go requires gcc to build
 RUN apk add build-base
@@ -25,7 +25,7 @@ RUN cp /tmp/go-migrate/migrate /usr/bin/migrate
 
 WORKDIR /clean_web
 
-RUN go mod download
+RUN go mod tidy
 
 RUN go get github.com/go-delve/delve/cmd/dlv
 
