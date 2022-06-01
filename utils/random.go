@@ -3,7 +3,6 @@ package utils
 import (
 	"crypto/rand"
 	"io"
-	mr "math/rand"
 	"strconv"
 	"time"
 )
