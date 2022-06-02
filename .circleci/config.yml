@@ -1,0 +1,289 @@
+version: 2.1
+# this is general circleCI implementation. 
+# This file might need some changes after setting up project for functional CICD
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.16
+
+      - image: circleci/mysql:8.0-ram
+        environment:
+          MYSQL_ROOT_PASSWORD: $DBPassword
+          MYSQL_DATABASE: $DBName
+          MYSQL_USER: $DBUsername
+          MYSQL_PASSWORD: $DBPassword
+
+    parallelism: 1
+    working_directory: /go/src/github.com/readytowork-org/boilerplate-api
+
+    steps:
+      - checkout
+
+      - run:
+          name: Initialize the environment variable file
+          command: |
+            echo "ENV=$Environment
+            DB_HOST=$DBHost
+            DB_PORT=$DBPort
+            DB_NAME=$DBName
+            DB_USER=$DBUsername
+            DB_PASS=$DBPassword
+            MAIL_CLIENT_ID=$MAIL_CLIENT_ID
+            MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
+            MAIL_REFRESH_TOKEN=$MAIL_REFRESH_TOKEN
+            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
+            CLIENT_URL_CONSUMER=$CLIENT_URL_CONSUMER
+            AWS_S3_REGION=$AWS_S3_REGION
+            AWS_S3_BUCKET=$AWS_S3_BUCKET
+            AWS_ACCESS_KEY=$AWS_ACCESS_KEY
+            AWS_SECRET_KEY=$AWS_SECRET_KEY
+            NOTIFICATION_EMAIL=$NOTIFICATION_EMAIL"> .env
+
+      - restore_cache:
+          keys:
+            - go-mod-v4-{{ checksum "go.sum" }}
+
+      - run:
+          name: Waiting for MYSQL to be ready
+          command: |
+            for i in `seq 1 30`;
+            do
+              nc -z 127.0.0.1 3306 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for MySQL && exit 1
+
+      - run:
+          name: Initialize firebase service account key file
+          command: |
+            echo "{
+              \"type\": \"$TYPE_FB_SERVICE_ACCOUNT_KEY\", 
+              \"project_id\": \"$PROJECT_ID_FB_SERVICE_ACCOUNT_KEY\", 
+              \"private_key_id\": \"$PRIVATE_KEY_ID_FB_SERVICE_ACCOUNT_KEY\",
+              \"private_key\": \"$PRIVATE_KEY_FB_SERVICE_ACCOUNT_KEY\",
+              \"client_email\": \"$CLIENT_EMAIL_FB_SERVICE_ACCOUNT_KEY\",
+              \"client_id\": \"$CLIENT_ID_FB_SERVICE_ACCOUNT_KEY\",
+              \"auth_uri\": \"$AUTH_URL_FB_SERVICE_ACCOUNT_KEY\",
+              \"token_uri\": \"$TOKEN_URI_FB_SERVICE_ACCOUNT_KEY\",
+              \"auth_provider_x509_cert_url\": \"$AUTH_PROVIDER_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\",
+              \"client_x509_cert_url\": \"$CLIENT_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\"
+            }" > serviceAccountKey.json
+
+      - run:
+          name: Build repo
+          command: |
+            go build main.go
+
+      - save_cache:
+          key: go-mod-v4-{{ checksum "go.sum" }}
+          paths:
+            - "go/pkg/mod"
+
+      - run:
+          name: Start the service
+          command: ./main
+          background: true
+
+      - run:
+          name: Validate if the service is working or not.
+          command: |
+            sleep 5
+            curl http://localhost:8080/health-check
+
+      - slack/status:
+          channel: ${SLACK_CHANNEL}
+          webhook: ${SLACK_WEBHOOK}
+          failure_message: ":red_circle: A $CIRCLE_JOB job has failed!"
+
+      - slack/notify-on-failure:
+          only_for_branches: main
+
+  deploy_to_develop:
+    docker:
+      - image: google/cloud-sdk
+
+    steps:
+      - checkout
+
+      - run:
+          name: Append GAR beta settings app yml
+          command: |
+            echo -e "beta_settings:\n  cloud_sql_instances: $DB_HOST" >> app.yml
+
+      - run:
+          name: Initialize the environment variable file
+          command: |
+            echo "ENV=development
+            DB_HOST=$DB_HOST
+            DB_PORT=$DB_PORT
+            DB_PASS=$DB_PASS
+            DB_NAME=$DB_NAME
+            DB_USER=$DB_USER
+            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
+            FIREBASE_API_KEY=$FIREBASE_API_KEY
+            MAIL_CLIENT_ID=$MAIL_CLIENT_ID
+            MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
+            MAIL_REFRESH_TOKEN=$MAIL_REFRESH_TOKEN
+            CLIENT_URL_CONSUMER=$CLIENT_URL_CONSUMER
+            AWS_S3_REGION=$AWS_S3_REGION
+            AWS_S3_BUCKET=$AWS_S3_BUCKET
+            AWS_ACCESS_KEY=$AWS_ACCESS_KEY
+            AWS_SECRET_KEY=$AWS_SECRET_KEY
+            SUPER_ADMIN_EMAIL=$SUPER_ADMIN_EMAIL
+            SUPER_ADMIN_PASSWORD=$SUPER_ADMIN_PASSWORD
+            SUPER_ADMIN_DISPLAY=$SUPER_ADMIN_DISPLAY
+            NOTIFICATION_EMAIL=$NOTIFICATION_EMAIL" > .env
+
+      - run:
+          name: Initialize firebase service account key file
+          command: |
+            echo "{
+              \"type\": \"$TYPE_FB_SERVICE_ACCOUNT_KEY\", 
+              \"project_id\": \"$PROJECT_ID_FB_SERVICE_ACCOUNT_KEY\", 
+              \"private_key_id\": \"$PRIVATE_KEY_ID_FB_SERVICE_ACCOUNT_KEY\",
+              \"private_key\": \"$PRIVATE_KEY_FB_SERVICE_ACCOUNT_KEY\",
+              \"client_email\": \"$CLIENT_EMAIL_FB_SERVICE_ACCOUNT_KEY\",
+              \"client_id\": \"$CLIENT_ID_FB_SERVICE_ACCOUNT_KEY\",
+              \"auth_uri\": \"$AUTH_URL_FB_SERVICE_ACCOUNT_KEY\",
+              \"token_uri\": \"$TOKEN_URI_FB_SERVICE_ACCOUNT_KEY\",
+              \"auth_provider_x509_cert_url\": \"$AUTH_PROVIDER_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\",
+              \"client_x509_cert_url\": \"$CLIENT_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\"
+            }" > serviceAccountKey.json
+
+      - run:
+          name: Authenticating and configuring the Google Cloud Platform
+          command: |
+            echo $GCLOUD_SERVICE_KEY | base64 --decode | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project ${GCLOUD_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GCLOUD_ZONE}
+
+      - deploy:
+          name: Deploy to Google App Engine
+          command: |
+            gcloud app deploy app.yml --project $GCLOUD_PROJECT_ID  --quiet
+
+      - deploy:
+          name: Deploy CRON to Google App Engine Cloud Scheduler
+          command: |
+            gcloud app deploy cron.yaml --quiet
+
+      - slack/status:
+          channel: ${SLACK_CHANNEL}
+          webhook: ${SLACK_WEBHOOK}
+          failure_message: ":red_circle: A $CIRCLE_JOB job has failed!"
+
+      - slack/notify-on-failure:
+          only_for_branches: main
+
+  deploy_to_production:
+    docker:
+      - image: google/cloud-sdk
+
+    steps:
+      - checkout
+
+      - run:
+          name: Append GAR beta settings app yml
+          command: |
+            echo -e "beta_settings:\n  cloud_sql_instances: $DB_HOST" >> app.yml
+
+      - run:
+          name: Initialize the environment variable file
+          command: |
+            echo "ENV=production
+            DB_HOST=$DB_HOST
+            DB_PORT=$DB_PORT
+            DB_PASS=$DB_PASS
+            DB_NAME=$DB_NAME
+            DB_USER=$DB_USER
+            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
+            FIREBASE_API_KEY=$FIREBASE_API_KEY
+            MAIL_CLIENT_ID=$MAIL_CLIENT_ID
+            MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
+            MAIL_REFRESH_TOKEN=$MAIL_REFRESH_TOKEN
+            CLIENT_URL_CONSUMER=$CLIENT_URL_CONSUMER
+            AWS_S3_REGION=$AWS_S3_REGION
+            AWS_S3_BUCKET=$AWS_S3_BUCKET
+            AWS_ACCESS_KEY=$AWS_ACCESS_KEY
+            AWS_SECRET_KEY=$AWS_SECRET_KEY
+            SUPER_ADMIN_EMAIL=$SUPER_ADMIN_EMAIL
+            SUPER_ADMIN_PASSWORD=$SUPER_ADMIN_PASSWORD
+            SUPER_ADMIN_DISPLAY=$SUPER_ADMIN_DISPLAY
+            NOTIFICATION_EMAIL=$NOTIFICATION_EMAIL" > .env
+
+      - run:
+          name: Initialize firebase service account key file
+          command: |
+            echo "{
+               \"type\": \"$TYPE_FB_SERVICE_ACCOUNT_KEY\", 
+               \"project_id\": \"$PROJECT_ID_FB_SERVICE_ACCOUNT_KEY\", 
+               \"private_key_id\": \"$PRIVATE_KEY_ID_FB_SERVICE_ACCOUNT_KEY\",
+               \"private_key\": \"$PRIVATE_KEY_FB_SERVICE_ACCOUNT_KEY\",
+               \"client_email\": \"$CLIENT_EMAIL_FB_SERVICE_ACCOUNT_KEY\",
+               \"client_id\": \"$CLIENT_ID_FB_SERVICE_ACCOUNT_KEY\",
+               \"auth_uri\": \"$AUTH_URL_FB_SERVICE_ACCOUNT_KEY\",
+               \"token_uri\": \"$TOKEN_URI_FB_SERVICE_ACCOUNT_KEY\",
+               \"auth_provider_x509_cert_url\": \"$AUTH_PROVIDER_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\",
+               \"client_x509_cert_url\": \"$CLIENT_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\"
+             }" > serviceAccountKey.json
+
+      - run:
+          name: Authenticating and configuring the Google Cloud Platform
+          command: |
+            echo $GCLOUD_SERVICE_KEY | base64 --decode | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project ${GCLOUD_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GCLOUD_ZONE}
+
+      - deploy:
+          name: Deploy to Google App Engine
+          command: |
+            gcloud app deploy app.yml --project $GCLOUD_PROJECT_ID --quiet
+
+      - deploy:
+          name: Deploy CRON to Google App Engine Cloud Scheduler
+          command: |
+            gcloud app deploy cron.yaml --quiet
+
+      - slack/status:
+          channel: ${SLACK_CHANNEL}
+          webhook: ${SLACK_WEBHOOK}
+          failure_message: ":red_circle: A $CIRCLE_JOB job has failed!"
+
+      - slack/notify-on-failure:
+          only_for_branches: main
+
+orbs:
+  slack: circleci/slack@3.4.2
+
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - build:
+          context: boilerplate_dev
+          filters:
+            branches:
+              only:
+                - develop
+                - main
+                - /HT-.*/
+
+      - deploy_to_develop:
+          context: boilerplate_dev
+          filters:
+            branches:
+              only:
+                - develop
+          requires:
+            - build
+
+      - deploy_to_production:
+          context: boilerplate_production
+          filters:
+            tags:
+              only:
+                - /v[0-9].*/
+            branches:
+              ignore:
+                - /.*/

@@ -1,0 +1,46 @@
+package services
+
+import (
+	"{{projectname}}/api/repository"
+	"{{projectname}}/models"
+	"{{projectname}}/utils"
+
+)
+
+// {{ucresource}}Service -> struct
+type {{ucresource}}Service struct {
+	repository repository.{{ucresource}}Repository
+}
+
+// New{{ucresource}}Service  -> creates a new {{ucresource}}service
+func New{{ucresource}}Service(repository repository.{{ucresource}}Repository) {{ucresource}}Service {
+	return {{ucresource}}Service{
+		repository: repository,
+	}
+}
+
+// Create{{ucresource}} -> call to create the {{ucresource}}
+func (c {{ucresource}}Service) Create{{ucresource}}({{lcresource}} models.{{ucresource}}) (models.{{ucresource}}, error) {
+	return c.repository.Create({{lcresource}})
+}
+
+// GetAll{{ucresource}} -> call to create the {{ucresource}}
+func (c {{ucresource}}Service) GetAll{{ucresource}}(pagination utils.Pagination) ([]models.{{ucresource}}, int64, error) {
+	return c.repository.GetAll{{ucresource}}(pagination)
+}
+
+// GetOne{{ucresource}} -> Get One {{ucresource}} By Id
+func (c {{ucresource}}Service) GetOne{{ucresource}}(ID int64) (models.{{ucresource}}, error) {
+	return c.repository.GetOne{{ucresource}}(ID)
+}
+
+// UpdateOne{{ucresource}} -> Update One {{ucresource}} By Id
+func (c {{ucresource}}Service) UpdateOne{{ucresource}}({{lcresource}} models.{{ucresource}}) error {
+	return c.repository.UpdateOne{{ucresource}}({{lcresource}})
+}
+
+// DeleteOne{{ucresource}} -> Delete One {{ucresource}} By Id
+func (c {{ucresource}}Service) DeleteOne{{ucresource}}(ID int64) error {
+	return c.repository.DeleteOne{{ucresource}}(ID)
+
+}

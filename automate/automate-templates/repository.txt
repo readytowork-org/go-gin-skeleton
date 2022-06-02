@@ -1,0 +1,74 @@
+package repository
+
+import (
+	"{{projectname}}/infrastructure"
+	"{{projectname}}/models"
+	"{{projectname}}/utils"
+)
+
+// {{ucresource}}Repository database structure
+type {{ucresource}}Repository struct {
+	db     infrastructure.Database
+	logger infrastructure.Logger
+}
+
+// New{{ucresource}}Repository creates a new {{ucresource}} repository
+func New{{ucresource}}Repository(db infrastructure.Database, logger infrastructure.Logger) {{ucresource}}Repository {
+	return {{ucresource}}Repository{
+		db:     db,
+		logger: logger,
+	}
+}
+
+
+// Create {{ucresource}}
+func (c {{ucresource}}Repository) Create({{ucresource}} models.{{ucresource}}) (models.{{ucresource}}, error) {
+	return {{ucresource}}, c.db.DB.Create(&{{ucresource}}).Error
+}
+
+// GetAll{{ucresource}} -> Get All {{plcresource}}
+func (c {{ucresource}}Repository) GetAll{{ucresource}}(pagination utils.Pagination) ([]models.{{ucresource}}, int64, error) {
+	var {{plcresource}} []models.{{ucresource}}
+	var totalRows int64 = 0
+	queryBuider := c.db.DB.Model(&models.{{ucresource}}{}).Offset(pagination.Offset).Order(pagination.Sort)
+	
+	if !pagination.All{
+		queryBuider=queryBuider.Limit(pagination.PageSize)
+	}
+	
+	if pagination.Keyword != "" {
+		searchQuery := "%" + pagination.Keyword + "%"
+		queryBuider.Where(c.db.DB.Where("`{{resourcetable}}`.`title` LIKE ?", searchQuery))
+	}
+
+	err := queryBuider.
+		Find(&{{plcresource}}).
+		Offset(-1).
+		Limit(-1).
+		Count(&totalRows).Error
+	return {{plcresource}}, totalRows, err
+}
+
+// GetOne{{ucresource}} -> Get One {{ucresource}} By Id
+func (c {{ucresource}}Repository) GetOne{{ucresource}}(ID int64) (models.{{ucresource}}, error) {
+	{{ucresource}} := models.{{ucresource}}{}
+	return {{ucresource}}, c.db.DB.
+		Where("id = ?", ID).First(&{{ucresource}}).Error
+}
+
+// UpdateOne{{ucresource}} -> Update One {{ucresource}} By Id
+func (c {{ucresource}}Repository) UpdateOne{{ucresource}}({{ucresource}} models.{{ucresource}}) error {
+	return c.db.DB.Model(&models.{{ucresource}}{}).
+		Where("id = ?", {{ucresource}}.ID).
+		Updates(map[string]interface{}{
+			"title":           {{ucresource}}.Title,
+		}).Error
+}
+
+// DeleteOne{{ucresource}} -> Delete One {{ucresource}} By Id
+func (c {{ucresource}}Repository) DeleteOne{{ucresource}}(ID int64) error {
+	return c.db.DB.
+		Where("id = ?", ID).
+		Delete(&models.{{ucresource}}{}).
+		Error
+}
