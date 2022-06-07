@@ -7,23 +7,37 @@ import (
 	"google.golang.org/api/option"
 )
 
-// NewBucketStorage creates a new storage client
+// NewBucketStorage -> creates a new storage client
 func NewBucketStorage(logger Logger, env Env) *storage.Client {
 	bucketName := env.StorageBucketName
 	ctx := context.Background()
 	if bucketName == "" {
-		logger.Zap.Warn("Please check your env file for StorageBucketName")
+		logger.Zap.Error("Please check your env file for STORAGE_BUCKET_NAME")
 	}
 	client, err := storage.NewClient(ctx, option.WithCredentialsFile("serviceAccountKey.json"))
 	if err != nil {
 		logger.Zap.Fatal(err.Error())
 	}
-	_, err = client.Bucket(bucketName).Attrs(ctx)
+
+	bucket := client.Bucket(bucketName)
+	_, err = bucket.Attrs(ctx)
 	if err == storage.ErrBucketNotExist {
 		logger.Zap.Fatalf("Provided bucket %v doesn't exists", bucketName)
 	}
 	if err != nil {
-		logger.Zap.Warnf("Cloud bucket error: %v", err.Error())
+		logger.Zap.Fatalf("Cloud bucket error: %v", err.Error())
+	}
+	bucketAttrsToUpdate := storage.BucketAttrsToUpdate{
+		CORS: []storage.CORS{
+			{
+				MaxAge:          600,
+				Methods:         []string{"PUT", "PATCH", "GET", "POST", "OPTIONS", "DELETE"},
+				Origins:         []string{"*"},
+				ResponseHeaders: []string{"Content-Type"},
+			}},
+	}
+	if _, err := bucket.Update(ctx, bucketAttrsToUpdate); err != nil {
+		logger.Zap.Fatalf("Cloud bucket update error: %v", err.Error())
 	}
 	return client
 }
