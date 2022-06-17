@@ -25,7 +25,7 @@ func NewBucketStorage(logger Logger, env Env) *storage.Client {
 		logger.Zap.Fatalf("Provided bucket %v doesn't exists", bucketName)
 	}
 	if err != nil {
-		logger.Zap.Fatalf("Cloud bucket error: %v", err.Error())
+		logger.Zap.Error("Cloud bucket error: %v", err.Error())
 	}
 	bucketAttrsToUpdate := storage.BucketAttrsToUpdate{
 		CORS: []storage.CORS{
@@ -37,7 +37,7 @@ func NewBucketStorage(logger Logger, env Env) *storage.Client {
 			}},
 	}
 	if _, err := bucket.Update(ctx, bucketAttrsToUpdate); err != nil {
-		logger.Zap.Fatalf("Cloud bucket update error: %v", err.Error())
+		logger.Zap.Error("Cloud bucket update error: %v", err.Error())
 	}
 	return client
 }
