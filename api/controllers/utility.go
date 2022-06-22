@@ -89,7 +89,6 @@ func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 		uploadThumbnailUrl, err := uc.bucket.UploadThumbnailFile(ctx.Request.Context(), thumbnail, thumbnailFileName, fileExtension)
 		if err != nil {
 			uc.logger.Zap.Error("Error Failed to upload File::", err.Error())
-			responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to upload thumbnail File")
 			err := errors.BadRequest.Wrap(err, "Failed to upload thumbnail File")
 			responses.HandleError(ctx, err)
 			return
