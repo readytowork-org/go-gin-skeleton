@@ -72,7 +72,6 @@ func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 		uploadedOriginalURL, err := uc.bucket.UploadFile(ctx.Request.Context(), file, originalFileName)
 		if err != nil {
 			uc.logger.Zap.Error("Error Failed to upload File::", err.Error())
-			responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to upload File")
 			err := errors.BadRequest.Wrap(err, "Failed to upload File")
 			responses.HandleError(ctx, err)
 			return
@@ -113,7 +112,6 @@ func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 	uploadedFileURL, err := uc.bucket.UploadFile(ctx.Request.Context(), file, originalFileName)
 	if err != nil {
 		uc.logger.Zap.Error("Error Failed to upload File::", err.Error())
-		responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to upload file ")
 		err := errors.BadRequest.Wrap(err, "Failed to upload file")
 		responses.HandleError(ctx, err)
 		return
@@ -145,7 +143,6 @@ func (cc UtilityController) FileUploadS3Handler(ctx *gin.Context) {
 	err = ctx.ShouldBind(&input)
 	if err != nil {
 		cc.logger.Zap.Error("Error Failed to bind input:: ", err.Error())
-		responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to Bind")
 		err := errors.BadRequest.Wrap(err, "Failed to bind")
 		responses.HandleError(ctx, err)
 		return
