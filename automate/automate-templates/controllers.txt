@@ -8,6 +8,7 @@ import (
 	"{{projectname}}/infrastructure"
 	"{{projectname}}/models"
 	"{{projectname}}/utils"
+	"{{projectname}}/errors"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,13 +36,15 @@ func (cc {{ucresource}}Controller) Create{{ucresource}}(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&{{lcresource}}); err != nil {
 		cc.logger.Zap.Error("Error [Create{{ucresource}}] (ShouldBindJson) : ", err)
-		responses.ErrorJSON(c, http.StatusBadRequest, "Failed To Create {{ucresource}}")
+		err := errors.BadRequest.Wrap(err, "Failed to bind {{ucresource}}")
+		responses.HandleError(c, err)
 		return
 	}
 
 	if _, err := cc.{{ucresource}}Service.Create{{ucresource}}({{lcresource}}); err != nil {
 		cc.logger.Zap.Error("Error [Create{{ucresource}}] [db Create{{ucresource}}]: ", err.Error())
-		responses.ErrorJSON(c, http.StatusInternalServerError, "Failed To Create {{ucresource}}")
+		err := errors.BadRequest.Wrap(err, "Failed To Create {{ucresource}}")
+		responses.HandleError(c, err)
 		return
 	}
 
@@ -57,7 +60,8 @@ func (cc {{ucresource}}Controller) GetAll{{ucresource}}(c *gin.Context) {
 
 	if err != nil {
 		cc.logger.Zap.Error("Error finding {{ucresource}} records", err.Error())
-		responses.ErrorJSON(c, http.StatusBadRequest, "Failed to Find {{ucresource}}")
+		err := errors.InternalError.Wrap(err, "Failed To Find {{ucresource}}")
+		responses.HandleError(c, err)
 		return
 	}
 	responses.JSONCount(c, http.StatusOK, {{plcresource}}, count)
@@ -71,7 +75,8 @@ func (cc {{ucresource}}Controller) GetOne{{ucresource}}(c *gin.Context) {
 
 	if err != nil {
 		cc.logger.Zap.Error("Error [GetOne{{ucresource}}] [db GetOne{{ucresource}}]: ", err.Error())
-		responses.ErrorJSON(c, http.StatusBadRequest, "Failed to Find {{ucresource}}")
+		err := errors.InternalError.Wrap(err, "Failed To Find {{ucresource}}")
+		responses.HandleError(c, err)
 		return
 	}
 	responses.JSON(c, http.StatusOK, {{lcresource}})
@@ -85,14 +90,16 @@ func (cc {{ucresource}}Controller) UpdateOne{{ucresource}}(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&{{lcresource}}); err != nil {
 		cc.logger.Zap.Error("Error [Update{{ucresource}}] (ShouldBindJson) : ", err)
-		responses.ErrorJSON(c, http.StatusBadRequest, "failed to update {{lcresource}}")
+		err := errors.BadRequest.Wrap(err, "failed to update {{lcresource}}")
+		responses.HandleError(c, err)
 		return
 	}
 	{{lcresource}}.ID = ID
 
 	if err := cc.{{ucresource}}Service.UpdateOne{{ucresource}}({{lcresource}}); err != nil {
 		cc.logger.Zap.Error("Error [Update{{ucresource}}] [db Update{{ucresource}}]: ", err.Error())
-		responses.ErrorJSON(c, http.StatusInternalServerError, "failed to update {{lcresource}}")
+		err := errors.InternalError.Wrap(err, "failed to update {{lcresource}}")
+		responses.HandleError(c, err)
 		return
 	}
 
@@ -106,7 +113,8 @@ func (cc {{ucresource}}Controller) DeleteOne{{ucresource}}(c *gin.Context) {
 
 	if err != nil {
 		cc.logger.Zap.Error("Error [DeleteOne{{ucresource}}] [db DeleteOne{{ucresource}}]: ", err.Error())
-		responses.ErrorJSON(c, http.StatusBadRequest, "Failed to Delete {{ucresource}}")
+		err := errors.InternalError.Wrap(err, "Failed to Delete {{ucresource}}")
+		responses.HandleError(c, err)
 		return
 	}
 
