@@ -39,16 +39,6 @@ services:
     image: adminer
     ports:
       - ${AdminerPort}:8080
-  
-  phpmyadmin:
-        image: phpmyadmin/phpmyadmin
-        container_name: pma_container
-        environment:
-            PMA_HOST: database
-            PMA_PORT: 9001
-        restart: always
-        ports:
-            - 9001:80
 
 volumes:
   clean_db:

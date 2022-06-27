@@ -68,17 +68,19 @@ func bootstrap(
 			logger.Zap.Info("------------------------")
 			logger.Zap.Info("------ Boilerplate 📺 ------")
 			logger.Zap.Info("------------------------")
-
 			logger.Zap.Info("Migrating DB schema...")
 			go func() {
-				migrations.Migrate()
+				if env.Environment == "development" || env.Environment == "production" {
+					logger.Zap.Info("Migrating DB schema...")
+					migrations.Migrate()
+				}
 				middlewares.Setup()
 				routes.Setup()
 				logger.Zap.Info("🌱 seeding data...")
 				seeds.Run()
 				if env.ServerPort == "" {
 					handler.Gin.Run(":5000")
-					} else {
+				} else {
 					handler.Gin.Run(":" + env.ServerPort)
 				}
 			}()
