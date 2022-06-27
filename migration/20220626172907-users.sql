@@ -2,8 +2,8 @@
 -- +migrate Up
 CREATE TABLE IF NOT EXISTS `users` (
   `id` BINARY(16) NOT NULL, 
-  `fullname` VARCHAR(100) NOT NULL,
-  `email` VARCHAR(20) NOT NULL,
+  `full_name` VARCHAR(100) NOT NULL,
+  `email` VARCHAR(256) NOT NULL,
   `created_at` DATETIME NOT NULL,
   `updated_at` DATETIME NOT NULL,
   `deleted_at` DATETIME NULL,
