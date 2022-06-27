@@ -5,7 +5,7 @@ Boilerplate API template includes all the common packages and setup used for API
 ### Development
 
 - Copy `.env.example` to `.env` and update according to requirement.
-- Create `serviceAccountKey.json` file for firebase admin sdk.
+- Create `serviceAccountKey.json` file for firebase admin sdk and copy serviceAccountKey.json.example file content for basic setup.
 - To run `docker-compose up` (with default configuration will run at `5000` and adminer runs at `5001`)
 
 #### Run Boilerplate CLI 🖥
