@@ -14,9 +14,6 @@ dev:
 migrate-status:
 		$(MIGRATE) status
 
-migrate-new:
-		%(MIGRATE) new
-
 migrate-up:
 		$(MIGRATE) up
 
