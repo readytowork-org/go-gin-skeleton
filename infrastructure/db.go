@@ -49,8 +49,17 @@ func NewDatabase(Zaplogger Logger, env Env) Database {
 		Zaplogger.Zap.Panic(err)
 	}
 
+	Zaplogger.Zap.Info("using given database")
+	if err := db.Exec(fmt.Sprintf("USE %s", env.DBName)).Error; err != nil {
+		Zaplogger.Zap.Info("cannot use the given database")
+		Zaplogger.Zap.Panic(err)
+	}
+	database := Database{DB: db}
 	Zaplogger.Zap.Info("Database connection established")
-
+	if err := RunMigration(Zaplogger, database); err != nil {
+		Zaplogger.Zap.Info("migration failed.")
+		Zaplogger.Zap.Panic(err)
+	}
 	return Database{
 		DB: db,
 	}

@@ -1,58 +1,53 @@
 package infrastructure
 
 import (
-	"fmt"
-
-	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	migrate "github.com/rubenv/sql-migrate"
 )
 
 //Migrations -> Migration Struct
 type Migrations struct {
 	logger Logger
-	env    Env
+	db     Database
 }
 
 //NewMigrations -> return new Migrations struct
 func NewMigrations(
 	logger Logger,
-	env Env,
+	db Database,
 ) Migrations {
 	return Migrations{
 		logger: logger,
-		env:    env,
+		db:     db,
 	}
 }
 
 //Migrate -> migrates all table
-func (m Migrations) Migrate() {
+func (m Migrations) Migrate() error {
 	m.logger.Zap.Info("Migrating schemas...")
 
-	USER := m.env.DBUsername
-	PASS := m.env.DBPassword
-	HOST := m.env.DBHost
-	PORT := m.env.DBPort
-	DBNAME := m.env.DBName
-	ENVIRONMENT := m.env.Environment
-
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", USER, PASS, HOST, PORT, DBNAME)
-
-	if ENVIRONMENT != "local" {
-		dsn = fmt.Sprintf(
-			"%s:%s@unix(/cloudsql/%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-			USER,
-			PASS,
-			HOST,
-			DBNAME,
-		)
+	migrations := &migrate.FileMigrationSource{
+		Dir: "migration/",
 	}
 
-	migrations, err := migrate.New("file://migration/", "mysql://"+dsn)
-
-	m.logger.Zap.Info("--- Running Migration ---")
-	err = migrations.Steps(1000)
+	sqlDB, err := m.db.DB.DB()
 	if err != nil {
-		m.logger.Zap.Error("Error in migration: ", err.Error())
+		return err
 	}
+
+	m.logger.Zap.Info("running migration.")
+	_, err = migrate.Exec(sqlDB, "mysql", migrations, migrate.Up)
+	if err != nil {
+		return err
+	}
+	m.logger.Zap.Info("migration completed.")
+	return nil
+
+}
+
+// RunMigration runs the migration provided logger and database instance
+func RunMigration(logger Logger, db Database) error {
+	m := Migrations{logger, db}
+	return m.Migrate()
 }

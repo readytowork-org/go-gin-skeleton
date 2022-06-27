@@ -1,0 +1,5 @@
+development:
+    dialect: mysql
+    datasource: ${DBUsername}:${DBPassword}@tcp(${DBHost}:${DBPort})/${DBName}?parseTime=true
+    dir: migration/
+    table: migration_schema

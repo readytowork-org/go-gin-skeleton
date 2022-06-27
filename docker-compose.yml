@@ -11,7 +11,7 @@ services:
     volumes:
       - .:/clean_web
     env_file: .env
-    container_name: boilerplate-web
+    container_name: clean-web
     depends_on:
       - database
 
@@ -23,7 +23,7 @@ services:
       MYSQL_USER: ${DBUsername}
       MYSQL_PASSWORD: ${DBPassword}
       MYSQL_DATABASE: ${DBName}
-    container_name: boilerplate-db
+    container_name: clean-db
     command:
       [
         "--character-set-server=utf8mb4",
@@ -33,12 +33,22 @@ services:
     ports:
       - 33066:3306
     volumes:
-      - boilerplate_db:/var/lib/mysql
+      - clean_db:/var/lib/mysql
 
   adminer:
     image: adminer
     ports:
       - ${AdminerPort}:8080
+  
+  phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: pma_container
+        environment:
+            PMA_HOST: database
+            PMA_PORT: 9001
+        restart: always
+        ports:
+            - 9001:80
 
 volumes:
-  boilerplate_db:
+  clean_db:

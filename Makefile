@@ -1,12 +1,35 @@
 include .env
-MIGRATE=docker-compose exec web migrate -path=migration -database "mysql://${DBUsername}:${DBPassword}@tcp(${DBHost}:${DBPort})/${DBName}" -verbose
+export
+RUNNER=docker-compose exec web sql-migrate
+
+ifeq ($(p),host)
+ 	RUNNER=sql-migrate
+endif
+
+MIGRATE=$(RUNNER)
 
 dev:
 		gin appPort ${ServerPort} -i run server.go
+
+migrate-status:
+		$(MIGRATE) status
+
+migrate-new:
+		%(MIGRATE) new
+
 migrate-up:
 		$(MIGRATE) up
+
 migrate-down:
 		$(MIGRATE) down 
+
+redo:
+		@read -p  "Are you sure to reapply the last migration? [y/n]" -n 1 -r; \
+		if [[ $$REPLY =~ ^[Yy] ]]; \
+		then \
+			$(MIGRATE) redo; \
+		fi
+
 force:
 		@read -p  "Which version do you want to force?" VERSION; \
 		$(MIGRATE) force $$VERSION
@@ -20,10 +43,10 @@ drop:
 
 create:
 		@read -p  "What is the name of migration?" NAME; \
-		${MIGRATE} create -ext sql -seq -dir migration  $$NAME
+		$(MIGRATE) new $$NAME
 
 crud:
-	bash automate/scripts/crud.sh
+		bash automate/scripts/crud.sh
 
 .PHONY: migrate-up migrate-down force goto drop create
 
