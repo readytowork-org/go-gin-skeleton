@@ -3,6 +3,7 @@ package controllers
 import (
 	"boilerplate-api/api/responses"
 	"boilerplate-api/api/services"
+	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/utils"
 	"net/http"
@@ -47,7 +48,8 @@ func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 	file, uploadFile, err := ctx.Request.FormFile("file")
 	if err != nil {
 		uc.logger.Zap.Error("Error Get File from request :: ", err.Error())
-		responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to get file form request")
+		err := errors.BadRequest.Wrap(err, "Failed to get file form request")
+		responses.HandleError(ctx, err)
 		return
 	}
 
@@ -61,7 +63,8 @@ func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 	fileHeader := make([]byte, 512)
 	if _, err := file1.Read(fileHeader); err != nil {
 		uc.logger.Zap.Error("Error File Read upload File::", err.Error())
-		responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to read upload  File")
+		err := errors.BadRequest.Wrap(err, "Failed to read upload  File")
+		responses.HandleError(ctx, err)
 		return
 	}
 	fileType := http.DetectContentType(fileHeader)
@@ -69,7 +72,8 @@ func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 		uploadedOriginalURL, err := uc.bucket.UploadFile(ctx.Request.Context(), file, originalFileName)
 		if err != nil {
 			uc.logger.Zap.Error("Error Failed to upload File::", err.Error())
-			responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to upload File")
+			err := errors.BadRequest.Wrap(err, "Failed to upload File")
+			responses.HandleError(ctx, err)
 			return
 		}
 
@@ -77,13 +81,15 @@ func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 		thumbnail, err := utils.CreateThumbnail(file, fileType, 200, 0)
 		if err != nil {
 			uc.logger.Zap.Error("Error Failed create thumbnail", err.Error())
-			responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to upload File")
+			err := errors.BadRequest.Wrap(err, "Error Failed create thumbnail")
+			responses.HandleError(ctx, err)
 			return
 		}
 		uploadThumbnailUrl, err := uc.bucket.UploadThumbnailFile(ctx.Request.Context(), thumbnail, thumbnailFileName, fileExtension)
 		if err != nil {
 			uc.logger.Zap.Error("Error Failed to upload File::", err.Error())
-			responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to upload File")
+			err := errors.BadRequest.Wrap(err, "Failed to upload thumbnail File")
+			responses.HandleError(ctx, err)
 			return
 		}
 
@@ -106,7 +112,8 @@ func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 	uploadedFileURL, err := uc.bucket.UploadFile(ctx.Request.Context(), file, originalFileName)
 	if err != nil {
 		uc.logger.Zap.Error("Error Failed to upload File::", err.Error())
-		responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to upload file ")
+		err := errors.BadRequest.Wrap(err, "Failed to upload file")
+		responses.HandleError(ctx, err)
 		return
 	}
 	response := &Response{
@@ -128,14 +135,16 @@ func (cc UtilityController) FileUploadS3Handler(ctx *gin.Context) {
 	file, fileHeader, err := ctx.Request.FormFile("file")
 	if err != nil {
 		cc.logger.Zap.Error("Error Get File from request: ", err.Error())
-		responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to get file form request")
+		err := errors.BadRequest.Wrap(err, "Failed to get file form request")
+		responses.HandleError(ctx, err)
 		return
 	}
 	var input Input
 	err = ctx.ShouldBind(&input)
 	if err != nil {
 		cc.logger.Zap.Error("Error Failed to bind input:: ", err.Error())
-		responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to Bind")
+		err := errors.BadRequest.Wrap(err, "Failed to bind")
+		responses.HandleError(ctx, err)
 		return
 	}
 
@@ -146,7 +155,8 @@ func (cc UtilityController) FileUploadS3Handler(ctx *gin.Context) {
 	uploadedFileURL, err := cc.s3Bucket.UploadtoS3(file, fileHeader, originalFileNamePath)
 	if err != nil {
 		cc.logger.Zap.Error("Error Failed to upload File:: ", err.Error())
-		responses.ErrorJSON(ctx, http.StatusBadRequest, "Failed to upload file")
+		err := errors.BadRequest.Wrap(err, "Failed to upload file to s3 bucket")
+		responses.HandleError(ctx, err)
 		return
 	}
 

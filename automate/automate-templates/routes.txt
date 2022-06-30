@@ -32,7 +32,7 @@ func New{{ucresource}}Routes(
 // Setup {{lcresource}} routes
 func (c {{ucresource}}Routes) Setup() {
 	c.logger.Zap.Info(" Setting up {{ucresource}} routes")
-	{{lcresource}} := c.router.Gin.Group("/{{resourcetable}}")
+	{{lcresource}} := c.router.Gin.Group("/{{pluralresourcetable}}")
 	{
 		{{lcresource}}.POST("", c.{{lcresource}}Controller.Create{{ucresource}})
 		{{lcresource}}.GET("", c.{{lcresource}}Controller.GetAll{{ucresource}})
