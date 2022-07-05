@@ -1,6 +1,9 @@
 package responses
 
 import (
+	"boilerplate-api/errors"
+	"os"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,4 +25,35 @@ func SuccessJSON(c *gin.Context, statusCode int, data interface{}) {
 // JSONCount : json response function
 func JSONCount(c *gin.Context, statusCode int, data interface{}, count int64) {
 	c.JSON(statusCode, gin.H{"data": data, "count": count})
+}
+
+type errResponse struct {
+	Message string      `json:"message"`
+	Error   string      `json:"error"`
+	Errors  interface{} `json:"errors"`
+}
+
+// HandleError func
+func HandleError(c *gin.Context, err error) {
+	errorType := errors.GetErrorType(err)
+	status := errors.GetStatusCode(errorType)
+
+	errorContext := errors.GetErrorContext(err)
+	customMessage := errors.GetCustomMessage(err)
+	response := &errResponse{}
+	if os.Getenv("ENV") != "production" {
+		response.Error = err.Error()
+	}
+	response.Message = customMessage
+
+	if customMessage == "" {
+		response.Message = "An error has occurred. Please try again later."
+	}
+	if status == 500 {
+		response.Message = "An error has occurred. Please try again later."
+	}
+	if errorContext != nil {
+		response.Errors = errorContext
+	}
+	c.JSON(status, gin.H{"error": &response})
 }

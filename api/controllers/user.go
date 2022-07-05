@@ -4,6 +4,7 @@ import (
 	"boilerplate-api/api/responses"
 	"boilerplate-api/api/services"
 	"boilerplate-api/constants"
+	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
 	"boilerplate-api/utils"
@@ -40,13 +41,15 @@ func (cc UserController) CreateUser(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&user); err != nil {
 		cc.logger.Zap.Error("Error [CreateUser] (ShouldBindJson) : ", err)
-		responses.ErrorJSON(c, http.StatusBadRequest, "Failed To Create User")
+		err := errors.BadRequest.Wrap(err, "Failed to bind user data")
+		responses.HandleError(c, err)
 		return
 	}
 
 	if err := cc.userService.WithTrx(trx).CreateUser(user); err != nil {
 		cc.logger.Zap.Error("Error [CreateUser] [db CreateUser]: ", err.Error())
-		responses.ErrorJSON(c, http.StatusInternalServerError, "Failed To Create User")
+		err := errors.InternalError.Wrap(err, "Failed to create user")
+		responses.HandleError(c, err)
 		return
 	}
 
@@ -60,7 +63,8 @@ func (cc UserController) GetAllUsers(c *gin.Context) {
 
 	if err != nil {
 		cc.logger.Zap.Error("Error finding user records", err.Error())
-		responses.ErrorJSON(c, http.StatusBadRequest, "Failed to Find users")
+		err := errors.InternalError.Wrap(err, "Failed to get users data")
+		responses.HandleError(c, err)
 		return
 	}
 
