@@ -70,10 +70,8 @@ func bootstrap(
 			logger.Zap.Info("------------------------")
 			logger.Zap.Info("Migrating DB schema...")
 			go func() {
-				if env.Environment == "development" || env.Environment == "production" {
-					logger.Zap.Info("Migrating DB schema...")
-					migrations.Migrate()
-				}
+				logger.Zap.Info("Migrating DB schema...")
+				migrations.Migrate()
 				middlewares.Setup()
 				routes.Setup()
 				logger.Zap.Info("🌱 seeding data...")
