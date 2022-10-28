@@ -167,6 +167,19 @@ jobs:
           name: Deploy CRON to Google App Engine Cloud Scheduler
           command: |
             gcloud app deploy cron.yaml --quiet
+            
+      - run:
+          name: Delete Old versions of App Engine
+          command: |
+            versions=$(gcloud app versions list \
+              --service default \
+              --sort-by '~VERSION.ID' \
+              --format 'value(VERSION.ID)' | sed 1,5d)
+            for version in $versions; do
+              gcloud app versions delete "$version" \
+                --service default \
+                --quiet
+            done
 
       - slack/status:
           channel: ${SLACK_CHANNEL}
