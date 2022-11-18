@@ -7,6 +7,7 @@ var Module = fx.Options(
 	fx.Provide(NewFirebaseService),
 	fx.Provide(NewStorageBucketService),
 	fx.Provide(NewUserService),
+	fx.Provide(NewProductService),
 	fx.Provide(NewTwilioService),
 	fx.Provide(NewGmailService),
 	fx.Provide(NewS3BucketService),
