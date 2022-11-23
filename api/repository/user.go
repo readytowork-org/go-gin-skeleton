@@ -1,9 +1,13 @@
 package repository
 
 import (
+	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
 	"boilerplate-api/utils"
+	"encoding/json"
+	"fmt"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -33,8 +37,17 @@ func (c UserRepository) WithTrx(trxHandle *gorm.DB) UserRepository {
 }
 
 // Save -> User
-func (c UserRepository) Create(User models.User) error {
-	return c.db.DB.Create(&User).Error
+func (c UserRepository) Create(User *models.User) (*models.User, error) {
+	c.logger.Zap.Info(User, "---User")
+	b, err := json.MarshalIndent(User, "", "")
+	if err == nil {
+		fmt.Println(string(b))
+	}
+	if err := c.db.DB.Create(&User).Error; err != nil {
+
+		return nil, err
+	}
+	return User, nil
 }
 
 // GetAllUser -> Get All users
@@ -46,7 +59,10 @@ func (c UserRepository) GetAllUsers(pagination utils.Pagination) ([]models.User,
 
 	if pagination.Keyword != "" {
 		searchQuery := "%" + pagination.Keyword + "%"
-		queryBuilder.Where(c.db.DB.Where("`users`.`name` LIKE ?", searchQuery))
+		queryBuilder.Where(c.db.DB.Where("`user`.`username` LIKE ?", searchQuery).
+			Or("`user`.`username` LIKE ?", searchQuery).
+			Or("`user`.`email` LIKE ?", searchQuery).
+			Or("`user`.`full_name` LIKE ?", searchQuery))
 	}
 
 	err := queryBuilder.
@@ -55,4 +71,27 @@ func (c UserRepository) GetAllUsers(pagination utils.Pagination) ([]models.User,
 		Limit(-1).
 		Count(&totalRows).Error
 	return users, totalRows, err
+}
+
+// Partial update of user
+func (c UserRepository) UpdatePartial(ID models.BINARY16, map_update map[string]interface{}) (*models.User, error) {
+	user := models.User{}
+	if err := c.db.DB.Model(&models.User{}).
+		Where("id = ?", ID).
+		Updates(map_update).Find(&user).Error; err != nil {
+		if strings.Contains(err.Error(), "1062") {
+			err = errors.BadRequest.Wrap(err, "Error updating user")
+			custom_msg := ""
+			if strings.Contains(err.Error(), "UQ_user_email") {
+				custom_msg = "Email address already taken"
+			} else if strings.Contains(err.Error(), "users.UQ_user_phone") {
+				custom_msg = "Phone number already taken"
+			}
+			err = errors.SetCustomMessage(err, custom_msg)
+		} else {
+			err = errors.InternalError.Wrap(err, "Error updating user")
+		}
+		return nil, err
+	}
+	return &user, nil
 }

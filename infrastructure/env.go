@@ -35,6 +35,7 @@ type Env struct {
 	TwilioSID       string
 	TwilioAuthToken string
 	TwilioSMSFrom   string
+	FirebaseApiKey  string
 }
 
 // NewEnv creates a new environment
@@ -76,4 +77,5 @@ func (env *Env) LoadEnv() {
 	env.TwilioAuthToken = os.Getenv("TwilioAuthToken")
 	env.TwilioSID = os.Getenv("TwilioSID")
 	env.TwilioSMSFrom = os.Getenv("TwilioSMSFrom")
+	env.FirebaseApiKey = os.Getenv("FirebaseApiKey")
 }

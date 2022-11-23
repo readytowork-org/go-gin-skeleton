@@ -3,6 +3,7 @@ package seeds
 import (
 	"boilerplate-api/api/services"
 	"boilerplate-api/infrastructure"
+	"boilerplate-api/models"
 )
 
 // AdminSeed  Admin seeding
@@ -30,21 +31,23 @@ func (c AdminSeed) Run() {
 
 	email := c.env.AdminEmail
 	password := c.env.AdminPass
-
+	adminUser := models.FirebaseAuthUser{}
+	adminUser.Email = email
+	adminUser.Password = password
 	c.logger.Zap.Info("🌱 seeding  admin data...")
 
-	_, err := c.firebaseSerivce.GetUserByEmail(email)
+	// err := c.firebaseSerivce.GetUserByEmail(email)
 
-	if err != nil {
-		err := c.firebaseSerivce.CreateAdminUser(email, password)
-		if err != nil {
-			c.logger.Zap.Error("Firebase Admin user can't be created: ", err.Error())
-			return
-		}
+	// if err != "" {
+	// 	err := c.firebaseSerivce.CreateAdminUser(adminUser)
+	// 	if err != nil {
+	// 		c.logger.Zap.Error("Firebase Admin user can't be created: ", err.Error())
+	// 		return
+	// 	}
 
-		c.logger.Zap.Info("Firebase Admin User Created, email: ", email, " password: ", password)
-	}
+	// 	c.logger.Zap.Info("Firebase Admin User Created, email: ", email, " password: ", password)
+	// }
 
-	c.logger.Zap.Info("Admin already exist")
+	// c.logger.Zap.Info("Admin already exist")
 
 }

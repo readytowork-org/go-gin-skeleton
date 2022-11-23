@@ -11,7 +11,7 @@ services:
     volumes:
       - .:/clean_web
     env_file: .env
-    container_name: boilerplate-web
+    container_name: new-web
     depends_on:
       - database
 
@@ -23,17 +23,17 @@ services:
       MYSQL_USER: ${DBUsername}
       MYSQL_PASSWORD: ${DBPassword}
       MYSQL_DATABASE: ${DBName}
-    container_name: boilerplate-db
+    container_name: new-db
     command:
       [
         "--character-set-server=utf8mb4",
         "--collation-server=utf8mb4_unicode_ci",
-        "--default-authentication-plugin=mysql_native_password",
+        "--default-authentication-plugin=mysql_native_password"
       ]
     ports:
       - 33066:3306
     volumes:
-      - boilerplate_db:/var/lib/mysql
+      - newdb:/var/lib/mysql
 
   adminer:
     image: adminer
@@ -41,4 +41,4 @@ services:
       - ${AdminerPort}:8080
 
 volumes:
-  boilerplate_db:
+  newdb:

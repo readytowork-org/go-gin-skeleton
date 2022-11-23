@@ -39,12 +39,12 @@ func (c CreateDummyAdminUser) Run() {
 
 	password, _ := passwordPrompt.Run()
 
-	_, err := c.firebaseSerivce.CreateUser(email, password)
+	// _, err := c.firebaseSerivce.CreateUser(email, password)
 
-	if err != nil {
-		c.logger.Zap.Error("firebase dummy admin user can't be created: ", err.Error())
-		return
-	}
+	// if err != nil {
+	// 	c.logger.Zap.Error("firebase dummy admin user can't be created: ", err.Error())
+	// 	return
+	// }
 
 	c.logger.Zap.Info("Firebase dummy admin user created, email: ", email, " password: ", password)
 

@@ -27,12 +27,16 @@ func (c UserService) WithTrx(trxHandle *gorm.DB) UserService {
 }
 
 // CreateUser -> call to create the User
-func (c UserService) CreateUser(user models.User) error {
-	err := c.repository.Create(user)
-	return err
+func (c UserService) CreateUser(user *models.User) (*models.User, error) {
+	return c.repository.Create(user)
 }
 
 // GetAllUser -> call to get all the User
 func (c UserService) GetAllUsers(pagination utils.Pagination) ([]models.User, int64, error) {
 	return c.repository.GetAllUsers(pagination)
+}
+
+// upate user partially
+func (c UserService) UpdatePartial(ID models.BINARY16, map_update map[string]interface{}) (*models.User, error) {
+	return c.repository.UpdatePartial(ID, map_update)
 }

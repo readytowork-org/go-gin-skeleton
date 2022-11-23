@@ -40,12 +40,12 @@ func (c CreateAdminUser) Run() {
 	password, _ := passwordPrompt.Run()
 
 	c.logger.Zap.Info("creating admin user...")
-	err := c.firebaseSerivce.CreateAdminUser(email, password)
+	// err := c.firebaseSerivce.CreateAdminUser(email, password)
 
-	if err != nil {
-		c.logger.Zap.Error("firebase admin user cant be created: ", err.Error())
-		return
-	}
+	// if err != nil {
+	// 	c.logger.Zap.Error("firebase admin user cant be created: ", err.Error())
+	// 	return
+	// }
 
 	c.logger.Zap.Info("Firebase admin user created, email: ", email, " password: ", password)
 
