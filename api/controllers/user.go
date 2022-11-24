@@ -49,7 +49,6 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		ConfirmPassword string `json:"confirm_password" validate:"required"`
 	}{}
 	trx := c.MustGet(constants.DBTransaction).(*gorm.DB)
-
 	if err := c.ShouldBindJSON(&reqData); err != nil {
 		cc.logger.Zap.Error("Error [CreateUser] (ShouldBindJson) : ", err)
 		err := errors.BadRequest.Wrap(err, "Failed to bind user data")
@@ -60,7 +59,11 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		cc.logger.Zap.Error("Password and confirm password not matching : ")
 		responses.ErrorJSON(c, http.StatusBadRequest, "Password and confirm password should be same.")
 		return
-
+	}
+	if !utils.IsValidEmail(reqData.User.Email) {
+		cc.logger.Zap.Error("Invalid email")
+		responses.ErrorJSON(c, http.StatusBadRequest, "Invalid Email")
+		return
 	}
 	if validationErr := cc.validator.Validate.Struct(reqData); validationErr != nil {
 		err := errors.BadRequest.Wrap(validationErr, "Validation error")
@@ -69,7 +72,8 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		responses.HandleError(c, err)
 		return
 	}
-	fb_user := cc.firebaseService.GetUserByEmail(reqData.User.Email)
+
+	fb_user := cc.firebaseService.GetUserByEmail(reqData.Email)
 	if fb_user != "" {
 		err := errors.BadRequest.New("Firebase user already exists")
 		err = errors.SetCustomMessage(err, "Email address already taken")
@@ -89,7 +93,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		DisplayName: created_user.FullName,
 		Password:    reqData.Password,
 		Role:        constants.RoleUser,
-		UserId:      created_user.ID.String(),
+		UserId:      utils.Int64ToString(created_user.ID),
 	}
 	fb_uid, err := cc.firebaseService.CreateUser(fb_auth_user)
 	if err != nil {
