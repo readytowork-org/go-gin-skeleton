@@ -139,3 +139,35 @@ func (cc UserController) GetAllUsers(c *gin.Context) {
 
 	responses.JSONCount(c, http.StatusOK, users, count)
 }
+
+func (cc UserController) GetOneUser(c *gin.Context) {
+	id := c.Param("id")
+	user, err := cc.userService.GetOneUser(id)
+	if err != nil {
+		cc.logger.Zap.Error("Error finding user records", err.Error())
+		err := errors.InternalError.Wrap(err, "Failed to get users data")
+		responses.HandleError(c, err)
+		return
+	}
+	responses.SuccessJSON(c, http.StatusOK, user)
+	return
+}
+
+func (cc UserController) DeleteOneUser(c *gin.Context) {
+	trx := c.MustGet(constants.DBTransaction).(*gorm.DB)
+	f_uid, err := cc.userService.WithTrx(trx).DeleteOneUser(c.Param("id"))
+	if err != nil {
+		cc.logger.Zap.Error("Error Deleting user record", err.Error())
+		err := errors.InternalError.Wrap(err, "Failed to delete user data")
+		responses.HandleError(c, err)
+		return
+	}
+	if err := cc.firebaseService.DeleteUser(*f_uid); err != nil {
+		cc.logger.Zap.Error("Error Deleting user record from firebase", err.Error())
+		err := errors.InternalError.Wrap(err, "Failed to delete user data from firebase")
+		responses.HandleError(c, err)
+		return
+	}
+	responses.SuccessJSON(c, http.StatusOK, "User deleted successfully")
+	return
+}
