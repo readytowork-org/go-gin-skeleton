@@ -74,7 +74,7 @@ func (c UserRepository) GetAllUsers(pagination utils.Pagination) ([]models.User,
 }
 
 // Partial update of user
-func (c UserRepository) UpdatePartial(ID models.BINARY16, map_update map[string]interface{}) (*models.User, error) {
+func (c UserRepository) UpdatePartial(ID int64, map_update map[string]interface{}) (*models.User, error) {
 	user := models.User{}
 	if err := c.db.DB.Model(&models.User{}).
 		Where("id = ?", ID).
@@ -94,4 +94,19 @@ func (c UserRepository) UpdatePartial(ID models.BINARY16, map_update map[string]
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (c UserRepository) GetOneUser(Id string) (*models.User, error) {
+	user := models.User{}
+	if err := c.db.DB.First(&user, Id).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+
+}
+
+func (c UserRepository) DeleteOneUser(Id string) (*string, error) {
+	user := models.User{}
+	err := c.db.DB.First(&user, Id).Delete(&user, Id).Error
+	return &user.FirebaseUID, err
 }

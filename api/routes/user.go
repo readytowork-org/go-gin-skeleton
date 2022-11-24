@@ -21,6 +21,8 @@ func (i UserRoutes) Setup() {
 	users := i.router.Gin.Group("/user")
 	{
 		users.GET("", i.userController.GetAllUsers)
+		users.GET("/:id", i.userController.GetOneUser)
+		users.DELETE("/:id", i.trxMiddleware.DBTransactionHandle(), i.userController.DeleteOneUser)
 		users.POST("", i.trxMiddleware.DBTransactionHandle(), i.userController.CreateUser)
 	}
 }
