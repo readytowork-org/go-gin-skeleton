@@ -4,6 +4,8 @@ import (
 	"boilerplate-api/api/responses"
 	"boilerplate-api/api/services"
 	"boilerplate-api/constants"
+	"boilerplate-api/errors"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -33,9 +35,10 @@ func NewFirebaseAuthMiddleware(
 func (m FirebaseAuthMiddleware) Handle() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, err := m.getTokenFromHeader(c)
-
 		if err != nil {
-			responses.ErrorJSON(c, http.StatusUnauthorized, err.Error())
+			err = errors.Unauthorized.Wrap(err, "Error verifying auth token")
+			err = errors.SetCustomMessage(err, "Unauthorised")
+			responses.HandleError(c, err)
 			c.Abort()
 			return
 		}
@@ -43,9 +46,13 @@ func (m FirebaseAuthMiddleware) Handle() gin.HandlerFunc {
 		sentry.ConfigureScope(func(scope *sentry.Scope) {
 			scope.SetUser(sentry.User{ID: token.UID})
 		})
+		role := fmt.Sprintf("%v", token.Claims["role"])
+		firebaseId := fmt.Sprintf("%v", token.Claims["fb_uid"])
 
 		c.Set(constants.Claims, token.Claims)
 		c.Set(constants.UID, token.UID)
+		c.Set(constants.FirebaseUID, firebaseId)
+		c.Set(constants.Role, role)
 
 		c.Next()
 	}
@@ -104,5 +111,3 @@ func (M FirebaseAuthMiddleware) isAdmin(claims map[string]interface{}) bool {
 	return isAdmin
 
 }
-
-
