@@ -16,9 +16,6 @@ const (
 	//DUMMYEMAIL ->
 	DUMMYEMAIL = "dummyrtw@mailinator.com"
 
-	//Adminrole ->
-	RoleAdmin = "admin"
-	RoleUser  = "user"
-
 	FirebaseUseLoginUrl = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key="
+	FirebaseUID         = "firebase_uid"
 )
