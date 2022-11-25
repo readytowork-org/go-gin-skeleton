@@ -9,6 +9,7 @@ import (
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
 	"boilerplate-api/utils"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -94,6 +95,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		Password:    reqData.Password,
 		Role:        constants.RoleUser,
 		UserId:      utils.Int64ToString(created_user.ID),
+		PhoneNumber: created_user.Phone,
 	}
 	fb_uid, err := cc.firebaseService.CreateUser(fb_auth_user)
 	if err != nil {
@@ -170,4 +172,72 @@ func (cc UserController) DeleteOneUser(c *gin.Context) {
 	}
 	responses.SuccessJSON(c, http.StatusOK, "User deleted successfully")
 	return
+}
+
+func (cc UserController) UpdateUser(c *gin.Context) {
+	trx := c.MustGet(constants.DBTransaction).(*gorm.DB)
+	bodyData := struct {
+		Username string `json:"username" validate:"required"`
+		FullName string `json:"full_name" validate:"required"`
+		Email    string `json:"email" validate:"required"`
+		Phone    string `json:"phone" validate:"required"`
+		Address  string `json:"address" validate:"required"`
+	}{}
+
+	if err := c.ShouldBindJSON(&bodyData); err != nil {
+		cc.logger.Zap.Error("Error finding user records", err.Error())
+		err := errors.InternalError.Wrap(err, "Failed to get users data")
+		responses.HandleError(c, err)
+		return
+	}
+	if validatedError := cc.validator.Validate.Struct(&bodyData); validatedError != nil {
+		err := errors.BadRequest.Wrap(validatedError, "Validation error")
+		err = errors.SetCustomMessage(err, "Invalid input information")
+		err = errors.AddErrorContextBlock(err, cc.validator.GenerateValidationResponse(validatedError))
+		responses.HandleError(c, err)
+		return
+	}
+	if !utils.IsValidEmail(bodyData.Email) {
+		cc.logger.Zap.Error("Invalid email")
+		responses.ErrorJSON(c, http.StatusBadRequest, "Invalid Email")
+		return
+	}
+	fb_user := cc.firebaseService.GetUserByEmail(bodyData.Email)
+	if fb_user != "" {
+		err := errors.BadRequest.New("Firebase user already exists")
+		err = errors.SetCustomMessage(err, "Email address already taken")
+		responses.HandleError(c, err)
+		return
+	}
+	bodyDataMap := map[string]interface{}{
+		"email":     bodyData.Email,
+		"username":  bodyData.Username,
+		"phone":     bodyData.Phone,
+		"full_name": bodyData.FullName,
+		"address":   bodyData.Address,
+	}
+	user, err := cc.userService.WithTrx(trx).UpdateUser(c.Param("id"), bodyDataMap)
+	if err != nil {
+		cc.logger.Zap.Error("Error [UpdateUser] [db UpdateUser]: ", err.Error())
+		err := errors.InternalError.Wrap(err, "Failed to update user")
+		responses.HandleError(c, err)
+		return
+	}
+	userToUpdate := models.UserToUpdate{}
+	userToUpdate.Email = user.Email
+	userToUpdate.FullName = user.FullName
+	userToUpdate.Username = user.Username
+	userToUpdate.Address = user.Address
+	userToUpdate.Phone = user.Phone
+	updateFirebaseUser, err := cc.firebaseService.UpdateUser(user.FirebaseUID, userToUpdate)
+	if err != nil {
+		cc.logger.Zap.Error("Error [UpdateUser] [db UpdateUser]: ", err.Error())
+		err := errors.InternalError.Wrap(err, "Failed to update user")
+		responses.HandleError(c, err)
+		return
+	}
+	fmt.Println(updateFirebaseUser)
+	responses.SuccessJSON(c, http.StatusOK, user)
+	return
+
 }

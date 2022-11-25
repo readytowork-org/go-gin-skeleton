@@ -39,6 +39,7 @@ func (fb *FirebaseService) CreateUser(newUser models.FirebaseAuthUser) (string, 
 		Email(newUser.Email).
 		Password(newUser.Password).
 		DisplayName(newUser.DisplayName).
+		PhoneNumber(newUser.PhoneNumber).
 		Disabled(false)
 	u, err := fb.client.CreateUser(context.Background(), params)
 	if err != nil {
@@ -87,9 +88,12 @@ func (fb *FirebaseService) GetUserByEmail(email string) string {
 }
 
 // UpdateUser -> update firebase user.
-func (fb *FirebaseService) UpdateUser(UID string, user *auth.UserToUpdate) (*auth.UserRecord, error) {
-
-	return fb.client.UpdateUser(context.Background(), UID, user)
+func (fb *FirebaseService) UpdateUser(UID string, user models.UserToUpdate) (*auth.UserRecord, error) {
+	userToUpdateParam := &auth.UserToUpdate{}
+	userToUpdateParam.Email(user.Email)
+	userToUpdateParam.DisplayName(user.FullName)
+	userToUpdateParam.PhoneNumber(user.Phone)
+	return fb.client.UpdateUser(context.Background(), UID, userToUpdateParam)
 }
 
 // GetUser gets firebase user from uid

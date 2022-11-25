@@ -110,3 +110,25 @@ func (c UserRepository) DeleteOneUser(Id string) (*string, error) {
 	err := c.db.DB.First(&user, Id).Delete(&user, Id).Error
 	return &user.FirebaseUID, err
 }
+
+func (c UserRepository) UpdateUser(Id string, mapData map[string]interface{}) (*models.User, error) {
+	user := models.User{}
+	if err := c.db.DB.First(&user, Id).
+		Updates(mapData).
+		Find(&user, Id).Error; err != nil {
+		if strings.Contains(err.Error(), "1062") {
+			err = errors.BadRequest.Wrap(err, "Error updating user")
+			custom_msg := ""
+			if strings.Contains(err.Error(), "UQ_user_email") {
+				custom_msg = "Email address already taken"
+			} else if strings.Contains(err.Error(), "users.UQ_user_phone") {
+				custom_msg = "Phone number already taken"
+			}
+			err = errors.SetCustomMessage(err, custom_msg)
+		} else {
+			err = errors.InternalError.Wrap(err, "Error updating user")
+		}
+		return nil, err
+	}
+	return &user, nil
+}

@@ -15,6 +15,14 @@ func (m *User) TableName() string {
 	return "user"
 }
 
+type UserToUpdate struct {
+	Email    string
+	Username string
+	Phone    string
+	FullName string
+	Address  string
+}
+
 // ToMap convert User to map
 func (m User) ToMap() map[string]interface{} {
 	return map[string]interface{}{

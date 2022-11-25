@@ -41,6 +41,10 @@ func (c UserService) UpdatePartial(ID int64, map_update map[string]interface{}) 
 	return c.repository.UpdatePartial(ID, map_update)
 }
 
+func (c UserService) UpdateUser(ID string, map_update map[string]interface{}) (*models.User, error) {
+	return c.repository.UpdateUser(ID, map_update)
+}
+
 func (c UserService) GetOneUser(Id string) (*models.User, error) {
 	return c.repository.GetOneUser(Id)
 }

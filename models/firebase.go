@@ -7,4 +7,5 @@ type FirebaseAuthUser struct {
 	Role        string
 	Enabled     int
 	UserId      string
+	PhoneNumber string
 }

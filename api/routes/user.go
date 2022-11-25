@@ -22,6 +22,8 @@ func (i UserRoutes) Setup() {
 	{
 		users.GET("", i.userController.GetAllUsers)
 		users.GET("/:id", i.userController.GetOneUser)
+		users.PUT("/:id", i.trxMiddleware.DBTransactionHandle(), i.userController.UpdateUser)
+		// users.PATCH("/:id", i.userController.PartialUpdateUser)
 		users.DELETE("/:id", i.trxMiddleware.DBTransactionHandle(), i.userController.DeleteOneUser)
 		users.POST("", i.trxMiddleware.DBTransactionHandle(), i.userController.CreateUser)
 	}
