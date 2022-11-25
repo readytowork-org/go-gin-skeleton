@@ -40,8 +40,10 @@ type Blog struct {
 	Content        string `json:"content" validate:"required"`
 	ThumbnailImage string `json:"thumbnail_image" validate:"required"`
 	IsPublished    bool   `json:"is_published" validate:"required"`
-	CreatedBy      int64  `json:"created_by" validate:"required"`
-	UpdatedBy      int64  `json:"updated_by" validate:"required"`
+	CreatedById    int64  `json:"created_by_id" validate:"required"`
+	UpdatedById    int64  `json:"updated_by_id" validate:"required"`
+	CreatedBy      User   `json:"created_by"`
+	UpdatedBy      User   `json:"updated_by" `
 }
 
 func (m *Blog) TableName() string {
