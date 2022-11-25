@@ -15,6 +15,6 @@ func StringToInt64(value string) (*int64, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &i, err
+	return &i, nil
 
 }
