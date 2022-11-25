@@ -22,7 +22,12 @@ type CategoryController struct {
 	validator       validators.CategoryValidator
 }
 
-func NewCategoryController(logger infrastructure.Logger, categoryService services.CategoryService, bucketService services.StorageBucketService, validator validators.CategoryValidator) CategoryController {
+func NewCategoryController(
+	logger infrastructure.Logger,
+	categoryService services.CategoryService,
+	bucketService services.StorageBucketService,
+	validator validators.CategoryValidator,
+) CategoryController {
 	return CategoryController{
 		logger:          logger,
 		categoryService: categoryService,
@@ -96,6 +101,13 @@ func (cc CategoryController) GetOneCategory(c *gin.Context) {
 }
 
 func (cc CategoryController) DeleteOneCategory(c *gin.Context) {
+	role := fmt.Sprintf("%v", c.MustGet(constants.Role))
+	if role != constants.RoleUser {
+		err := errors.Unauthorized.New("Unauthorised user")
+		err = errors.SetCustomMessage(err, "Unauthorised user")
+		responses.HandleError(c, err)
+		return
+	}
 	if err := cc.categoryService.DeleteOneCategory(c.Param("id")); err != nil {
 		cc.logger.Zap.Error("Error finding Category record!!!", err.Error())
 		err := errors.BadRequest.Wrap(err, "Failed To Find category")
@@ -107,10 +119,16 @@ func (cc CategoryController) DeleteOneCategory(c *gin.Context) {
 }
 
 func (cc CategoryController) UpdateOneCategory(c *gin.Context) {
+	role := fmt.Sprintf("%v", c.MustGet(constants.Role))
+	if role != constants.RoleUser {
+		err := errors.Unauthorized.New("Unauthorised user")
+		err = errors.SetCustomMessage(err, "Unauthorised user")
+		responses.HandleError(c, err)
+		return
+	}
 	var category models.Category
 	Int64Id, err := utils.StringToInt64(c.Param("id"))
 	if err != nil {
-		cc.logger.Zap.Info(err, "---------- error converting string to int64------------- ")
 		cc.logger.Zap.Error("Error converting string to int64 !!!", err)
 		err := errors.InternalError.Wrap(err, "Failed To convert string to int64")
 		responses.HandleError(c, err)
