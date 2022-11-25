@@ -8,6 +8,7 @@ import (
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
+	"boilerplate-api/utils"
 	"fmt"
 	"net/http"
 
@@ -63,4 +64,33 @@ func (cc CategoryController) CreateCategory(c *gin.Context) {
 	}
 	responses.SuccessJSON(c, http.StatusCreated, created_category)
 	return
+}
+
+func (cc CategoryController) GetAllCategory(c *gin.Context) {
+	pagination := utils.BuildPagination(c)
+	category, count, err := cc.categoryService.GetAllCategory(pagination)
+	if err != nil {
+		cc.logger.Zap.Error("Error finding Category records", err.Error())
+		err := errors.InternalError.Wrap(err, "Failed To Find Categories")
+		responses.HandleError(c, err)
+		return
+	}
+	responses.JSONCount(c, http.StatusOK, category, count)
+}
+
+func (cc CategoryController) GetOneCategory(c *gin.Context) {
+	category, err := cc.categoryService.GetOneCategory(c.Param("id"))
+	if err != nil {
+		cc.logger.Zap.Error("Error finding Category record!!!", err.Error())
+		err := errors.InternalError.Wrap(err, "Failed To Find category")
+		responses.HandleError(c, err)
+		return
+	}
+	var Id int64 = 0
+	if category.ID == Id {
+		cc.logger.Zap.Info(" Error finding Category record")
+		responses.JSON(c, http.StatusBadRequest, "Category not found")
+		return
+	}
+	responses.SuccessJSON(c, http.StatusOK, category)
 }

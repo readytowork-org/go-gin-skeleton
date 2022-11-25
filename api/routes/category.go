@@ -18,14 +18,14 @@ type CategoryRoutes struct {
 // Setup user routes
 func (i CategoryRoutes) Setup() {
 	i.logger.Zap.Info(" Setting up user routes")
-	users := i.router.Gin.Group("/category")
+	category := i.router.Gin.Group("/category")
 	{
-		// users.GET("", i.categoryController.GetAllCategory)
-		// users.GET("/:id", i.categoryController.GetOneCategory)
+		category.GET("", i.categoryController.GetAllCategory)
+		category.GET("/:id", i.categoryController.GetOneCategory)
 		// users.PUT("/:id", i.trxMiddleware.DBTransactionHandle(), i.categoryController.UpdateCategory)
 		// users.PATCH("/:id", i.categoryController.PartialUpdateUser)
 		// users.DELETE("/:id", i.trxMiddleware.DBTransactionHandle(), i.categoryController.DeleteOneCategory)
-		users.POST("", i.trxMiddleware.DBTransactionHandle(), i.middleware.Handle(), i.categoryController.CreateCategory)
+		category.POST("", i.trxMiddleware.DBTransactionHandle(), i.middleware.Handle(), i.categoryController.CreateCategory)
 	}
 }
 

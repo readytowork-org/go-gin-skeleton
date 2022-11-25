@@ -3,6 +3,7 @@ package repository
 import (
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
+	"boilerplate-api/utils"
 )
 
 type CategoryRepository struct {
@@ -24,4 +25,15 @@ func (c CategoryRepository) CreateCategory(category models.Category) (*models.Ca
 		return nil, err
 	}
 	return &category, nil
+}
+
+func (c CategoryRepository) GetAllCategory(pagination utils.Pagination) ([]models.Category, int64, error) {
+	var Category []models.Category
+	var totalRows int64 = 0
+	return Category, totalRows, c.db.DB.Find(&Category).Error
+}
+
+func (c CategoryRepository) GetOneCategory(Id string) (*models.Category, error) {
+	var Category models.Category
+	return &Category, c.db.DB.Find(&Category, Id).Error
 }

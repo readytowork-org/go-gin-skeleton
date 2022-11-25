@@ -4,6 +4,7 @@ import (
 	"boilerplate-api/api/repository"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
+	"boilerplate-api/utils"
 )
 
 type CategoryService struct {
@@ -20,5 +21,15 @@ func NewCategoryRepository(repository repository.CategoryRepository, logger infr
 
 func (c CategoryService) CreateCategory(catergory models.Category) (*models.Category, error) {
 	return c.repository.CreateCategory(catergory)
+
+}
+
+func (c CategoryService) GetAllCategory(pagination utils.Pagination) ([]models.Category, int64, error) {
+	return c.repository.GetAllCategory(pagination)
+
+}
+
+func (c CategoryService) GetOneCategory(Id string) (*models.Category, error) {
+	return c.repository.GetOneCategory(Id)
 
 }
