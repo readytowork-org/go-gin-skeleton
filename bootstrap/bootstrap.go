@@ -73,7 +73,7 @@ func bootstrap(
 
 			logger.Zap.Info("Migrating DB schema...")
 			go func() {
-				migrations.Migrate()
+				// migrations.Migrate()
 				middlewares.Setup()
 				routes.Setup()
 				logger.Zap.Info("🌱 seeding data...")
