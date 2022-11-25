@@ -68,21 +68,21 @@ func (cc CategoryController) CreateCategory(c *gin.Context) {
 
 func (cc CategoryController) GetAllCategory(c *gin.Context) {
 	pagination := utils.BuildPagination(c)
-	category, count, err := cc.categoryService.GetAllCategory(pagination)
+	category, err := cc.categoryService.GetAllCategory(pagination)
 	if err != nil {
 		cc.logger.Zap.Error("Error finding Category records", err.Error())
 		err := errors.InternalError.Wrap(err, "Failed To Find Categories")
 		responses.HandleError(c, err)
 		return
 	}
-	responses.JSONCount(c, http.StatusOK, category, count)
+	responses.JSON(c, http.StatusOK, category)
 }
 
 func (cc CategoryController) GetOneCategory(c *gin.Context) {
 	category, err := cc.categoryService.GetOneCategory(c.Param("id"))
 	if err != nil {
 		cc.logger.Zap.Error("Error finding Category record!!!", err.Error())
-		err := errors.InternalError.Wrap(err, "Failed To Find category")
+		err := errors.BadRequest.Wrap(err, "Failed To Find category")
 		responses.HandleError(c, err)
 		return
 	}
@@ -93,4 +93,51 @@ func (cc CategoryController) GetOneCategory(c *gin.Context) {
 		return
 	}
 	responses.SuccessJSON(c, http.StatusOK, category)
+}
+
+func (cc CategoryController) DeleteOneCategory(c *gin.Context) {
+	if err := cc.categoryService.DeleteOneCategory(c.Param("id")); err != nil {
+		cc.logger.Zap.Error("Error finding Category record!!!", err.Error())
+		err := errors.BadRequest.Wrap(err, "Failed To Find category")
+		responses.HandleError(c, err)
+		return
+	}
+	responses.SuccessJSON(c, http.StatusOK, "Category deleted successfully.")
+	return
+}
+
+func (cc CategoryController) UpdateOneCategory(c *gin.Context) {
+	var category models.Category
+	Int64Id, err := utils.StringToInt64(c.Param("id"))
+	if err != nil {
+		cc.logger.Zap.Info(err, "---------- error converting string to int64------------- ")
+		cc.logger.Zap.Error("Error converting string to int64 !!!", err)
+		err := errors.InternalError.Wrap(err, "Failed To convert string to int64")
+		responses.HandleError(c, err)
+		return
+	}
+	category.ID = *Int64Id
+	if err := c.ShouldBindJSON(&category); err != nil {
+		cc.logger.Zap.Error("Error Binding Category [UpdateCategory] [ShouldBindJSON] !!!", err.Error())
+		err := errors.BadRequest.Wrap(err, "Failed To Bind category")
+		responses.HandleError(c, err)
+		return
+	}
+	if validationErr := cc.validator.Validate.Struct(category); validationErr != nil {
+		err := errors.BadRequest.Wrap(validationErr, "Validation error")
+		err = errors.SetCustomMessage(err, "Invalid input information")
+		err = errors.AddErrorContextBlock(err, cc.validator.GenerateValidationResponse(validationErr))
+		responses.HandleError(c, err)
+		return
+	}
+	updated_category, err := cc.categoryService.UpdateOneCategory(category)
+	if err != nil {
+		cc.logger.Zap.Error("Error updating category !!!", err.Error())
+		err := errors.BadRequest.Wrap(err, "Failed To Update category")
+		responses.HandleError(c, err)
+		return
+	}
+	responses.SuccessJSON(c, http.StatusOK, &updated_category)
+	return
+
 }

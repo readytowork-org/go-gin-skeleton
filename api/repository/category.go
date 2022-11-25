@@ -4,6 +4,8 @@ import (
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
 	"boilerplate-api/utils"
+	"encoding/json"
+	"fmt"
 )
 
 type CategoryRepository struct {
@@ -27,13 +29,39 @@ func (c CategoryRepository) CreateCategory(category models.Category) (*models.Ca
 	return &category, nil
 }
 
-func (c CategoryRepository) GetAllCategory(pagination utils.Pagination) ([]models.Category, int64, error) {
+func (c CategoryRepository) GetAllCategory(pagination utils.Pagination) ([]models.Category, error) {
 	var Category []models.Category
-	var totalRows int64 = 0
-	return Category, totalRows, c.db.DB.Find(&Category).Error
+	return Category, c.db.DB.Find(&Category).Error
 }
 
 func (c CategoryRepository) GetOneCategory(Id string) (*models.Category, error) {
 	var Category models.Category
 	return &Category, c.db.DB.Find(&Category, Id).Error
+}
+
+func (c CategoryRepository) DeleteOneCategory(Id string) error {
+	var Category models.Category
+	err := c.db.DB.First(&Category, Id).Delete(&Category, Id).Error
+	if err != nil {
+		c.logger.Zap.Info(err, "____category err_______")
+		return err
+
+	}
+	return nil
+}
+
+func (c CategoryRepository) UpdateOneCategory(Category models.Category) (*models.Category, error) {
+
+	b, errr := json.MarshalIndent(Category, "", " ")
+	if errr == nil {
+		fmt.Println(string(b))
+	}
+	err := c.db.DB.Model(&Category).Where("id=?", Category.ID).Updates(models.Category{Title: Category.Title}).Error
+
+	if err != nil {
+		c.logger.Zap.Info(err, "____category err_______")
+		return nil, err
+
+	}
+	return &Category, nil
 }

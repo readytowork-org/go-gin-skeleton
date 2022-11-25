@@ -22,9 +22,9 @@ func (i CategoryRoutes) Setup() {
 	{
 		category.GET("", i.categoryController.GetAllCategory)
 		category.GET("/:id", i.categoryController.GetOneCategory)
-		// users.PUT("/:id", i.trxMiddleware.DBTransactionHandle(), i.categoryController.UpdateCategory)
-		// users.PATCH("/:id", i.categoryController.PartialUpdateUser)
-		// users.DELETE("/:id", i.trxMiddleware.DBTransactionHandle(), i.categoryController.DeleteOneCategory)
+		category.PUT("/:id", i.trxMiddleware.DBTransactionHandle(), i.middleware.Handle(), i.categoryController.UpdateOneCategory)
+		// category.PATCH("/:id", i.categoryController.PartialUpdateUser)
+		category.DELETE("/:id", i.trxMiddleware.DBTransactionHandle(), i.middleware.Handle(), i.categoryController.DeleteOneCategory)
 		category.POST("", i.trxMiddleware.DBTransactionHandle(), i.middleware.Handle(), i.categoryController.CreateCategory)
 	}
 }

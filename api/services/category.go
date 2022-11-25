@@ -24,12 +24,22 @@ func (c CategoryService) CreateCategory(catergory models.Category) (*models.Cate
 
 }
 
-func (c CategoryService) GetAllCategory(pagination utils.Pagination) ([]models.Category, int64, error) {
+func (c CategoryService) GetAllCategory(pagination utils.Pagination) ([]models.Category, error) {
 	return c.repository.GetAllCategory(pagination)
 
 }
 
 func (c CategoryService) GetOneCategory(Id string) (*models.Category, error) {
 	return c.repository.GetOneCategory(Id)
+
+}
+
+func (c CategoryService) DeleteOneCategory(Id string) error {
+	return c.repository.DeleteOneCategory(Id)
+
+}
+
+func (c CategoryService) UpdateOneCategory(Category models.Category) (*models.Category, error) {
+	return c.repository.UpdateOneCategory(Category)
 
 }
