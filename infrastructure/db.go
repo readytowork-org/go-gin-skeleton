@@ -32,7 +32,7 @@ func NewDatabase(Zaplogger Logger, env Env) Database {
 
 	url := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", env.DBUsername, env.DBPassword, env.DBHost, env.DBPort, env.DBName)
 
-	if env.Environment != "local" {
+	if env.Environment == "development" || env.Environment == "production" {
 		url = fmt.Sprintf(
 			"%s:%s@unix(/cloudsql/%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 			env.DBUsername,
