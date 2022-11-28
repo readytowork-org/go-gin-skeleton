@@ -55,6 +55,6 @@ func (m Migrations) Migrate() {
 	m.logger.Zap.Info("--- Running Migration ---")
 	err = migrations.Steps(1000)
 	if err != nil {
-		m.logger.Zap.Info("Error in migration: ", err.Error())
+		m.logger.Zap.Info("Error in migration steps: ", err.Error())
 	}
 }

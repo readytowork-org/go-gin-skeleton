@@ -33,6 +33,13 @@ func NewUserValidator() UserValidator {
 		}
 		return true
 	})
+	_ = v.RegisterValidation("email", func(fl validator.FieldLevel) bool {
+		if fl.Field().String() != "" {
+			match, _ := regexp.MatchString(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`, fl.Field().String())
+			return match
+		}
+		return true
+	})
 	return UserValidator{
 		Validate: v,
 	}
