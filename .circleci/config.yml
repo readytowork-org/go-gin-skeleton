@@ -22,22 +22,17 @@ jobs:
       - run:
           name: Initialize the environment variable file
           command: |
-            echo "ENV=$Environment
-            DB_HOST=$DBHost
-            DB_PORT=$DBPort
-            DB_NAME=$DBName
-            DB_USER=$DBUsername
-            DB_PASS=$DBPassword
-            MAIL_CLIENT_ID=$MAIL_CLIENT_ID
-            MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
-            MAIL_REFRESH_TOKEN=$MAIL_REFRESH_TOKEN
-            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
-            CLIENT_URL_CONSUMER=$CLIENT_URL_CONSUMER
-            AWS_S3_REGION=$AWS_S3_REGION
-            AWS_S3_BUCKET=$AWS_S3_BUCKET
-            AWS_ACCESS_KEY=$AWS_ACCESS_KEY
-            AWS_SECRET_KEY=$AWS_SECRET_KEY
-            NOTIFICATION_EMAIL=$NOTIFICATION_EMAIL"> .env
+            echo "Environment=$Environment
+            DBHost=$DBHost
+            DBPort=$DBPort
+            DBName=$DBName
+            DBUsername=$DBUsername
+            DBPassword=$DBPassword
+            MailClientID=$MailClientID
+            MailClientSecret=$MailClientSecret
+            MailRefreshToken=$MailRefreshToken
+            StorageBucketName=$StorageBucketName
+            SentryDSN=$SentryDSN " > .env
 
       - restore_cache:
           keys:
@@ -114,26 +109,17 @@ jobs:
       - run:
           name: Initialize the environment variable file
           command: |
-            echo "ENV=development
-            DB_HOST=$DB_HOST
-            DB_PORT=$DB_PORT
-            DB_PASS=$DB_PASS
-            DB_NAME=$DB_NAME
-            DB_USER=$DB_USER
-            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
-            FIREBASE_API_KEY=$FIREBASE_API_KEY
-            MAIL_CLIENT_ID=$MAIL_CLIENT_ID
-            MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
-            MAIL_REFRESH_TOKEN=$MAIL_REFRESH_TOKEN
-            CLIENT_URL_CONSUMER=$CLIENT_URL_CONSUMER
-            AWS_S3_REGION=$AWS_S3_REGION
-            AWS_S3_BUCKET=$AWS_S3_BUCKET
-            AWS_ACCESS_KEY=$AWS_ACCESS_KEY
-            AWS_SECRET_KEY=$AWS_SECRET_KEY
-            SUPER_ADMIN_EMAIL=$SUPER_ADMIN_EMAIL
-            SUPER_ADMIN_PASSWORD=$SUPER_ADMIN_PASSWORD
-            SUPER_ADMIN_DISPLAY=$SUPER_ADMIN_DISPLAY
-            NOTIFICATION_EMAIL=$NOTIFICATION_EMAIL" > .env
+            echo "Environment=$Environment
+            DBHost=$DBHost
+            DBPort=$DBPort
+            DBName=$DBName
+            DBUsername=$DBUsername
+            DBPassword=$DBPassword
+            MailClientID=$MailClientID
+            MailClientSecret=$MailClientSecret
+            MailRefreshToken=$MailRefreshToken
+            StorageBucketName=$StorageBucketName
+            SentryDSN=$SentryDSN " > .env
 
       - run:
           name: Initialize firebase service account key file
@@ -204,26 +190,17 @@ jobs:
       - run:
           name: Initialize the environment variable file
           command: |
-            echo "ENV=production
-            DB_HOST=$DB_HOST
-            DB_PORT=$DB_PORT
-            DB_PASS=$DB_PASS
-            DB_NAME=$DB_NAME
-            DB_USER=$DB_USER
-            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
-            FIREBASE_API_KEY=$FIREBASE_API_KEY
-            MAIL_CLIENT_ID=$MAIL_CLIENT_ID
-            MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
-            MAIL_REFRESH_TOKEN=$MAIL_REFRESH_TOKEN
-            CLIENT_URL_CONSUMER=$CLIENT_URL_CONSUMER
-            AWS_S3_REGION=$AWS_S3_REGION
-            AWS_S3_BUCKET=$AWS_S3_BUCKET
-            AWS_ACCESS_KEY=$AWS_ACCESS_KEY
-            AWS_SECRET_KEY=$AWS_SECRET_KEY
-            SUPER_ADMIN_EMAIL=$SUPER_ADMIN_EMAIL
-            SUPER_ADMIN_PASSWORD=$SUPER_ADMIN_PASSWORD
-            SUPER_ADMIN_DISPLAY=$SUPER_ADMIN_DISPLAY
-            NOTIFICATION_EMAIL=$NOTIFICATION_EMAIL" > .env
+            echo "Environment=$Environment
+            DBHost=$DBHost
+            DBPort=$DBPort
+            DBName=$DBName
+            DBUsername=$DBUsername
+            DBPassword=$DBPassword
+            MailClientID=$MailClientID
+            MailClientSecret=$MailClientSecret
+            MailRefreshToken=$MailRefreshToken
+            StorageBucketName=$StorageBucketName
+            SentryDSN=$SentryDSN " > .env
 
       - run:
           name: Initialize firebase service account key file
