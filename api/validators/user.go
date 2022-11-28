@@ -51,6 +51,10 @@ func (cv UserValidator) generateValidationMessage(field string, rule string) (me
 		return fmt.Sprintf("Field '%s' is '%s'.", field, rule)
 	case "phone":
 		return fmt.Sprintf("Field '%s' is not valid.", field)
+	case "gender":
+		return fmt.Sprintf("Field '%s' is not valid.", field)
+	case "email":
+		return fmt.Sprintf("Field '%s' is not valid.", field)
 	default:
 		return fmt.Sprintf("Field '%s' is not valid.", field)
 	}
