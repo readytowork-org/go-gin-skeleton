@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: ./docker/web.Dockerfile
     ports:
-      - ${ServerPort}:${ServerPort}
-      - ${DebugPort}:2345
+      - ${SERVER_PORT}:${SERVER_PORT}
+      - ${DEBUG_PORT}:2345
     volumes:
       - .:/clean_web
     env_file: .env
@@ -20,9 +20,9 @@ services:
       context: .
       dockerfile: ./docker/db.Dockerfile
     environment:
-      MYSQL_USER: ${DBUsername}
-      MYSQL_PASSWORD: ${DBPassword}
-      MYSQL_DATABASE: ${DBName}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
     container_name: boilerplate-db
     command:
       [
@@ -38,7 +38,7 @@ services:
   adminer:
     image: adminer
     ports:
-      - ${AdminerPort}:8080
+      - ${ADMINER_PORT}:8080
 
 volumes:
   boilerplate_db:
