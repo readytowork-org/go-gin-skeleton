@@ -29,7 +29,7 @@ func NewAdminSeed(
 func (c AdminSeed) Run() {
 
 	email := c.env.AdminEmail
-	password := c.env.AdminPass
+	password := c.env.AdminPassword
 
 	c.logger.Zap.Info("🌱 seeding  admin data...")
 
