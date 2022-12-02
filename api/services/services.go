@@ -9,4 +9,5 @@ var Module = fx.Options(
 	fx.Provide(NewUserService),
 	fx.Provide(NewGmailService),
 	fx.Provide(NewS3BucketService),
+	fx.Provide(NewProductService),
 )
