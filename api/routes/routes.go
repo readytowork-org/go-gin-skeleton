@@ -22,10 +22,12 @@ type Route interface {
 func NewRoutes(
 	utilityRoutes UtilityRoutes,
 	userRoutes UserRoutes,
+	productRoutes ProductRoutes,
 ) Routes {
 	return Routes{
 		utilityRoutes,
 		userRoutes,
+		productRoutes,
 	}
 }
 
