@@ -3,15 +3,17 @@ package models
 import "time"
 
 type Product struct {
-	ProductId    int64     `json:"id"`
-	ProductName  string    `json:"product_name"`
-	ReceivedQty  uint64    `json:"received_qty"`
-	SentQty      uint64    `json:"sent_qty"`
-	RemainingQty uint64    `json:"remaining_qty"`
-	ReceivedBy   User      `json:"received_by" gorm:"references:Users;"`
-	SentBy       User      `json:"sent_by" gorm:"references:Users;"`
-	UpdatedAt    time.Time `json:"updated_at"`
-	ReceivedAt   time.Time `json:"received_at"`
+	ItemId       int64  `json:"id"`
+	ItemName     string `json:"product_name"`
+	ReceivedQty  uint64 `json:"received_qty"`
+	SentQty      uint64 `json:"sent_qty"`
+	RemainingQty uint64 `json:"remaining_qty"`
+	ReceivedBy   int64  `json:"received_by"`
+	ReceivedUser User   `gorm:"foreignKey:ReceivedBy" json:"received_user"`
+	// SentBy       int64     `json:"sent_by"`
+	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"created_at"`
+	// SentUser     User      `gorm:"foreignKey:SentBy;"`
 }
 
 type Tabler interface {
@@ -21,4 +23,10 @@ type Tabler interface {
 // TableName overrides the table name used by product to `items`
 func (Product) TableName() string {
 	return "items"
+}
+
+type ProductCreateInput struct {
+	ProductName string `json:"product_name" binding:"required"`
+	ReceivedQty uint64 `json:"received_qty,string" binding:"required"`
+	ReceivedBy  int64  `json:"received_by,string" binding:"required"`
 }
