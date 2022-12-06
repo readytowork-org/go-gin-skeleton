@@ -8,6 +8,7 @@ var Module = fx.Options(
 	fx.Provide(NewUtilityRoutes),
 	fx.Provide(NewUserRoutes),
 	fx.Provide(NewProductRoutes),
+	fx.Provide(NewTwitterRoutes),
 )
 
 // Routes contains multiple routes
@@ -23,11 +24,13 @@ func NewRoutes(
 	utilityRoutes UtilityRoutes,
 	userRoutes UserRoutes,
 	productRoutes ProductRoutes,
+	twitterRoutes TwitterRoutes,
 ) Routes {
 	return Routes{
 		utilityRoutes,
 		userRoutes,
 		productRoutes,
+		twitterRoutes,
 	}
 }
 
