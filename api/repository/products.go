@@ -34,7 +34,7 @@ func (pr ProductRepository) GetAllProducts(pagination utils.Pagination) ([]model
 	var products []models.Product
 	var totalRows int64 = 0
 
-	queryBuilder := pr.db.DB.Limit(1).Offset(1)
+	queryBuilder := pr.db.DB.Limit(pagination.PageSize).Offset(pagination.Offset)
 	queryBuilder = queryBuilder.Model(&models.Product{}).Preload("ReceivedUser")
 	// pr.logger.Zap.Info(pr.db.DB.Find(products))
 	err := queryBuilder.Find(&products).
