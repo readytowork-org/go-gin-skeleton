@@ -3,6 +3,7 @@ package repository
 import (
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
+	"boilerplate-api/utils"
 
 	"gorm.io/gorm"
 )
@@ -27,12 +28,20 @@ func (pr ProductRepository) AddProduct(product models.ProductCreateInput) error 
 	return pr.db.DB.Create(&productCreate).Error
 }
 
-func (pr ProductRepository) GetAllProducts() ([]models.Product, error) {
+func (pr ProductRepository) GetAllProducts(pagination utils.Pagination) ([]models.Product, int64, error) {
 	// var products
 	// return pr.db.DB.Find(&models.Product{})
 	var products []models.Product
+	var totalRows int64 = 0
+
+	queryBuilder := pr.db.DB.Limit(1).Offset(1)
+	queryBuilder = queryBuilder.Model(&models.Product{}).Preload("ReceivedUser")
 	// pr.logger.Zap.Info(pr.db.DB.Find(products))
-	return products, pr.db.DB.Model(&models.Product{}).Preload("ReceivedUser").Find(&products).Error
+	err := queryBuilder.Find(&products).
+		Offset(-1).
+		Limit(-1).
+		Count(&totalRows).Error
+	return products, totalRows, err
 }
 
 func (pr ProductRepository) FilterUserProducts(id int64) *gorm.DB {

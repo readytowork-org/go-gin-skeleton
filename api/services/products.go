@@ -3,6 +3,7 @@ package services
 import (
 	"boilerplate-api/api/repository"
 	"boilerplate-api/models"
+	"boilerplate-api/utils"
 
 	"gorm.io/gorm"
 )
@@ -21,8 +22,8 @@ func (ps ProductService) AddProduct(product models.ProductCreateInput) error {
 	return ps.repository.AddProduct(product)
 }
 
-func (ps ProductService) GetAllProduct() ([]models.Product, error) {
-	return ps.repository.GetAllProducts()
+func (ps ProductService) GetAllProduct(pagination utils.Pagination) ([]models.Product, int64, error) {
+	return ps.repository.GetAllProducts(pagination)
 }
 
 func (ps ProductService) FilterUserProducts(id int64) *gorm.DB {

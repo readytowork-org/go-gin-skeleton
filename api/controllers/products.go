@@ -5,6 +5,7 @@ import (
 	"boilerplate-api/api/services"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
+	"boilerplate-api/utils"
 	"net/http"
 	"strconv"
 
@@ -45,13 +46,14 @@ func (cc ProductController) AddProducts(ctx *gin.Context) {
 }
 
 func (cc ProductController) GetAllProducts(ctx *gin.Context) {
-	allProducts, err := cc.service.GetAllProduct()
+	pagination := utils.BuildPagination(ctx)
+	allProducts, count, err := cc.service.GetAllProduct(pagination)
 	if err != nil {
 		responses.HandleError(ctx, err)
 		return
 	}
 	cc.logger.Zap.Info(allProducts)
-	responses.SuccessJSON(ctx, http.StatusOK, allProducts)
+	responses.JSONCount(ctx, http.StatusOK, allProducts, count)
 }
 
 func (cc ProductController) FilterUserProducts(ctx *gin.Context) {
