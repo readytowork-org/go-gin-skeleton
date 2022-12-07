@@ -39,6 +39,8 @@ type Env struct {
 	AWS_SECRET_KEY string
 	AWS_S3_REGION  string
 	AWS_S3_BUCKET  string
+
+	MerchantRegisterUrl string
 }
 
 // NewEnv creates a new environment
@@ -83,5 +85,6 @@ func (env *Env) LoadEnv() {
 	env.AWS_SECRET_KEY = os.Getenv("AWS_SECRET_KEY")
 	env.AWS_S3_REGION = os.Getenv("AWS_S3_REGION")
 	env.AWS_S3_BUCKET = os.Getenv("AWS_S#_BUCKET")
+	env.MerchantRegisterUrl = os.Getenv("MERCHANT_REGISTER_API_URL")
 
 }
