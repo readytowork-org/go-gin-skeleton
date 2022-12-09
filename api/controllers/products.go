@@ -59,10 +59,26 @@ func (cc ProductController) GetAllProducts(ctx *gin.Context) {
 func (cc ProductController) FilterUserProducts(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	pagination := utils.BuildPagination(ctx)
-	products, err := cc.service.FilterUserProducts(int64(id), pagination)
+	products, receivedUser, err := cc.service.FilterUserProducts(int64(id), pagination)
 	if err != nil {
 		cc.logger.Zap.Error("Error", err)
 		return
 	}
-	responses.SuccessJSON(ctx, http.StatusOK, products)
+	cc.logger.Zap.Info("Received User", receivedUser)
+	responses.JSONUserData(ctx, http.StatusOK, products, receivedUser)
 }
+
+// func (cc ProductController) SendProduct(ctx *gin.Context) {
+// 	var sentProduct models.ProductSentInput
+// 	if err := ctx.ShouldBindJSON(&sentProduct); err != nil {
+// 		cc.logger.Zap.Error("bind Error", err)
+// 		return
+// 	}
+// 	id, _ := strconv.Atoi(ctx.Param("id"))
+// 	products, err := cc.service.SendProduct(int64(id), sentProduct)
+// 	if err != nil {
+// 		cc.logger.Zap.Error("Error", err)
+// 		return
+// 	}
+// 	responses.SuccessJSON(ctx, http.StatusOK, products)
+// }

@@ -11,9 +11,10 @@ type ProductRepository struct {
 	logger infrastructure.Logger
 }
 
-func NewProductRepository(db infrastructure.Database) ProductRepository {
+func NewProductRepository(db infrastructure.Database, logger infrastructure.Logger) ProductRepository {
 	return ProductRepository{
-		db: db,
+		db:     db,
+		logger: logger,
 	}
 }
 
@@ -42,11 +43,23 @@ func (pr ProductRepository) GetAllProducts(pagination utils.Pagination) ([]model
 	return products, totalRows, err
 }
 
-func (pr ProductRepository) FilterUserProducts(id int64, pagination utils.Pagination) ([]models.Product, error) {
+func (pr ProductRepository) FilterUserProducts(id int64, pagination utils.Pagination) ([]models.Product, models.User, error) {
 	var products []models.Product
+	var user models.User
+
 	queryBuilder := pr.db.DB.Limit(pagination.PageSize).Offset(pagination.Offset)
 	queryBuilder = queryBuilder.Model(&models.Product{}).Preload("ReceivedUser").Where("received_by=?", id)
+
+	pr.db.DB.Model(&models.User{}).Where("id=?", id).First(&user)
+
+	// pr.logger.Zap.Info("recieved user", recievedUser)
 	err := queryBuilder.Find(&products).
 		Offset(-1).Limit(-1).Error
-	return products, err
+	return products, user, err
+
 }
+
+// func (pr ProductRepository) SendProduct(id int64, product models.ProductSentInput) error {
+// 	var products []models.Product
+// 	return err
+// }

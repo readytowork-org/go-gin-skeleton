@@ -24,6 +24,10 @@ func (ps ProductService) GetAllProduct(pagination utils.Pagination) ([]models.Pr
 	return ps.repository.GetAllProducts(pagination)
 }
 
-func (ps ProductService) FilterUserProducts(id int64, pagination utils.Pagination) ([]models.Product, error) {
+func (ps ProductService) FilterUserProducts(id int64, pagination utils.Pagination) ([]models.Product, models.User, error) {
 	return ps.repository.FilterUserProducts(id, pagination)
 }
+
+// func (ps ProductService) SendProduct(id int64, product models.ProductSentInput) error {
+// 	return ps.repository.SendProduct(id, product)
+// }
