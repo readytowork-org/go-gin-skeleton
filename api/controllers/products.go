@@ -58,6 +58,11 @@ func (cc ProductController) GetAllProducts(ctx *gin.Context) {
 
 func (cc ProductController) FilterUserProducts(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
-	cc.service.FilterUserProducts(int64(id))
-	responses.SuccessJSON(ctx, http.StatusOK, cc.service.FilterUserProducts(int64(id)))
+	pagination := utils.BuildPagination(ctx)
+	products, err := cc.service.FilterUserProducts(int64(id), pagination)
+	if err != nil {
+		cc.logger.Zap.Error("Error", err)
+		return
+	}
+	responses.SuccessJSON(ctx, http.StatusOK, products)
 }

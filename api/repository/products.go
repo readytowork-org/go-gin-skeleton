@@ -4,8 +4,6 @@ import (
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
 	"boilerplate-api/utils"
-
-	"gorm.io/gorm"
 )
 
 type ProductRepository struct {
@@ -44,7 +42,11 @@ func (pr ProductRepository) GetAllProducts(pagination utils.Pagination) ([]model
 	return products, totalRows, err
 }
 
-func (pr ProductRepository) FilterUserProducts(id int64) *gorm.DB {
+func (pr ProductRepository) FilterUserProducts(id int64, pagination utils.Pagination) ([]models.Product, error) {
 	var products []models.Product
-	return pr.db.DB.Where("received_by=?", id).Find(&products)
+	queryBuilder := pr.db.DB.Limit(pagination.PageSize).Offset(pagination.Offset)
+	queryBuilder = queryBuilder.Model(&models.Product{}).Preload("ReceivedUser").Where("received_by=?", id)
+	err := queryBuilder.Find(&products).
+		Offset(-1).Limit(-1).Error
+	return products, err
 }

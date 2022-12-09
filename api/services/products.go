@@ -4,8 +4,6 @@ import (
 	"boilerplate-api/api/repository"
 	"boilerplate-api/models"
 	"boilerplate-api/utils"
-
-	"gorm.io/gorm"
 )
 
 type ProductService struct {
@@ -26,6 +24,6 @@ func (ps ProductService) GetAllProduct(pagination utils.Pagination) ([]models.Pr
 	return ps.repository.GetAllProducts(pagination)
 }
 
-func (ps ProductService) FilterUserProducts(id int64) *gorm.DB {
-	return ps.repository.FilterUserProducts(id)
+func (ps ProductService) FilterUserProducts(id int64, pagination utils.Pagination) ([]models.Product, error) {
+	return ps.repository.FilterUserProducts(id, pagination)
 }
