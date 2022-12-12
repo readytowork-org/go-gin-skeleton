@@ -8,35 +8,35 @@ import (
 
 // Env has environment stored
 type Env struct {
-	ServerPort  string
-	Environment string
-	LogOutput   string
-	DBUsername  string
-	DBPassword  string
-	DBHost      string
-	DBPort      string
-	DBName      string
-	SentryDSN   string
+	ServerPort  string `mapstructure:"ServerPort"`
+	Environment string `mapstructure:"Environment"`
+	LogOutput   string `mapstructure:"LogOutput"`
+	DBUsername  string `mapstructure:"DBUsername"`
+	DBPassword  string `mapstructure:"DBPassword"`
+	DBHost      string `mapstructure:"DBHost"`
+	DBPort      string `mapstructure:"DBPort"`
+	DBName      string `mapstructure:"DBName"`
+	SentryDSN   string `mapstructure:"SentryDSN"`
 
-	StorageBucketName string
+	StorageBucketName string `mapstructure:"StorageBucketName"`
 
-	AdminEmail string
-	AdminPass  string
+	AdminEmail string `mapstructure:"AdminEmail"`
+	AdminPass  string `mapstructure:"AdminPass"`
 
-	MailClientID     string
-	MailClientSecret string
-	MailAccesstoken  string
-	MailRefreshToken string
+	MailClientID     string `mapstructure:"MailClientID"`
+	MailClientSecret string `mapstructure:"MailClientSecret"`
+	MailAccesstoken  string `mapstructure:"MailAccessToken"`
+	MailRefreshToken string `mapstructure:"MailRefreshToken"`
 
-	AWS_S3_REGION  string
-	AWS_S3_BUCKET  string
-	AWS_ACCESS_KEY string
-	AWS_SECRET_KEY string
+	AWS_S3_REGION  string `mapstructure:"AWS_S3_REGION"`
+	AWS_S3_BUCKET  string `mapstructure:"AWS_S3_BUCKET"`
+	AWS_ACCESS_KEY string `mapstructure:"AWS_ACCESS_KEY"`
+	AWS_SECRET_KEY string `mapstructure:"AWS_SECRET_KEY"`
 
-	TwilioBaseURL   string
-	TwilioSID       string
-	TwilioAuthToken string
-	TwilioSMSFrom   string
+	TwilioBaseURL   string `mapstructure:"TWILIO_BASE_URL"`
+	TwilioSID       string `mapstructure:"TWILIO_SID"`
+	TwilioAuthToken string `mapstructure:"TWILIO_AUTH_TOKEN"`
+	TwilioSMSFrom   string `mapstructure:"TWILIO_SMS_FROM"`
 }
 
 // NewEnv creates a new environment
