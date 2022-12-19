@@ -23,7 +23,7 @@ func (i ProductRoutes) Setup() {
 		products.GET("", i.productController.GetAllProducts)
 		products.POST("", i.productController.AddProducts)
 		products.GET("/filter/user/:id", i.productController.FilterUserProducts)
-		products.POST("/send_product/:id", i.productController.FilterUserProducts)
+		products.PATCH("/send/:id", i.productController.SendProduct)
 	}
 }
 

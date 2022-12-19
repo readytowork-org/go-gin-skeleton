@@ -28,8 +28,6 @@ func (pr ProductRepository) AddProduct(product models.ProductCreateInput) error 
 }
 
 func (pr ProductRepository) GetAllProducts(pagination utils.Pagination) ([]models.Product, int64, error) {
-	// var products
-	// return pr.db.DB.Find(&models.Product{})
 	var products []models.Product
 	var totalRows int64 = 0
 
@@ -59,7 +57,11 @@ func (pr ProductRepository) FilterUserProducts(id int64, pagination utils.Pagina
 
 }
 
-// func (pr ProductRepository) SendProduct(id int64, product models.ProductSentInput) error {
-// 	var products []models.Product
-// 	return err
-// }
+func (pr ProductRepository) SendProduct(id int64, product models.ProductSentInput) error {
+
+	return pr.db.DB.Model(&models.Product{}).Where("item_id=?", id).Updates(map[string]interface{}{
+		"item_id":  id,
+		"sent_by":  product.SentBy,
+		"sent_qty": product.SentQty,
+	}).Error
+}

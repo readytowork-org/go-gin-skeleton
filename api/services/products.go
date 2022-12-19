@@ -28,6 +28,6 @@ func (ps ProductService) FilterUserProducts(id int64, pagination utils.Paginatio
 	return ps.repository.FilterUserProducts(id, pagination)
 }
 
-// func (ps ProductService) SendProduct(id int64, product models.ProductSentInput) error {
-// 	return ps.repository.SendProduct(id, product)
-// }
+func (ps ProductService) SendProduct(id int64, product models.ProductSentInput) error {
+	return ps.repository.SendProduct(id, product)
+}
