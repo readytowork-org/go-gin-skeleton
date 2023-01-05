@@ -8,23 +8,23 @@ import (
 
 // Env has environment stored
 type Env struct {
-	ServerPort  string `mapstructure:"ServerPort"`
-	Environment string `mapstructure:"Environment"`
+	ServerPort  string `mapstructure:"SERVER_PORT"`
+	Environment string `mapstructure:"ENVIRONMENT"`
 	LogOutput   string `mapstructure:"LogOutput"`
-	DBUsername  string `mapstructure:"DBUsername"`
-	DBPassword  string `mapstructure:"DBPassword"`
-	DBHost      string `mapstructure:"DBHost"`
-	DBPort      string `mapstructure:"DBPort"`
-	DBName      string `mapstructure:"DBName"`
-	SentryDSN   string `mapstructure:"SentryDSN"`
+	DBUsername  string `mapstructure:"DB_USERNAME"`
+	DBPassword  string `mapstructure:"DB_PASSWORD"`
+	DBHost      string `mapstructure:"DB_HOST"`
+	DBPort      string `mapstructure:"DB_PORT"`
+	DBName      string `mapstructure:"DB_NAME"`
+	SentryDSN   string `mapstructure:"SENTRY_DSN"`
 
-	StorageBucketName string `mapstructure:"StorageBucketName"`
+	StorageBucketName string `mapstructure:"STORAGE_BUCKET_NAME"`
 
-	AdminEmail string `mapstructure:"AdminEmail"`
-	AdminPass  string `mapstructure:"AdminPass"`
+	AdminEmail string `mapstructure:"ADMIN_EMAIL"`
+	AdminPass  string `mapstructure:"ADMIN_PASS"`
 
-	MailClientID     string `mapstructure:"MailClientID"`
-	MailClientSecret string `mapstructure:"MailClientSecret"`
+	MailClientID     string `mapstructure:"MAIL_CLIENT_ID"`
+	MailClientSecret string `mapstructure:"MAIL_CLIENT_SECRET"`
 	MailAccesstoken  string `mapstructure:"MailAccessToken"`
 	MailRefreshToken string `mapstructure:"MailRefreshToken"`
 
