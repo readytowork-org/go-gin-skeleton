@@ -8,10 +8,10 @@ jobs:
 
       - image: circleci/mysql:8.0-ram
         environment:
-          MYSQL_ROOT_PASSWORD: $DBPassword
-          MYSQL_DATABASE: $DBName
-          MYSQL_USER: $DBUsername
-          MYSQL_PASSWORD: $DBPassword
+          MYSQL_ROOT_PASSWORD: $DB_PASSWORD
+          MYSQL_DATABASE: $DB_NAME
+          MYSQL_USER: $DB_USERNAME
+          MYSQL_PASSWORD: $DB_PASSWORD
 
     parallelism: 1
     working_directory: /go/src/github.com/readytowork-org/boilerplate-api
@@ -22,17 +22,17 @@ jobs:
       - run:
           name: Initialize the environment variable file
           command: |
-            echo "Environment=$Environment
-            DBHost=$DBHost
-            DBPort=$DBPort
-            DBName=$DBName
-            DBUsername=$DBUsername
-            DBPassword=$DBPassword
-            MailClientID=$MailClientID
-            MailClientSecret=$MailClientSecret
+            echo "ENVIRONMENT=$ENVIRONMENT
+            DB_HOST=$DB_HOST
+            DB_PORT=$DB_PORT
+            DB_NAME=$DB_NAME
+            DB_USERNAME=$DB_USERNAME
+            DB_PASSWORD=$DB_PASSWORD
+            MAIL_CLIENT_ID=$MAIL_CLIENT_ID
+            MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
             MailRefreshToken=$MailRefreshToken
-            StorageBucketName=$StorageBucketName
-            SentryDSN=$SentryDSN " > .env
+            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
+            SENTRY_DSN=$SENTRY_DSN " > .env
 
       - restore_cache:
           keys:
@@ -109,17 +109,17 @@ jobs:
       - run:
           name: Initialize the environment variable file
           command: |
-            echo "Environment=$Environment
-            DBHost=$DBHost
-            DBPort=$DBPort
-            DBName=$DBName
-            DBUsername=$DBUsername
-            DBPassword=$DBPassword
-            MailClientID=$MailClientID
-            MailClientSecret=$MailClientSecret
+            echo "ENVIRONMENT=$ENVIRONMENT
+            DB_HOST=$DB_HOST
+            DB_PORT=$DB_PORT
+            DB_NAME=$DB_NAME
+            DB_USERNAME=$DB_USERNAME
+            DB_PASSWORD=$DB_PASSWORD
+            MAIL_CLIENT_ID=$MAIL_CLIENT_ID
+            MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
             MailRefreshToken=$MailRefreshToken
-            StorageBucketName=$StorageBucketName
-            SentryDSN=$SentryDSN " > .env
+            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
+            SENTRY_DSN=$SENTRY_DSN " > .env
 
       - run:
           name: Initialize firebase service account key file
@@ -190,17 +190,17 @@ jobs:
       - run:
           name: Initialize the environment variable file
           command: |
-            echo "Environment=$Environment
-            DBHost=$DBHost
-            DBPort=$DBPort
-            DBName=$DBName
-            DBUsername=$DBUsername
-            DBPassword=$DBPassword
-            MailClientID=$MailClientID
-            MailClientSecret=$MailClientSecret
+            echo "ENVIRONMENT=$ENVIRONMENT
+            DB_HOST=$DB_HOST
+            DB_PORT=$DB_PORT
+            DB_NAME=$DB_NAME
+            DB_USERNAME=$DB_USERNAME
+            DB_PASSWORD=$DB_PASSWORD
+            MAIL_CLIENT_ID=$MAIL_CLIENT_ID
+            MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
             MailRefreshToken=$MailRefreshToken
-            StorageBucketName=$StorageBucketName
-            SentryDSN=$SentryDSN " > .env
+            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
+            SENTRY_DSN=$SENTRY_DSN " > .env
 
       - run:
           name: Initialize firebase service account key file
