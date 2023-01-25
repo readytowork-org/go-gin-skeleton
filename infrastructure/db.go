@@ -31,6 +31,7 @@ func NewDatabase(Zaplogger Logger, env Env) Database {
 	Zaplogger.Zap.Info(env)
 
 	url := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", env.DBUsername, env.DBPassword, env.DBHost, env.DBPort, env.DBName)
+	fmt.Print("Test")
 
 	if env.Environment == "development" || env.Environment == "production" {
 		url = fmt.Sprintf(
