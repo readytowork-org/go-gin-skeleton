@@ -28,6 +28,9 @@ func NewRouter(env Env) Router {
 			fmt.Printf("Sentry initialization failed: %v\n", err)
 		}
 	}
+	if env.Environment == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
 	if env.Environment == "production" {
 		gin.SetMode(gin.ReleaseMode)

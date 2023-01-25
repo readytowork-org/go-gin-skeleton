@@ -1,79 +1,61 @@
 package infrastructure
 
 import (
-	"os"
+	"log"
+
+	"github.com/spf13/viper"
 )
 
 // Env has environment stored
 type Env struct {
-	ServerPort  string
-	Environment string
-	LogOutput   string
-	DBUsername  string
-	DBPassword  string
-	DBHost      string
-	DBPort      string
-	DBName      string
-	SentryDSN   string
+	ServerPort  string `mapstructure:"SERVER_PORT"`
+	Environment string `mapstructure:"ENVIRONMENT"`
+	LogOutput   string `mapstructure:"LogOutput"`
+	DBUsername  string `mapstructure:"DB_USERNAME"`
+	DBPassword  string `mapstructure:"DB_PASSWORD"`
+	DBHost      string `mapstructure:"DB_HOST"`
+	DBPort      string `mapstructure:"DB_PORT"`
+	DBName      string `mapstructure:"DB_NAME"`
+	SentryDSN   string `mapstructure:"SENTRY_DSN"`
 
-	StorageBucketName string
+	StorageBucketName string `mapstructure:"STORAGE_BUCKET_NAME"`
 
-	AdminEmail string
-	AdminPass  string
+	AdminEmail string `mapstructure:"ADMIN_EMAIL"`
+	AdminPass  string `mapstructure:"ADMIN_PASS"`
 
-	MailClientID     string
-	MailClientSecret string
-	MailAccesstoken  string
-	MailRefreshToken string
+	MailClientID     string `mapstructure:"MAIL_CLIENT_ID"`
+	MailClientSecret string `mapstructure:"MAIL_CLIENT_SECRET"`
+	MailAccesstoken  string `mapstructure:"MailAccessToken"`
+	MailRefreshToken string `mapstructure:"MailRefreshToken"`
 
-	AWS_S3_REGION  string
-	AWS_S3_BUCKET  string
-	AWS_ACCESS_KEY string
-	AWS_SECRET_KEY string
+	AWS_S3_REGION  string `mapstructure:"AWS_S3_REGION"`
+	AWS_S3_BUCKET  string `mapstructure:"AWS_S3_BUCKET"`
+	AWS_ACCESS_KEY string `mapstructure:"AWS_ACCESS_KEY"`
+	AWS_SECRET_KEY string `mapstructure:"AWS_SECRET_KEY"`
 
-	TwilioBaseURL   string
-	TwilioSID       string
-	TwilioAuthToken string
-	TwilioSMSFrom   string
+	TwilioBaseURL   string `mapstructure:"TWILIO_BASE_URL"`
+	TwilioSID       string `mapstructure:"TWILIO_SID"`
+	TwilioAuthToken string `mapstructure:"TWILIO_AUTH_TOKEN"`
+	TwilioSMSFrom   string `mapstructure:"TWILIO_SMS_FROM"`
 }
 
 // NewEnv creates a new environment
 func NewEnv() Env {
 	env := Env{}
-	env.LoadEnv()
+	viper.SetConfigFile(".env")
+
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			log.Fatal("☠️ Env config file not found: ", err)
+		} else {
+			log.Fatal("☠️ Env config file error: ", err)
+		}
+	}
+
+	if err := viper.Unmarshal(&env); err != nil {
+		log.Fatal("☠️ environment can't be loaded: ", err)
+	}
+
+	log.Printf("%+v \n", env)
 	return env
-}
-
-// LoadEnv loads environment
-func (env *Env) LoadEnv() {
-	env.ServerPort = os.Getenv("ServerPort")
-	env.Environment = os.Getenv("Environment")
-	env.LogOutput = os.Getenv("LogOutput")
-
-	env.DBUsername = os.Getenv("DBUsername")
-	env.DBPassword = os.Getenv("DBPassword")
-	env.DBHost = os.Getenv("DBHost")
-	env.DBPort = os.Getenv("DBPort")
-	env.DBName = os.Getenv("DBName")
-
-	env.SentryDSN = os.Getenv("SentryDSN")
-	env.StorageBucketName = os.Getenv("StorageBucketName")
-
-	env.AdminEmail = os.Getenv("AdminEmail")
-	env.AdminPass = os.Getenv("AdminPass")
-
-	env.MailClientID = os.Getenv("MailClientID")
-	env.MailClientSecret = os.Getenv("MailClientSecret")
-	env.MailAccesstoken = os.Getenv("MailAccesstoken")
-	env.MailRefreshToken = os.Getenv("MailRefreshToken")
-
-	env.AWS_S3_REGION = os.Getenv("AWS_S3_REGION")
-	env.AWS_S3_BUCKET = os.Getenv("AWS_S3_BUCKET")
-	env.AWS_ACCESS_KEY = os.Getenv("AWS_ACCESS_KEY")
-	env.AWS_SECRET_KEY = os.Getenv("AWS_SECRET_KEY")
-
-	env.TwilioBaseURL = os.Getenv("TwilioBaseURL")
-	env.TwilioAuthToken = os.Getenv("TwilioAuthToken")
-	env.TwilioSID = os.Getenv("TwilioSID")
-	env.TwilioSMSFrom = os.Getenv("TwilioSMSFrom")
 }

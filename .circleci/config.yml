@@ -8,10 +8,10 @@ jobs:
 
       - image: circleci/mysql:8.0-ram
         environment:
-          MYSQL_ROOT_PASSWORD: $DBPassword
-          MYSQL_DATABASE: $DBName
-          MYSQL_USER: $DBUsername
-          MYSQL_PASSWORD: $DBPassword
+          MYSQL_ROOT_PASSWORD: $DB_PASSWORD
+          MYSQL_DATABASE: $DB_NAME
+          MYSQL_USER: $DB_USERNAME
+          MYSQL_PASSWORD: $DB_PASSWORD
 
     parallelism: 1
     working_directory: /go/src/github.com/readytowork-org/boilerplate-api
@@ -22,22 +22,17 @@ jobs:
       - run:
           name: Initialize the environment variable file
           command: |
-            echo "ENV=$Environment
-            DB_HOST=$DBHost
-            DB_PORT=$DBPort
-            DB_NAME=$DBName
-            DB_USER=$DBUsername
-            DB_PASS=$DBPassword
+            echo "ENVIRONMENT=$ENVIRONMENT
+            DB_HOST=$DB_HOST
+            DB_PORT=$DB_PORT
+            DB_NAME=$DB_NAME
+            DB_USERNAME=$DB_USERNAME
+            DB_PASSWORD=$DB_PASSWORD
             MAIL_CLIENT_ID=$MAIL_CLIENT_ID
             MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
-            MAIL_REFRESH_TOKEN=$MAIL_REFRESH_TOKEN
+            MailRefreshToken=$MailRefreshToken
             STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
-            CLIENT_URL_CONSUMER=$CLIENT_URL_CONSUMER
-            AWS_S3_REGION=$AWS_S3_REGION
-            AWS_S3_BUCKET=$AWS_S3_BUCKET
-            AWS_ACCESS_KEY=$AWS_ACCESS_KEY
-            AWS_SECRET_KEY=$AWS_SECRET_KEY
-            NOTIFICATION_EMAIL=$NOTIFICATION_EMAIL"> .env
+            SENTRY_DSN=$SENTRY_DSN " > .env
 
       - restore_cache:
           keys:
@@ -114,26 +109,17 @@ jobs:
       - run:
           name: Initialize the environment variable file
           command: |
-            echo "ENV=development
+            echo "ENVIRONMENT=$ENVIRONMENT
             DB_HOST=$DB_HOST
             DB_PORT=$DB_PORT
-            DB_PASS=$DB_PASS
             DB_NAME=$DB_NAME
-            DB_USER=$DB_USER
-            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
-            FIREBASE_API_KEY=$FIREBASE_API_KEY
+            DB_USERNAME=$DB_USERNAME
+            DB_PASSWORD=$DB_PASSWORD
             MAIL_CLIENT_ID=$MAIL_CLIENT_ID
             MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
-            MAIL_REFRESH_TOKEN=$MAIL_REFRESH_TOKEN
-            CLIENT_URL_CONSUMER=$CLIENT_URL_CONSUMER
-            AWS_S3_REGION=$AWS_S3_REGION
-            AWS_S3_BUCKET=$AWS_S3_BUCKET
-            AWS_ACCESS_KEY=$AWS_ACCESS_KEY
-            AWS_SECRET_KEY=$AWS_SECRET_KEY
-            SUPER_ADMIN_EMAIL=$SUPER_ADMIN_EMAIL
-            SUPER_ADMIN_PASSWORD=$SUPER_ADMIN_PASSWORD
-            SUPER_ADMIN_DISPLAY=$SUPER_ADMIN_DISPLAY
-            NOTIFICATION_EMAIL=$NOTIFICATION_EMAIL" > .env
+            MailRefreshToken=$MailRefreshToken
+            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
+            SENTRY_DSN=$SENTRY_DSN " > .env
 
       - run:
           name: Initialize firebase service account key file
@@ -204,26 +190,17 @@ jobs:
       - run:
           name: Initialize the environment variable file
           command: |
-            echo "ENV=production
+            echo "ENVIRONMENT=$ENVIRONMENT
             DB_HOST=$DB_HOST
             DB_PORT=$DB_PORT
-            DB_PASS=$DB_PASS
             DB_NAME=$DB_NAME
-            DB_USER=$DB_USER
-            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
-            FIREBASE_API_KEY=$FIREBASE_API_KEY
+            DB_USERNAME=$DB_USERNAME
+            DB_PASSWORD=$DB_PASSWORD
             MAIL_CLIENT_ID=$MAIL_CLIENT_ID
             MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
-            MAIL_REFRESH_TOKEN=$MAIL_REFRESH_TOKEN
-            CLIENT_URL_CONSUMER=$CLIENT_URL_CONSUMER
-            AWS_S3_REGION=$AWS_S3_REGION
-            AWS_S3_BUCKET=$AWS_S3_BUCKET
-            AWS_ACCESS_KEY=$AWS_ACCESS_KEY
-            AWS_SECRET_KEY=$AWS_SECRET_KEY
-            SUPER_ADMIN_EMAIL=$SUPER_ADMIN_EMAIL
-            SUPER_ADMIN_PASSWORD=$SUPER_ADMIN_PASSWORD
-            SUPER_ADMIN_DISPLAY=$SUPER_ADMIN_DISPLAY
-            NOTIFICATION_EMAIL=$NOTIFICATION_EMAIL" > .env
+            MailRefreshToken=$MailRefreshToken
+            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
+            SENTRY_DSN=$SENTRY_DSN " > .env
 
       - run:
           name: Initialize firebase service account key file
