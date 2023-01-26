@@ -2,8 +2,8 @@ package services
 
 import (
 	"boilerplate-api/app/global/infrastructure"
+	"boilerplate-api/app/helpers"
 	"boilerplate-api/app/models"
-	"boilerplate-api/resources/utils"
 	"encoding/base64"
 	"errors"
 
@@ -24,7 +24,7 @@ func NewGmailService(gmailService *gmail.Service, logger infrastructure.Logger) 
 
 func (g GmailService) SendEmail(params models.EmailParams) (bool, error) {
 	to := params.To
-	emailBody, err := utils.ParseTemplate(params.BodyTemplate, params.BodyData)
+	emailBody, err := helpers.ParseTemplate(params.BodyTemplate, params.BodyData)
 	if err != nil {
 		return false, errors.New("unable to parse email body template")
 	}
@@ -37,7 +37,7 @@ func (g GmailService) SendEmail(params models.EmailParams) (bool, error) {
 	var msg []byte
 
 	if params.Lang != "en" {
-		msgStringJP, _ := utils.ToISO2022JP(msgString)
+		msgStringJP, _ := helpers.ToISO2022JP(msgString)
 		msg = []byte(msgStringJP)
 	} else {
 		msg = []byte(msgString)

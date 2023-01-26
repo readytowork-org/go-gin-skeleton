@@ -5,9 +5,9 @@ import (
 	"boilerplate-api/app/global/infrastructure"
 	"boilerplate-api/app/global/middlewares"
 	"boilerplate-api/app/global/services"
+	"boilerplate-api/app/helpers"
 	"boilerplate-api/app/packages"
 	"boilerplate-api/database/seeds"
-	"boilerplate-api/resources/utils"
 	routes "boilerplate-api/routes/api/v1"
 	"context"
 
@@ -46,7 +46,7 @@ func bootstrap(
 		return nil
 	}
 
-	if utils.IsCli() {
+	if helpers.IsCli() {
 		lifecycle.Append(fx.Hook{
 			OnStart: func(context.Context) error {
 				logger.Zap.Info("Starting boilerplate cli Application")

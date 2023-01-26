@@ -54,7 +54,7 @@ func (cc {{ucresource}}Controller) Create{{ucresource}}(c *gin.Context) {
 // GetAll{{ucresource}} -> Get All {{ucresource}}
 func (cc {{ucresource}}Controller) GetAll{{ucresource}}(c *gin.Context) {
 
-	pagination := utils.BuildPagination(c)
+	pagination := helpers.BuildPagination(c)
 	pagination.Sort = "created_at desc"
 	{{plcresource}}, count, err := cc.{{ucresource}}Service.GetAll{{ucresource}}(pagination)
 

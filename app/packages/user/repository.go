@@ -2,8 +2,8 @@ package user
 
 import (
 	"boilerplate-api/app/global/infrastructure"
+	"boilerplate-api/app/helpers"
 	"boilerplate-api/app/models"
-	"boilerplate-api/resources/utils"
 
 	"gorm.io/gorm"
 )
@@ -38,7 +38,7 @@ func (c Repository) Create(User models.User) error {
 }
 
 // GetAllUser -> Get All users
-func (c Repository) GetAllUsers(pagination utils.Pagination) ([]models.User, int64, error) {
+func (c Repository) GetAllUsers(pagination helpers.Pagination) ([]models.User, int64, error) {
 	var users []models.User
 	var totalRows int64 = 0
 	queryBuilder := c.db.DB.Limit(pagination.PageSize).Offset(pagination.Offset).Order("created_at desc")

@@ -1,4 +1,4 @@
-package utils
+package helpers
 
 import (
 	"image"
@@ -29,7 +29,3 @@ func CreateThumbnail(file multipart.File, fileType string, width, height uint) (
 	thumbnail := resize.Resize(width, height, img, resize.Lanczos3)
 	return thumbnail, nil
 }
-
-
-
-

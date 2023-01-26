@@ -1,4 +1,4 @@
-package utils
+package helpers
 
 import "boilerplate-api/app/global/infrastructure"
 

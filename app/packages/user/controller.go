@@ -3,10 +3,10 @@ package user
 import (
 	"boilerplate-api/app/global/infrastructure"
 	"boilerplate-api/app/global/responses"
+	"boilerplate-api/app/helpers"
 	"boilerplate-api/app/models"
 	"boilerplate-api/config/constants"
 	"boilerplate-api/config/errors"
-	"boilerplate-api/resources/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -67,7 +67,7 @@ func (cc Controller) CreateUser(c *gin.Context) {
 
 // GetAllUser -> Get All User
 func (cc Controller) GetAllUsers(c *gin.Context) {
-	pagination := utils.BuildPagination(c)
+	pagination := helpers.BuildPagination(c)
 	users, count, err := cc.service.GetAllUsers(pagination)
 
 	if err != nil {

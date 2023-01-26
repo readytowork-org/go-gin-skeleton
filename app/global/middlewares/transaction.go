@@ -2,8 +2,8 @@ package middlewares
 
 import (
 	"boilerplate-api/app/global/infrastructure"
+	"boilerplate-api/app/helpers"
 	"boilerplate-api/config/constants"
-	"boilerplate-api/resources/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -46,7 +46,7 @@ func (m DBTransactionMiddleware) DBTransactionHandle() gin.HandlerFunc {
 		c.Set(constants.DBTransaction, txHandle)
 		c.Next()
 
-		if utils.StatusInList(c.Writer.Status(), []int{http.StatusOK, http.StatusCreated}) {
+		if helpers.StatusInList(c.Writer.Status(), []int{http.StatusOK, http.StatusCreated}) {
 			m.logger.Zap.Info("committing transactions")
 			if err := txHandle.Commit().Error; err != nil {
 				m.logger.Zap.Error("trx commit error: ", err)

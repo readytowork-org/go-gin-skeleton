@@ -1,11 +1,11 @@
-package utils
+package helpers
 
 import (
 	"io/ioutil"
 	"net/http"
 )
 
-//URLToBinary -> URL to Binary
+// URLToBinary -> URL to Binary
 func URLToBinary(url string) ([]byte, error) {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -19,8 +19,3 @@ func URLToBinary(url string) ([]byte, error) {
 	return imageBinary, nil
 
 }
-
-
-
-
-

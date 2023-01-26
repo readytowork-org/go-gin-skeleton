@@ -1,4 +1,4 @@
-package utils
+package helpers
 
 import (
 	"strconv"
@@ -6,17 +6,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//Pagination -> struct for Pagination
+// Pagination -> struct for Pagination
 type Pagination struct {
-	Page       int
-	Sort       string
-	PageSize   int
-	Offset     int
-	All        bool
-	Keyword    string
+	Page     int
+	Sort     string
+	PageSize int
+	Offset   int
+	All      bool
+	Keyword  string
 }
 
-//BuildPagination -> builds the pagination
+// BuildPagination -> builds the pagination
 func BuildPagination(c *gin.Context) Pagination {
 	pageStr := c.Query("page")
 	pageSizeStr := c.Query("pageSize")
@@ -39,11 +39,11 @@ func BuildPagination(c *gin.Context) Pagination {
 	}
 
 	return Pagination{
-		Page:       page,
-		Sort:       sort,
-		PageSize:   pageSize,
-		Offset:     (page - 1) * pageSize,
-		All:        all,
-		Keyword:    keyword,
+		Page:     page,
+		Sort:     sort,
+		PageSize: pageSize,
+		Offset:   (page - 1) * pageSize,
+		All:      all,
+		Keyword:  keyword,
 	}
 }

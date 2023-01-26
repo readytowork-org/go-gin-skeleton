@@ -25,7 +25,7 @@ func (c {{ucresource}}Service) Create{{ucresource}}({{lcresource}} models.{{ucre
 }
 
 // GetAll{{ucresource}} -> call to create the {{ucresource}}
-func (c {{ucresource}}Service) GetAll{{ucresource}}(pagination utils.Pagination) ([]models.{{ucresource}}, int64, error) {
+func (c {{ucresource}}Service) GetAll{{ucresource}}(pagination helpers.Pagination) ([]models.{{ucresource}}, int64, error) {
 	return c.repository.GetAll{{ucresource}}(pagination)
 }
 

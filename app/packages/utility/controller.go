@@ -4,8 +4,8 @@ import (
 	"boilerplate-api/app/global/infrastructure"
 	"boilerplate-api/app/global/responses"
 	"boilerplate-api/app/global/services"
+	"boilerplate-api/app/helpers"
 	"boilerplate-api/config/errors"
-	"boilerplate-api/resources/utils"
 	"net/http"
 	"path/filepath"
 
@@ -54,7 +54,7 @@ func (uc Controller) FileUploadHandler(ctx *gin.Context) {
 	}
 
 	fileExtension := filepath.Ext(uploadFile.Filename)
-	fileName := utils.GenerateRandomFileName() + fileExtension
+	fileName := helpers.GenerateRandomFileName() + fileExtension
 	originalFileName := "images/original/" + fileName
 	thumbnailFileName := "images/thumbnail/" + fileName
 
@@ -78,7 +78,7 @@ func (uc Controller) FileUploadHandler(ctx *gin.Context) {
 		}
 
 		//uploadedthumbnail
-		thumbnail, err := utils.CreateThumbnail(file, fileType, 200, 0)
+		thumbnail, err := helpers.CreateThumbnail(file, fileType, 200, 0)
 		if err != nil {
 			uc.logger.Zap.Error("Error Failed create thumbnail", err.Error())
 			err := errors.BadRequest.Wrap(err, "Error Failed create thumbnail")
@@ -149,7 +149,7 @@ func (cc Controller) FileUploadS3Handler(ctx *gin.Context) {
 	}
 
 	fileExtension := filepath.Ext(fileHeader.Filename)
-	fileName := utils.GenerateRandomFileName() + fileExtension
+	fileName := helpers.GenerateRandomFileName() + fileExtension
 	originalFileNamePath := *input.Path + "/" + fileName
 
 	uploadedFileURL, err := cc.s3Bucket.UploadtoS3(file, fileHeader, originalFileNamePath)

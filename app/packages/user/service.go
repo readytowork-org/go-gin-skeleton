@@ -1,8 +1,8 @@
 package user
 
 import (
+	"boilerplate-api/app/helpers"
 	"boilerplate-api/app/models"
-	"boilerplate-api/resources/utils"
 
 	"gorm.io/gorm"
 )
@@ -32,6 +32,6 @@ func (c Service) CreateUser(user models.User) error {
 }
 
 // GetAllUser -> call to get all the User
-func (c Service) GetAllUsers(pagination utils.Pagination) ([]models.User, int64, error) {
+func (c Service) GetAllUsers(pagination helpers.Pagination) ([]models.User, int64, error) {
 	return c.repository.GetAllUsers(pagination)
 }
