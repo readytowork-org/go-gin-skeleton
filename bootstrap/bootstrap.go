@@ -6,6 +6,7 @@ import (
 	"boilerplate-api/api/repository"
 	"boilerplate-api/api/routes"
 	"boilerplate-api/api/services"
+	"boilerplate-api/api/validators"
 	"boilerplate-api/cli"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/seeds"
@@ -22,6 +23,7 @@ var Module = fx.Options(
 	services.Module,
 	middlewares.Module,
 	repository.Module,
+	validators.Module,
 	infrastructure.Module,
 	cli.Module,
 	seeds.Module,
@@ -80,7 +82,7 @@ func bootstrap(
 				seeds.Run()
 				if env.ServerPort == "" {
 					handler.Gin.Run(":5000")
-					} else {
+				} else {
 					handler.Gin.Run(":" + env.ServerPort)
 				}
 			}()
