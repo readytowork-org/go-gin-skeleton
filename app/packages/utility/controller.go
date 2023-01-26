@@ -1,9 +1,9 @@
-package controllers
+package utility
 
 import (
-	"boilerplate-api/app/http/services"
-	"boilerplate-api/app/infrastructure"
-	"boilerplate-api/app/responses"
+	"boilerplate-api/app/global/infrastructure"
+	"boilerplate-api/app/global/responses"
+	"boilerplate-api/app/global/services"
 	"boilerplate-api/config/errors"
 	"boilerplate-api/resources/utils"
 	"net/http"
@@ -12,19 +12,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type UtilityController struct {
+type Controller struct {
 	logger   infrastructure.Logger
 	env      infrastructure.Env
 	bucket   services.StorageBucketService
 	s3Bucket services.S3BucketService
 }
 
-func NewUtilityController(logger infrastructure.Logger,
+func UtilityController(logger infrastructure.Logger,
 	env infrastructure.Env,
 	bucket services.StorageBucketService,
 	s3Bucket services.S3BucketService,
-) UtilityController {
-	return UtilityController{
+) Controller {
+	return Controller{
 		logger:   logger,
 		env:      env,
 		bucket:   bucket,
@@ -44,7 +44,7 @@ type Response struct {
 const storageURL string = "https://storage.googleapis.com/"
 
 // FileUploadHandler -> handles file upload
-func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
+func (uc Controller) FileUploadHandler(ctx *gin.Context) {
 	file, uploadFile, err := ctx.Request.FormFile("file")
 	if err != nil {
 		uc.logger.Zap.Error("Error Get File from request :: ", err.Error())
@@ -131,7 +131,7 @@ type Input struct {
 }
 
 // FileUploadS3Handler handles aws s3 file upload
-func (cc UtilityController) FileUploadS3Handler(ctx *gin.Context) {
+func (cc Controller) FileUploadS3Handler(ctx *gin.Context) {
 	file, fileHeader, err := ctx.Request.FormFile("file")
 	if err != nil {
 		cc.logger.Zap.Error("Error Get File from request: ", err.Error())

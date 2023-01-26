@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"boilerplate-api/app/infrastructure"
+	"boilerplate-api/app/global/infrastructure"
 	"boilerplate-api/database/seeds"
 )
 

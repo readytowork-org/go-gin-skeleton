@@ -1,8 +1,9 @@
 package middlewares
 
 import (
-	"boilerplate-api/app/http/services"
-	"boilerplate-api/app/responses"
+	"boilerplate-api/app/global/responses"
+	"boilerplate-api/app/global/services"
+	"boilerplate-api/app/packages/user"
 	"boilerplate-api/config/constants"
 	"net/http"
 	"strings"
@@ -15,13 +16,13 @@ import (
 // FirebaseAuthMiddleware structure
 type FirebaseAuthMiddleware struct {
 	service     services.FirebaseService
-	userservice services.UserService
+	userservice user.Service
 }
 
 // NewFirebaseAuthMiddleware creates new firebase authentication
 func NewFirebaseAuthMiddleware(
 	service services.FirebaseService,
-	userservice services.UserService,
+	userservice user.Service,
 ) FirebaseAuthMiddleware {
 	return FirebaseAuthMiddleware{
 		service:     service,

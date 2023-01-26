@@ -1,8 +1,8 @@
 package cli
 
 import (
-	"boilerplate-api/app/http/services"
-	"boilerplate-api/app/infrastructure"
+	"boilerplate-api/app/global/infrastructure"
+	"boilerplate-api/app/global/services"
 
 	"github.com/manifoldco/promptui"
 )

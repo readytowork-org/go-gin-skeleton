@@ -1,10 +1,9 @@
-package controllers
+package user
 
 import (
-	"boilerplate-api/app/http/services"
-	"boilerplate-api/app/infrastructure"
+	"boilerplate-api/app/global/infrastructure"
+	"boilerplate-api/app/global/responses"
 	"boilerplate-api/app/models"
-	"boilerplate-api/app/responses"
 	"boilerplate-api/config/constants"
 	"boilerplate-api/config/errors"
 	"boilerplate-api/resources/utils"
@@ -15,19 +14,19 @@ import (
 )
 
 // UserController -> struct
-type UserController struct {
+type Controller struct {
 	logger      infrastructure.Logger
-	userService services.UserService
+	userService Service
 	env         infrastructure.Env
 }
 
-// NewUserController -> constructor
-func NewUserController(
+// UserController -> constructor
+func UserController(
 	logger infrastructure.Logger,
-	userService services.UserService,
+	userService Service,
 	env infrastructure.Env,
-) UserController {
-	return UserController{
+) Controller {
+	return Controller{
 		logger:      logger,
 		userService: userService,
 		env:         env,
@@ -35,7 +34,7 @@ func NewUserController(
 }
 
 // CreateUser -> Create User
-func (cc UserController) CreateUser(c *gin.Context) {
+func (cc Controller) CreateUser(c *gin.Context) {
 	user := models.User{}
 	trx := c.MustGet(constants.DBTransaction).(*gorm.DB)
 
@@ -57,7 +56,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 }
 
 // GetAllUser -> Get All User
-func (cc UserController) GetAllUsers(c *gin.Context) {
+func (cc Controller) GetAllUsers(c *gin.Context) {
 	pagination := utils.BuildPagination(c)
 	users, count, err := cc.userService.GetAllUsers(pagination)
 

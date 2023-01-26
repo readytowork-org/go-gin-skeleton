@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"boilerplate-api/app/http/controllers/v1"
-	"boilerplate-api/app/infrastructure"
+	"boilerplate-api/app/global/infrastructure"
+	"boilerplate-api/app/packages/utility"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,14 +11,14 @@ import (
 type UtilityRoutes struct {
 	router            infrastructure.Router
 	Logger            infrastructure.Logger
-	UtilityController controllers.UtilityController
+	UtilityController utility.Controller
 }
 
 // NewUtilityRoute -> returns new utility route
 func NewUtilityRoutes(
 	logger infrastructure.Logger,
 	router infrastructure.Router,
-	UtilityController controllers.UtilityController,
+	UtilityController utility.Controller,
 ) UtilityRoutes {
 	return UtilityRoutes{
 		Logger:            logger,

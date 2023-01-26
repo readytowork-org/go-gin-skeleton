@@ -1,8 +1,8 @@
 package seeds
 
 import (
-	"boilerplate-api/app/http/services"
-	"boilerplate-api/app/infrastructure"
+	"boilerplate-api/app/global/infrastructure"
+	"boilerplate-api/app/global/services"
 )
 
 // AdminSeed  Admin seeding

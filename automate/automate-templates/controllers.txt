@@ -3,9 +3,9 @@ package controllers
 import (
 	"net/http"
 	"strconv"
-	"{{projectname}}/app/responses"
-	"{{projectname}}/app/http/services"
-	"{{projectname}}/app/infrastructure"
+	"{{projectname}}/app/global/responses"
+	"{{projectname}}/app/global/services"
+	"{{projectname}}/app/global/infrastructure"
 	"{{projectname}}/app/models"
 	"{{projectname}}/resources/utils"
 	"{{projectname}}/config/errors"

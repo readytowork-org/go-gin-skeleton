@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"boilerplate-api/app/http/controllers/v1"
-	"boilerplate-api/app/http/middlewares"
-	"boilerplate-api/app/infrastructure"
+	"boilerplate-api/app/global/infrastructure"
+	"boilerplate-api/app/global/middlewares"
+	"boilerplate-api/app/packages/user"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,7 +12,7 @@ import (
 type UserRoutes struct {
 	logger         infrastructure.Logger
 	router         infrastructure.Router
-	userController controllers.UserController
+	userController user.Controller
 	middleware     middlewares.FirebaseAuthMiddleware
 	trxMiddleware  middlewares.DBTransactionMiddleware
 }
@@ -32,7 +32,7 @@ func (i UserRoutes) Setup(v1 *gin.RouterGroup) {
 func NewUserRoutes(
 	logger infrastructure.Logger,
 	router infrastructure.Router,
-	userController controllers.UserController,
+	userController user.Controller,
 	middleware middlewares.FirebaseAuthMiddleware,
 	trxMiddleware middlewares.DBTransactionMiddleware,
 ) UserRoutes {

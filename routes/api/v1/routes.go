@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"boilerplate-api/app/infrastructure"
+	"boilerplate-api/app/global/infrastructure"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"

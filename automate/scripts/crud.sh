@@ -74,9 +74,9 @@ done
 
 # inject fx deps
 fx_path_hash=(
-  "Controller:${ROOT}/app/http/controllers/controllers.go"
-  "Service:${ROOT}/app/http/services/services.go"
-  "Repository:${ROOT}/app/http/repository/repository.go"
+  "Controller:${ROOT}/app/global/controllers/controllers.go"
+  "Service:${ROOT}/app/global/services/services.go"
+  "Repository:${ROOT}/app/global/repository/repository.go"
 )
 fx_init_string="var Module = fx.Options("
 for deps_value in "${fx_path_hash[@]}"; do

@@ -2,11 +2,10 @@ package bootstrap
 
 import (
 	"boilerplate-api/app/cli"
-	"boilerplate-api/app/http/controllers/v1"
-	"boilerplate-api/app/http/middlewares"
-	"boilerplate-api/app/http/repository"
-	"boilerplate-api/app/http/services"
-	"boilerplate-api/app/infrastructure"
+	"boilerplate-api/app/global/infrastructure"
+	"boilerplate-api/app/global/middlewares"
+	"boilerplate-api/app/global/services"
+	"boilerplate-api/app/packages"
 	"boilerplate-api/database/seeds"
 	"boilerplate-api/resources/utils"
 	routes "boilerplate-api/routes/api/v1"
@@ -17,11 +16,10 @@ import (
 
 // Module exported for initializing application
 var Module = fx.Options(
-	controllers.Module,
+	packages.Module,
 	routes.Module,
 	services.Module,
 	middlewares.Module,
-	repository.Module,
 	infrastructure.Module,
 	cli.Module,
 	seeds.Module,

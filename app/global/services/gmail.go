@@ -1,7 +1,7 @@
 package services
 
 import (
-	"boilerplate-api/app/infrastructure"
+	"boilerplate-api/app/global/infrastructure"
 	"boilerplate-api/app/models"
 	"boilerplate-api/resources/utils"
 	"encoding/base64"

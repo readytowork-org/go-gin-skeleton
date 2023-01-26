@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"boilerplate-api/app/infrastructure"
+	"boilerplate-api/app/global/infrastructure"
 	"boilerplate-api/config/constants"
 	"boilerplate-api/resources/utils"
 	"net/http"

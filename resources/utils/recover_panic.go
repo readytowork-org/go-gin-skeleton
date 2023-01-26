@@ -1,6 +1,6 @@
 package utils
 
-import "boilerplate-api/app/infrastructure"
+import "boilerplate-api/app/global/infrastructure"
 
 // RecoverPanic recovers panic in the application
 func RecoverPanic(logger infrastructure.Logger) func() {
