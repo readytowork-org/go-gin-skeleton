@@ -1,4 +1,4 @@
-## Boilerplate API
+## Boilerplate API V2
 
 Boilerplate API template includes all the common packages and setup used for API development in this Company.
 
