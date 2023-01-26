@@ -49,10 +49,12 @@ func (m Migrations) Migrate() {
 	}
 
 	migrations, err := migrate.New("file://migration/", "mysql://"+dsn)
-
+	if err != nil {
+		m.logger.Zap.Panic("Error in migration: ", err.Error())
+	}
 	m.logger.Zap.Info("--- Running Migration ---")
 	err = migrations.Steps(1000)
 	if err != nil {
-		m.logger.Zap.Error("Error in migration: ", err.Error())
+		m.logger.Zap.Info("Error in migration steps: ", err.Error())
 	}
 }
