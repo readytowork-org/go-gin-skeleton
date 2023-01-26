@@ -72,7 +72,7 @@ func bootstrap(
 
 			logger.Zap.Info("Migrating DB schema...")
 			go func() {
-				if env.Environment == "production"{
+				if env.Environment == "production" {
 					migrations.Migrate()
 				}
 				middlewares.Setup()

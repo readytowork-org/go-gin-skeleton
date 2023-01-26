@@ -14,7 +14,7 @@ type UserValidator struct {
 	Validate *validator.Validate
 }
 
-//Register Custom Validators
+// Register Custom Validators
 func NewUserValidator() UserValidator {
 	v := validator.New()
 	_ = v.RegisterValidation("phone", func(fl validator.FieldLevel) bool {
