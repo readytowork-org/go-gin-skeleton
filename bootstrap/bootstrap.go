@@ -8,7 +8,7 @@ import (
 	"boilerplate-api/app/helpers"
 	"boilerplate-api/app/packages"
 	"boilerplate-api/database/seeds"
-	routes "boilerplate-api/routes/api/v1"
+	"boilerplate-api/routes"
 	"context"
 
 	"go.uber.org/fx"

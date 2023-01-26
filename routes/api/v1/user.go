@@ -1,4 +1,4 @@
-package routes
+package api
 
 import (
 	"boilerplate-api/app/global/infrastructure"
@@ -11,7 +11,6 @@ import (
 // UserRoutes -> struct
 type UserRoutes struct {
 	logger         infrastructure.Logger
-	router         infrastructure.Router
 	userController user.Controller
 	middleware     middlewares.FirebaseAuthMiddleware
 	trxMiddleware  middlewares.DBTransactionMiddleware
@@ -25,19 +24,16 @@ func (i UserRoutes) Setup(v1 *gin.RouterGroup) {
 		users.GET("", i.userController.GetAllUsers)
 		users.POST("", i.trxMiddleware.DBTransactionHandle(), i.userController.CreateUser)
 	}
-
 }
 
 // NewUserRoutes -> creates new user controller
 func NewUserRoutes(
 	logger infrastructure.Logger,
-	router infrastructure.Router,
 	userController user.Controller,
 	middleware middlewares.FirebaseAuthMiddleware,
 	trxMiddleware middlewares.DBTransactionMiddleware,
 ) UserRoutes {
 	return UserRoutes{
-		router:         router,
 		logger:         logger,
 		userController: userController,
 		middleware:     middleware,

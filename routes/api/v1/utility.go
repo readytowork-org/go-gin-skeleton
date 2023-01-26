@@ -1,4 +1,4 @@
-package routes
+package api
 
 import (
 	"boilerplate-api/app/global/infrastructure"
@@ -9,7 +9,6 @@ import (
 
 // UtilityRoutes -> utility routes struct
 type UtilityRoutes struct {
-	router            infrastructure.Router
 	Logger            infrastructure.Logger
 	UtilityController utility.Controller
 }
@@ -22,7 +21,6 @@ func NewUtilityRoutes(
 ) UtilityRoutes {
 	return UtilityRoutes{
 		Logger:            logger,
-		router:            router,
 		UtilityController: UtilityController,
 	}
 }
