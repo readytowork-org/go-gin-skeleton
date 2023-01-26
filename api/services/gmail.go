@@ -1,11 +1,11 @@
 package services
 
 import (
-	"encoding/base64"
-	"errors"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
 	"boilerplate-api/utils"
+	"encoding/base64"
+	"errors"
 
 	"google.golang.org/api/gmail/v1"
 )

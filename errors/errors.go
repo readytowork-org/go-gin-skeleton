@@ -9,7 +9,7 @@ import (
 
 type HttpErrorType uint
 
-//these are unsigned integer constants of custom type HttpErrorType
+// these are unsigned integer constants of custom type HttpErrorType
 const (
 	BadRequest = HttpErrorType(iota)
 	Unauthorized
@@ -56,7 +56,7 @@ type ErrorContext struct {
 	Message string
 }
 
-//CustomMessage struct
+// CustomMessage struct
 type CustomMessage struct {
 	Message string
 }

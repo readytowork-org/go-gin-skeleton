@@ -22,7 +22,7 @@ func GenerateRandomCode(codeLength int) string {
 	return string(b)
 }
 
-//GenerateRandomFileName genrates the fileName with unique time
+// GenerateRandomFileName genrates the fileName with unique time
 func GenerateRandomFileName() string {
 	time := time.Now().UnixNano()
 	return strconv.FormatInt(time, 10)

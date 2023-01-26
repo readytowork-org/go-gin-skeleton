@@ -12,4 +12,3 @@ type EmailParams struct {
 type EmailSubject struct {
 	Data string
 }
-

@@ -12,7 +12,7 @@ type UtilityRoutes struct {
 	UtilityController controllers.UtilityController
 }
 
-//NewUtilityRoute -> returns new utility route
+// NewUtilityRoute -> returns new utility route
 func NewUtilityRoutes(
 	logger infrastructure.Logger,
 	router infrastructure.Router,
@@ -25,7 +25,7 @@ func NewUtilityRoutes(
 	}
 }
 
-//Setup -> sets up route for util entities
+// Setup -> sets up route for util entities
 func (u UtilityRoutes) Setup() {
 	utils := u.router.Gin.Group("/utils")
 	{

@@ -104,5 +104,3 @@ func (M FirebaseAuthMiddleware) isAdmin(claims map[string]interface{}) bool {
 	return isAdmin
 
 }
-
-
