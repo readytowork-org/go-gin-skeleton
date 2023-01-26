@@ -17,5 +17,4 @@ func URLToBinary(url string) ([]byte, error) {
 		return nil, err
 	}
 	return imageBinary, nil
-
 }

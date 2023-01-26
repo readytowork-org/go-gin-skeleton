@@ -67,5 +67,4 @@ func (c Application) Start() {
 	commandMap[result].Run()
 
 	c.Start()
-
 }

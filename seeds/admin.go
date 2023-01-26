@@ -27,7 +27,6 @@ func NewAdminSeed(
 
 // Run the seed data
 func (c AdminSeed) Run() {
-
 	email := c.env.AdminEmail
 	password := c.env.AdminPass
 
@@ -46,5 +45,4 @@ func (c AdminSeed) Run() {
 	}
 
 	c.logger.Zap.Info("Admin already exist")
-
 }

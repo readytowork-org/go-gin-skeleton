@@ -48,7 +48,6 @@ func (c CreateAdminUser) Run() {
 	}
 
 	c.logger.Zap.Info("Firebase admin user created, email: ", email, " password: ", password)
-
 }
 
 // Name return name of command

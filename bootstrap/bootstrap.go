@@ -40,7 +40,6 @@ func bootstrap(
 	migrations infrastructure.Migrations,
 	seeds seeds.Seeds,
 ) {
-
 	appStop := func(context.Context) error {
 		logger.Zap.Info("Stopping Application")
 		conn, _ := database.DB.DB()

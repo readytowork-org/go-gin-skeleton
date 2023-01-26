@@ -45,7 +45,6 @@ func (s StorageBucketService) UploadBinary(
 	file []byte,
 	fileName string,
 ) (string, error) {
-
 	var bucketName = s.env.StorageBucketName
 
 	if bucketName == "" {
@@ -84,7 +83,6 @@ func (s StorageBucketService) UploadBinary(
 	path = strings.Replace(path, "/", "", 1)
 
 	return path, nil
-
 }
 
 // UploadFile -> uploads the file to the cloud storage
@@ -169,7 +167,6 @@ func (s StorageBucketService) GetObjectSignedURL(
 
 // RemoveObject -> removes the file from the storage bucket
 func (s StorageBucketService) RemoveObject(objectName string) error {
-
 	bucketName := s.env.StorageBucketName
 	if bucketName == "" {
 		s.logger.Zap.Fatal("Please check your env file for StorageBucketName")
@@ -199,7 +196,6 @@ func (s StorageBucketService) RemoveObject(objectName string) error {
 func (s StorageBucketService) UploadThumbnailFile(ctx context.Context,
 	file image.Image,
 	fileName string, extension string) (string, error) {
-
 	var bucketName = s.env.StorageBucketName
 	if bucketName == "" {
 		s.logger.Zap.Fatal("Please check your env file for StorageBucketName")
@@ -240,5 +236,4 @@ func (s StorageBucketService) UploadThumbnailFile(ctx context.Context,
 	path = strings.Replace(path, "/", "", 1)
 
 	return path, nil
-
 }

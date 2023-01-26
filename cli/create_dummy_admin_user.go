@@ -47,7 +47,6 @@ func (c CreateDummyAdminUser) Run() {
 	}
 
 	c.logger.Zap.Info("Firebase dummy admin user created, email: ", email, " password: ", password)
-
 }
 
 // Name return name of command

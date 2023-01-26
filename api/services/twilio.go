@@ -132,7 +132,6 @@ func (t TwilioService) SendSMS(input SMSInput) (*SuccessResponse, *ErrorResponse
 	}
 
 	return &result, nil, nil
-
 }
 
 func (t TwilioService) getBasicToken() string {

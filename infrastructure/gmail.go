@@ -33,5 +33,4 @@ func NewGmailService(logger Logger, env Env) *gmail.Service {
 		logger.Zap.Fatal("failed to receive gmail client", err.Error())
 	}
 	return srv
-
 }

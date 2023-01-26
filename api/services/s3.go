@@ -37,7 +37,6 @@ func (s S3BucketService) UploadtoS3(
 	fileHeader *multipart.FileHeader,
 	fileName string,
 ) (string, error) {
-
 	uploader := manager.NewUploader(s.client)
 	result, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
 		Bucket:      aws.String(s.env.AWS_S3_BUCKET),

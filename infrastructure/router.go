@@ -17,7 +17,6 @@ type Router struct {
 
 // NewRouter : all the routes are defined here
 func NewRouter(env Env) Router {
-
 	if env.Environment != "local" {
 		if err := sentry.Init(sentry.ClientOptions{
 			Dsn:              env.SentryDSN,

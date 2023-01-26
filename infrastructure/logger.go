@@ -16,7 +16,6 @@ type Logger struct {
 
 // NewLogger sets up logger
 func NewLogger(env Env) Logger {
-
 	config := zap.NewDevelopmentConfig()
 	defer sentry.Recover()
 
@@ -31,7 +30,6 @@ func NewLogger(env Env) Logger {
 			})
 			defer sentry.Flush(2 * time.Second)
 			sentry.CaptureMessage(fmt.Sprintf("%s:%d - %s \n %s", entry.Caller.File, entry.Caller.Line, entry.Message, entry))
-
 		}
 		if entry.Level == zapcore.WarnLevel {
 			sentry.ConfigureScope(func(scope *sentry.Scope) {
@@ -39,7 +37,6 @@ func NewLogger(env Env) Logger {
 			})
 			defer sentry.Flush(2 * time.Second)
 			sentry.CaptureMessage(fmt.Sprintf("%s:%d - %s \n %s", entry.Caller.File, entry.Caller.Line, entry.Message, entry))
-
 		}
 		sentry.ConfigureScope(func(scope *sentry.Scope) {
 			scope.Clear()
@@ -52,5 +49,4 @@ func NewLogger(env Env) Logger {
 	return Logger{
 		Zap: sugar,
 	}
-
 }

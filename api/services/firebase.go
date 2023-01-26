@@ -58,7 +58,6 @@ func (fb *FirebaseService) GetUserByEmail(email string) (*auth.UserRecord, error
 
 // UpdateUser -> update firebase user.
 func (fb *FirebaseService) UpdateUser(UID string, user *auth.UserToUpdate) (*auth.UserRecord, error) {
-
 	return fb.client.UpdateUser(context.Background(), UID, user)
 }
 
@@ -70,10 +69,8 @@ func (fb *FirebaseService) GetUser(uid string) (*auth.UserRecord, error) {
 
 // SetClaim set's claim to firebase user
 func (fb *FirebaseService) SetClaim(uid string, claims gin.H) error {
-
 	err := fb.client.SetCustomUserClaims(context.Background(), uid, claims)
 	return err
-
 }
 
 // UpdateEmailVerification update firebase user email verify

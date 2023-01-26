@@ -13,7 +13,6 @@ import (
 
 // NewFBApp creates new firebase app instance
 func NewFBApp(logger Logger) *firebase.App {
-
 	ctx := context.Background()
 
 	serviceAccountKeyFilePath, err := filepath.Abs("./serviceAccountKey.json")
@@ -33,7 +32,6 @@ func NewFBApp(logger Logger) *firebase.App {
 
 // NewFBAuth creates new firebase auth client
 func NewFBAuth(logger Logger, app *firebase.App) *auth.Client {
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
