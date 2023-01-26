@@ -43,7 +43,7 @@ func NewRoutes(
 
 // Setup all the route
 func (r Routes) Setup() {
-	v1 := r.router.Gin.Group("/v1")
+	v1 := r.router.Gin.Group("/api/v1")
 	for _, route := range r.routes {
 		route.Setup(v1)
 	}
