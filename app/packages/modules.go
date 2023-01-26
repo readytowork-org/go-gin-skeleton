@@ -12,5 +12,6 @@ var Module = fx.Options(
 	fx.Provide(user.UserController),
 	fx.Provide(user.UserRepository),
 	fx.Provide(user.UserService),
+	fx.Provide(user.UserValidator),
 	fx.Provide(utility.UtilityController),
 )

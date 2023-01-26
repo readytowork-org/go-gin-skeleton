@@ -18,6 +18,7 @@ type Controller struct {
 	logger      infrastructure.Logger
 	userService Service
 	env         infrastructure.Env
+	validator   Validator
 }
 
 // UserController -> constructor
@@ -25,11 +26,13 @@ func UserController(
 	logger infrastructure.Logger,
 	userService Service,
 	env infrastructure.Env,
+	validator Validator,
 ) Controller {
 	return Controller{
 		logger:      logger,
 		userService: userService,
 		env:         env,
+		validator:   validator,
 	}
 }
 
@@ -41,6 +44,13 @@ func (cc Controller) CreateUser(c *gin.Context) {
 	if err := c.ShouldBindJSON(&user); err != nil {
 		cc.logger.Zap.Error("Error [CreateUser] (ShouldBindJson) : ", err)
 		err := errors.BadRequest.Wrap(err, "Failed to bind user data")
+		responses.HandleError(c, err)
+		return
+	}
+	if validationErr := cc.validator.Validate.Struct(user); validationErr != nil {
+		err := errors.BadRequest.Wrap(validationErr, "Validation error")
+		err = errors.SetCustomMessage(err, "Invalid input information")
+		err = errors.AddErrorContextBlock(err, cc.validator.GenerateValidationResponse(validationErr))
 		responses.HandleError(c, err)
 		return
 	}
