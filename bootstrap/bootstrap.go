@@ -1,15 +1,15 @@
 package bootstrap
 
 import (
-	"boilerplate-api/api/controllers"
-	"boilerplate-api/api/middlewares"
-	"boilerplate-api/api/repository"
-	"boilerplate-api/api/routes"
-	"boilerplate-api/api/services"
-	"boilerplate-api/cli"
-	"boilerplate-api/infrastructure"
-	"boilerplate-api/seeds"
-	"boilerplate-api/utils"
+	"boilerplate-api/app/cli"
+	"boilerplate-api/app/http/controllers/v1"
+	"boilerplate-api/app/http/middlewares"
+	"boilerplate-api/app/http/repository"
+	"boilerplate-api/app/http/services"
+	"boilerplate-api/app/infrastructure"
+	"boilerplate-api/database/seeds"
+	"boilerplate-api/resources/utils"
+	routes "boilerplate-api/routes/api/v1"
 	"context"
 
 	"go.uber.org/fx"
@@ -78,7 +78,7 @@ func bootstrap(
 				seeds.Run()
 				if env.ServerPort == "" {
 					handler.Gin.Run(":5000")
-					} else {
+				} else {
 					handler.Gin.Run(":" + env.ServerPort)
 				}
 			}()

@@ -74,9 +74,9 @@ done
 
 # inject fx deps
 fx_path_hash=(
-  "Controller:${ROOT}/api/controllers/controllers.go"
-  "Service:${ROOT}/api/services/services.go"
-  "Repository:${ROOT}/api/repository/repository.go"
+  "Controller:${ROOT}/app/http/controllers/controllers.go"
+  "Service:${ROOT}/app/http/services/services.go"
+  "Repository:${ROOT}/app/http/repository/repository.go"
 )
 fx_init_string="var Module = fx.Options("
 for deps_value in "${fx_path_hash[@]}"; do
@@ -87,7 +87,7 @@ for deps_value in "${fx_path_hash[@]}"; do
 done
 
 # fx routes
-fx_route_path="${ROOT}/api/routes/routes.go"
+fx_route_path="${ROOT}/routes/api/v1/routes.go"
 $resed "" "s/func NewRoutes(/func NewRoutes(\n\t ${lc_resource}Routes ${uc_resource}Routes,/g" $fx_route_path
 $resed "" "s/return Routes{/return Routes{\n\t ${lc_resource}Routes,/g" $fx_route_path
 $resed "" "s/fx.Provide(NewRoutes),/fx.Provide(NewRoutes),\n  fx.Provide(New${uc_resource}Routes),/g" $fx_route_path

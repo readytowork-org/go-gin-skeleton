@@ -1,9 +1,9 @@
 package services
 
 import (
-	"{{projectname}}/api/repository"
-	"{{projectname}}/models"
-	"{{projectname}}/utils"
+	"{{projectname}}/app/http/repository"
+	"{{projectname}}/app/models"
+	"{{projectname}}/resources/utils"
 
 )
 
