@@ -15,24 +15,24 @@ import (
 
 // UserController -> struct
 type Controller struct {
-	logger      infrastructure.Logger
-	userService Service
-	env         infrastructure.Env
-	validator   Validator
+	logger    infrastructure.Logger
+	service   Service
+	env       infrastructure.Env
+	validator Validator
 }
 
 // UserController -> constructor
 func UserController(
 	logger infrastructure.Logger,
-	userService Service,
+	service Service,
 	env infrastructure.Env,
 	validator Validator,
 ) Controller {
 	return Controller{
-		logger:      logger,
-		userService: userService,
-		env:         env,
-		validator:   validator,
+		logger:    logger,
+		service:   service,
+		env:       env,
+		validator: validator,
 	}
 }
 
@@ -55,7 +55,7 @@ func (cc Controller) CreateUser(c *gin.Context) {
 		return
 	}
 
-	if err := cc.userService.WithTrx(trx).CreateUser(user); err != nil {
+	if err := cc.service.WithTrx(trx).CreateUser(user); err != nil {
 		cc.logger.Zap.Error("Error [CreateUser] [db CreateUser]: ", err.Error())
 		err := errors.InternalError.Wrap(err, "Failed to create user")
 		responses.HandleError(c, err)
@@ -68,7 +68,7 @@ func (cc Controller) CreateUser(c *gin.Context) {
 // GetAllUser -> Get All User
 func (cc Controller) GetAllUsers(c *gin.Context) {
 	pagination := utils.BuildPagination(c)
-	users, count, err := cc.userService.GetAllUsers(pagination)
+	users, count, err := cc.service.GetAllUsers(pagination)
 
 	if err != nil {
 		cc.logger.Zap.Error("Error finding user records", err.Error())
