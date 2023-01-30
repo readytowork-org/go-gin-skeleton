@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"boilerplate-api/api/middlewares"
 	"boilerplate-api/api/responses"
 	"boilerplate-api/api/services"
 	"boilerplate-api/api/validators"
@@ -20,6 +19,7 @@ import (
 type JwtAuthController struct {
 	logger      infrastructure.Logger
 	userService services.UserService
+	jwtService  services.JWTAuthService
 	env         infrastructure.Env
 	validator   validators.UserValidator
 }
@@ -28,12 +28,14 @@ type JwtAuthController struct {
 func NewJwtAuthController(
 	logger infrastructure.Logger,
 	userService services.UserService,
+	jwtService services.JWTAuthService,
 	env infrastructure.Env,
 	validator validators.UserValidator,
 ) JwtAuthController {
 	return JwtAuthController{
 		logger:      logger,
 		userService: userService,
+		jwtService:  jwtService,
 		env:         env,
 		validator:   validator,
 	}
@@ -76,7 +78,7 @@ func (cc JwtAuthController) ObtainJwtToken(c *gin.Context) {
 	}
 
 	// Create a new JWT claims object
-	claims := middlewares.JWTClaims{
+	claims := services.JWTClaims{
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Minute * time.Duration(cc.env.JWT_TOKEN_EXPIRES_AT)).Unix(),
 			Id:        fmt.Sprintf("%v", user.ID),
