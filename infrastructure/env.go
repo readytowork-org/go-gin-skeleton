@@ -33,10 +33,12 @@ type Env struct {
 	AWS_ACCESS_KEY string `mapstructure:"AWS_ACCESS_KEY"`
 	AWS_SECRET_KEY string `mapstructure:"AWS_SECRET_KEY"`
 
-	TwilioBaseURL   string `mapstructure:"TWILIO_BASE_URL"`
-	TwilioSID       string `mapstructure:"TWILIO_SID"`
-	TwilioAuthToken string `mapstructure:"TWILIO_AUTH_TOKEN"`
-	TwilioSMSFrom   string `mapstructure:"TWILIO_SMS_FROM"`
+	TwilioBaseURL        string `mapstructure:"TWILIO_BASE_URL"`
+	TwilioSID            string `mapstructure:"TWILIO_SID"`
+	TwilioAuthToken      string `mapstructure:"TWILIO_AUTH_TOKEN"`
+	TwilioSMSFrom        string `mapstructure:"TWILIO_SMS_FROM"`
+	JWT_SECRET           string `mapstructure:"JWT_SECRET"`
+	JWT_TOKEN_EXPIRES_AT int    `mapstructure:"JWT_TOKEN_EXPIRES_AT"`
 }
 
 // NewEnv creates a new environment
