@@ -1,11 +1,18 @@
 package models
 
+import (
+	"go.uber.org/zap"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
+)
+
 type User struct {
 	Base
-	Email    string `json:"email" validate:"required,email"`
-	FullName string `json:"full_name" validate:"required"`
-	Phone    string `json:"phone"  validate:"required,phone"`
-	Gender   string `json:"gender" validate:"required,gender"`
+	Email    string `gorm:"email" json:"email" validate:"required,email"`
+	FullName string `gorm:"full_name" json:"full_name" validate:"required"`
+	Phone    string `gorm:"phone" json:"phone"  validate:"required,phone"`
+	Gender   string `gorm:"gender" json:"gender" validate:"required,gender"`
+	Password string `gorm:"password" json:"password" validate:"required"`
 }
 
 // TableName gives table name of model
@@ -21,4 +28,16 @@ func (u User) ToMap() map[string]interface{} {
 		"phone":     u.Phone,
 		"gender":    u.Gender,
 	}
+}
+
+// Runs before inserting a row into table
+func (u *User) BeforeCreate(db *gorm.DB) error {
+	var Zap *zap.SugaredLogger
+	password, err := bcrypt.GenerateFromPassword([]byte(u.Password), 10)
+	u.Password = string(password)
+	if err != nil {
+		Zap.Error("Error decrypting plain password to hash", err.Error())
+		return err
+	}
+	return nil
 }
