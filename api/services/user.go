@@ -36,3 +36,15 @@ func (c UserService) CreateUser(user models.User) error {
 func (c UserService) GetAllUsers(pagination utils.Pagination) ([]models.User, int64, error) {
 	return c.repository.GetAllUsers(pagination)
 }
+
+func (c UserService) GetOneUser(Id string) (*models.User, error) {
+	return c.repository.GetOneUser(Id)
+}
+
+func (c UserService) GetOneUserWithEmail(Email string) (*models.User, error) {
+	return c.repository.GetOneUserWithEmail(Email)
+}
+
+func (c UserService) GetOneUserWithPhone(Phone string) (*models.User, error) {
+	return c.repository.GetOneUserWithPhone(Phone)
+}

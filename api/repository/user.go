@@ -48,11 +48,39 @@ func (c UserRepository) GetAllUsers(pagination utils.Pagination) ([]models.User,
 		searchQuery := "%" + pagination.Keyword + "%"
 		queryBuilder.Where(c.db.DB.Where("`users`.`name` LIKE ?", searchQuery))
 	}
-
 	err := queryBuilder.
 		Find(&users).
 		Offset(-1).
 		Limit(-1).
 		Count(&totalRows).Error
 	return users, totalRows, err
+}
+
+func (c UserRepository) GetOneUser(Id string) (*models.User, error) {
+	user := models.User{}
+	err := c.db.DB.Model(&user).Where("id = ?", Id).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+
+}
+
+func (c UserRepository) GetOneUserWithEmail(Email string) (*models.User, error) {
+	user := models.User{}
+	err := c.db.DB.Model(&user).Where("email = ?", Email).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+
+}
+
+func (c UserRepository) GetOneUserWithPhone(Phone string) (*models.User, error) {
+	user := models.User{}
+	if err := c.db.DB.First(&user, "phone = ?", Phone).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+
 }
