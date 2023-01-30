@@ -4,15 +4,16 @@ import (
 	"boilerplate-api/api/responses"
 	"boilerplate-api/api/services"
 	"boilerplate-api/api/validators"
+	"boilerplate-api/dtos"
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
+	"boilerplate-api/utils"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // JwtAuthController -> struct
@@ -42,10 +43,7 @@ func NewJwtAuthController(
 }
 
 func (cc JwtAuthController) ObtainJwtToken(c *gin.Context) {
-	var reqData struct {
-		Email    string `json:"email" validate:"required"`
-		Password string `json:"password" validate:"required"`
-	}
+	reqData := dtos.JWTLoginRequestData{}
 	// Bind the request payload to a reqData struct
 	if err := c.ShouldBindJSON(&reqData); err != nil {
 		cc.logger.Zap.Error("Error [ShouldBindJSON] : ", err.Error())
@@ -71,7 +69,8 @@ func (cc JwtAuthController) ObtainJwtToken(c *gin.Context) {
 
 	// Check if the password is correct
 	// Thus password is encrypted and saved in DB, comparing plain text with it's hash
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(reqData.Password)); err != nil {
+	isValidPassword := utils.CompareHashAndPlainPassword(user.Password, reqData.Password)
+	if !isValidPassword {
 		cc.logger.Zap.Error("[CompareHashAndPassword] hash and plain password doesnot match")
 		responses.ErrorJSON(c, http.StatusBadRequest, "Invalid user credentials")
 		return
@@ -86,8 +85,7 @@ func (cc JwtAuthController) ObtainJwtToken(c *gin.Context) {
 	}
 
 	// Create a new JWT token using the claims and the secret key
-	tokenClaim := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token, tokenErr := tokenClaim.SignedString([]byte(cc.env.JWT_SECRET))
+	token, tokenErr := cc.jwtService.GenerateToken(claims)
 	if tokenErr != nil {
 		cc.logger.Zap.Error("[SignedString] Error getting token: ", tokenErr.Error())
 		responses.ErrorJSON(c, http.StatusInternalServerError, tokenErr.Error())

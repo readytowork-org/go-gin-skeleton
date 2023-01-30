@@ -5,9 +5,9 @@ import (
 	"boilerplate-api/api/services"
 	"boilerplate-api/api/validators"
 	"boilerplate-api/constants"
+	"boilerplate-api/dtos"
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
-	"boilerplate-api/models"
 	"boilerplate-api/utils"
 	"net/http"
 
@@ -40,10 +40,7 @@ func NewUserController(
 
 // CreateUser -> Create User
 func (cc UserController) CreateUser(c *gin.Context) {
-	reqData := struct {
-		models.User
-		ConfirmPassword string `json:"confirm_password" validate:"required"`
-	}{}
+	reqData := dtos.CreateUserRequestData{}
 	trx := c.MustGet(constants.DBTransaction).(*gorm.DB)
 
 	if err := c.ShouldBindJSON(&reqData); err != nil {
@@ -60,7 +57,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		return
 	}
 
-	if reqData.User.Password != reqData.ConfirmPassword {
+	if reqData.Password != reqData.ConfirmPassword {
 		cc.logger.Zap.Error("Password and confirm password not matching : ")
 		responses.ErrorJSON(c, http.StatusBadRequest, "Password and confirm password should be same.")
 		return
@@ -77,8 +74,8 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		responses.ErrorJSON(c, http.StatusBadRequest, "User with this phone already exists")
 		return
 	}
-
-	if err := cc.userService.WithTrx(trx).CreateUser(reqData.User); err != nil {
+	user := reqData.GetUser()
+	if err := cc.userService.WithTrx(trx).CreateUser(user); err != nil {
 		cc.logger.Zap.Error("Error [CreateUser] [db CreateUser]: ", err.Error())
 		err := errors.InternalError.Wrap(err, "Failed to create user")
 		responses.HandleError(c, err)
