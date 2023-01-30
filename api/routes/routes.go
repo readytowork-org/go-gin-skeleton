@@ -6,6 +6,7 @@ import "go.uber.org/fx"
 var Module = fx.Options(
 	fx.Provide(NewRoutes),
 	fx.Provide(NewUtilityRoutes),
+	fx.Provide(NewObtainJwtTokenRoutes),
 	fx.Provide(NewUserRoutes),
 )
 
@@ -21,9 +22,11 @@ type Route interface {
 func NewRoutes(
 	utilityRoutes UtilityRoutes,
 	userRoutes UserRoutes,
+	obtainJwtTokenRoutes ObtainJwtTokenRoutes,
 ) Routes {
 	return Routes{
 		utilityRoutes,
+		obtainJwtTokenRoutes,
 		userRoutes,
 	}
 }
