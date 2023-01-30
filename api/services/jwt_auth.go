@@ -86,3 +86,13 @@ func (m JWTAuthService) VerifyToken(c *gin.Context) (bool, error) {
 	return true, nil
 
 }
+
+func (m JWTAuthService) GenerateToken(claims JWTClaims) (string, error) {
+	// Create a new JWT token using the claims and the secret key
+	tokenClaim := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token, tokenErr := tokenClaim.SignedString([]byte(m.env.JWT_SECRET))
+	if tokenErr != nil {
+		return "", tokenErr
+	}
+	return token, nil
+}
