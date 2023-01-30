@@ -49,7 +49,7 @@ func (cc JwtAuthController) ObtainJwtToken(c *gin.Context) {
 	// Bind the request payload to a reqData struct
 	if err := c.ShouldBindJSON(&reqData); err != nil {
 		cc.logger.Zap.Error("Error [ShouldBindJSON] : ", err.Error())
-		err := errors.InternalError.Wrap(err, "Failed to bind request data")
+		err := errors.BadRequest.Wrap(err, "Failed to bind request data")
 		responses.HandleError(c, err)
 		return
 	}
