@@ -4,14 +4,6 @@ set -e
 
 os_name=$(uname)
 
-# if [[ $os_name == "Darwin" ]]
-# then
-#   resed='sed -i ""'
-# else
-#   resed="sed -i "
-# fi
-# echo $resed
-
 first_lower () {
   echo `echo $1 | awk '{$1=tolower(substr($1,0,1))substr($1,2)}1'`
 }
@@ -32,6 +24,7 @@ printf "\n* Generating Scaffold for ${uc_resource} *\n\n"
 # getting project name from go.mod file
 # this code will grab second word of first line from file go.mod and store value to the project name
 read -r _ project_name _ < go.mod
+project_name=$(echo $project_name | tr -d '\r')
 
 placeholder_value_hash=(
   "{{ucresource}}:$uc_resource"
@@ -69,7 +62,7 @@ for entity in "${entity_path_hash[@]}"; do
     placeholder="${item%%:*}"
     value="${item##*:}"
     
-    if [[ $os_name == "Darwin" ]]
+    if [[ $os_name == "Darwin" ]];
     then
         sed -i "" "s/$placeholder/$value/g" $file_to_write
         continue
@@ -91,7 +84,7 @@ fx_init_string="var Module = fx.Options("
 for deps_value in "${fx_path_hash[@]}"; do
   deps_name="${deps_value%%:*}"
   deps_path="${deps_value##*:}"
-  if [[ $os_name == "Darwin" ]]
+  if [[ $os_name == "Darwin" ]];
     then
       sed -i "" "s/${fx_init_string}/${fx_init_string}\n\t  fx.Provide(New${uc_resource}${deps_name}),/g" $deps_path
       continue
