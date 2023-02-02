@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"{{projectname}}/api/controllers"
-	"{{projectname}}/api/middlewares"
-	"{{projectname}}/infrastructure"
+	"{{projectname}}/app/global/controllers"
+	"{{projectname}}/app/global/middlewares"
+	"{{projectname}}/app/global/infrastructure"
 )
 
 // {{ucresource}}Routes -> struct

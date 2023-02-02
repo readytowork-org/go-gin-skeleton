@@ -3,12 +3,12 @@ package controllers
 import (
 	"net/http"
 	"strconv"
-	"{{projectname}}/api/responses"
-	"{{projectname}}/api/services"
-	"{{projectname}}/infrastructure"
-	"{{projectname}}/models"
-	"{{projectname}}/utils"
-	"{{projectname}}/errors"
+	"{{projectname}}/app/global/responses"
+	"{{projectname}}/app/global/services"
+	"{{projectname}}/app/global/infrastructure"
+	"{{projectname}}/app/models"
+	"{{projectname}}/resources/utils"
+	"{{projectname}}/config/errors"
 
 	"github.com/gin-gonic/gin"
 )
@@ -54,7 +54,7 @@ func (cc {{ucresource}}Controller) Create{{ucresource}}(c *gin.Context) {
 // GetAll{{ucresource}} -> Get All {{ucresource}}
 func (cc {{ucresource}}Controller) GetAll{{ucresource}}(c *gin.Context) {
 
-	pagination := utils.BuildPagination(c)
+	pagination := helpers.BuildPagination(c)
 	pagination.Sort = "created_at desc"
 	{{plcresource}}, count, err := cc.{{ucresource}}Service.GetAll{{ucresource}}(pagination)
 

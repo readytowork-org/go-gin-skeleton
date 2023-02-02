@@ -27,7 +27,7 @@ func (c {{ucresource}}Repository) Create({{ucresource}} models.{{ucresource}}) (
 }
 
 // GetAll{{ucresource}} -> Get All {{plcresource}}
-func (c {{ucresource}}Repository) GetAll{{ucresource}}(pagination utils.Pagination) ([]models.{{ucresource}}, int64, error) {
+func (c {{ucresource}}Repository) GetAll{{ucresource}}(pagination helpers.Pagination) ([]models.{{ucresource}}, int64, error) {
 	var {{plcresource}} []models.{{ucresource}}
 	var totalRows int64 = 0
 	queryBuider := c.db.DB.Model(&models.{{ucresource}}{}).Offset(pagination.Offset).Order(pagination.Sort)

@@ -1,16 +1,14 @@
 package bootstrap
 
 import (
-	"boilerplate-api/api/controllers"
-	"boilerplate-api/api/middlewares"
-	"boilerplate-api/api/repository"
-	"boilerplate-api/api/routes"
-	"boilerplate-api/api/services"
-	"boilerplate-api/api/validators"
-	"boilerplate-api/cli"
-	"boilerplate-api/infrastructure"
-	"boilerplate-api/seeds"
-	"boilerplate-api/utils"
+	"boilerplate-api/app/cli"
+	"boilerplate-api/app/global/infrastructure"
+	"boilerplate-api/app/global/middlewares"
+	"boilerplate-api/app/global/services"
+	"boilerplate-api/app/helpers"
+	"boilerplate-api/app/packages"
+	"boilerplate-api/database/seeds"
+	"boilerplate-api/routes"
 	"context"
 
 	"go.uber.org/fx"
@@ -18,12 +16,10 @@ import (
 
 // Module exported for initializing application
 var Module = fx.Options(
-	controllers.Module,
+	packages.Module,
 	routes.Module,
 	services.Module,
 	middlewares.Module,
-	repository.Module,
-	validators.Module,
 	infrastructure.Module,
 	cli.Module,
 	seeds.Module,
@@ -50,7 +46,7 @@ func bootstrap(
 		return nil
 	}
 
-	if utils.IsCli() {
+	if helpers.IsCli() {
 		lifecycle.Append(fx.Hook{
 			OnStart: func(context.Context) error {
 				logger.Zap.Info("Starting boilerplate cli Application")
@@ -73,7 +69,9 @@ func bootstrap(
 
 			logger.Zap.Info("Migrating DB schema...")
 			go func() {
-				migrations.Migrate()
+				if env.Environment == "production" {
+					migrations.Migrate()
+				}
 				middlewares.Setup()
 				routes.Setup()
 				logger.Zap.Info("🌱 seeding data...")
