@@ -1,15 +1,8 @@
-#!/bin/bash -e
+#!/bin/bash
 
-if [[ uname -eq "Linux" ]]
-then
-  resed="sed -i"
-elif [[ uname -eq "Darwin" ]]
-then
-  resed="sed -i ''"
-else
-  resed="sed -i"
-fi
+set -e
 
+os_name=$(uname)
 
 first_lower () {
   echo `echo $1 | awk '{$1=tolower(substr($1,0,1))substr($1,2)}1'`
@@ -31,6 +24,7 @@ printf "\n* Generating Scaffold for ${uc_resource} *\n\n"
 # getting project name from go.mod file
 # this code will grab second word of first line from file go.mod and store value to the project name
 read -r _ project_name _ < go.mod
+project_name=$(echo $project_name | tr -d '\r')
 
 placeholder_value_hash=(
   "{{ucresource}}:$uc_resource"
@@ -67,10 +61,18 @@ for entity in "${entity_path_hash[@]}"; do
   for item in "${placeholder_value_hash[@]}"; do
     placeholder="${item%%:*}"
     value="${item##*:}"
-    $resed "" "s/$placeholder/$value/g" $file_to_write
+    
+    if [[ $os_name == "Darwin" ]];
+    then
+        sed -i "" "s/$placeholder/$value/g" $file_to_write
+        continue
+    fi
+    sed -i "s/$placeholder/$value/g" $file_to_write
+
   done
   echo $file_to_write "created."
 done
+
 
 # inject fx deps
 fx_path_hash=(
@@ -82,15 +84,27 @@ fx_init_string="var Module = fx.Options("
 for deps_value in "${fx_path_hash[@]}"; do
   deps_name="${deps_value%%:*}"
   deps_path="${deps_value##*:}"
-  $resed "" "s/${fx_init_string}/${fx_init_string}\n\t  fx.Provide(New${uc_resource}${deps_name}),/g" $deps_path
+  if [[ $os_name == "Darwin" ]];
+    then
+      sed -i "" "s/${fx_init_string}/${fx_init_string}\n\t  fx.Provide(New${uc_resource}${deps_name}),/g" $deps_path
+      continue
+    fi
+      sed -i  "s/${fx_init_string}/${fx_init_string}\n\t  fx.Provide(New${uc_resource}${deps_name}),/g" $deps_path
   echo $deps_path "updated."
 done
 
 # fx routes
 fx_route_path="${ROOT}/api/routes/routes.go"
-$resed "" "s/func NewRoutes(/func NewRoutes(\n\t ${lc_resource}Routes ${uc_resource}Routes,/g" $fx_route_path
-$resed "" "s/return Routes{/return Routes{\n\t ${lc_resource}Routes,/g" $fx_route_path
-$resed "" "s/fx.Provide(NewRoutes),/fx.Provide(NewRoutes),\n  fx.Provide(New${uc_resource}Routes),/g" $fx_route_path
+if [[ $os_name == "Darwin" ]]
+then
+  sed -i "" "s/func NewRoutes(/func NewRoutes(\n\t ${lc_resource}Routes ${uc_resource}Routes,/g" $fx_route_path
+  sed -i "" "s/return Routes{/return Routes{\n\t ${lc_resource}Routes,/g" $fx_route_path
+  sed -i "" "s/fx.Provide(NewRoutes),/fx.Provide(NewRoutes),\n  fx.Provide(New${uc_resource}Routes),/g" $fx_route_path
+else 
+  sed -i  "s/func NewRoutes(/func NewRoutes(\n\t ${lc_resource}Routes ${uc_resource}Routes,/g" $fx_route_path
+  sed -i  "s/return Routes{/return Routes{\n\t ${lc_resource}Routes,/g" $fx_route_path
+  sed -i  "s/fx.Provide(NewRoutes),/fx.Provide(NewRoutes),\n  fx.Provide(New${uc_resource}Routes),/g" $fx_route_path
+fi
 echo $fx_route_path "updated."
 
 printf "\n\n*** Scaffolding Completely Successfully ***\n"
