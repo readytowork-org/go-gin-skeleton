@@ -32,16 +32,18 @@ func NewDatabase(Zaplogger Logger, env Env) Database {
 
 	url := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", env.DBUsername, env.DBPassword, env.DBHost, env.DBPort, env.DBName)
 
-	if env.Environment == "development" || env.Environment == "production" {
-		url = fmt.Sprintf(
-			"%s:%s@unix(/cloudsql/%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-			env.DBUsername,
-			env.DBPassword,
-			env.DBHost,
-			env.DBName,
-		)
+	// if env.Environment == "development" || env.Environment == "production" {
+	// 	url = fmt.Sprintf(
+	// 		"%s:%s@unix(/cloudsql/%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+	// 		env.DBUsername,
+	// 		env.DBPassword,
+	// 		env.DBHost,
+	// 		env.DBName,
+	// 	)
+	// }
+	if env.Environment == "production"{
+		newLogger = logger.Default.LogMode(logger.Silent);
 	}
-
 	db, err := gorm.Open(mysql.Open(url), &gorm.Config{Logger: newLogger})
 	_ = db.Exec("CREATE DATABASE IF NOT EXISTS " + env.DBName + ";")
 	if err != nil {
