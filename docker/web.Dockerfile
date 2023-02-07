@@ -9,9 +9,9 @@ RUN echo $GOPATH
 
 RUN go install github.com/go-delve/delve/cmd/dlv@latest
 
-COPY . /clean_web
+RUN go install github.com/rubenv/sql-migrate/...@latest
 
-RUN go get github.com/rubenv/sql-migrate/...
+COPY . /clean_web
 
 WORKDIR /clean_web
 
