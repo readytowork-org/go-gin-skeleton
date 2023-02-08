@@ -70,12 +70,10 @@ func bootstrap(
 			logger.Zap.Info("------------------------")
 			logger.Zap.Info("------ Boilerplate 📺 ------")
 			logger.Zap.Info("------------------------")
-
 			logger.Zap.Info("Migrating DB schema...")
 			go func() {
-				if env.Environment == "production"{
-					migrations.Migrate()
-				}
+				logger.Zap.Info("Migrating DB schema...")
+				migrations.Migrate()
 				middlewares.Setup()
 				routes.Setup()
 				logger.Zap.Info("🌱 seeding data...")

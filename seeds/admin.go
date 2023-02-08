@@ -33,6 +33,9 @@ func (c AdminSeed) Run() {
 
 	c.logger.Zap.Info("🌱 seeding  admin data...")
 
+	if email == "" {
+		return
+	}
 	_, err := c.firebaseSerivce.GetUserByEmail(email)
 
 	if err != nil {
