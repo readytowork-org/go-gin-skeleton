@@ -76,26 +76,88 @@ func (cc JwtAuthController) ObtainJwtToken(c *gin.Context) {
 		return
 	}
 
-	// Create a new JWT claims object
-	claims := services.JWTClaims{
+	// Create a new JWT access claims object
+	accessClaims := services.JWTClaims{
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * time.Duration(cc.env.JWT_TOKEN_EXPIRES_AT)).Unix(),
+			ExpiresAt: time.Now().Add(time.Minute * time.Duration(cc.env.JWT_ACCESS_TOKEN_EXPIRES_AT)).Unix(),
+			Id:        fmt.Sprintf("%v", user.ID),
+		},
+		//Add other claims
+	}
+	// Create a new JWT Access token using the claims and the secret key
+	accessToken, tokenErr := cc.jwtService.GenerateToken(accessClaims, cc.env.JWT_ACCESS_SECRET)
+	if tokenErr != nil {
+		cc.logger.Zap.Error("[SignedString] Error getting token: ", tokenErr.Error())
+		responses.ErrorJSON(c, http.StatusInternalServerError, tokenErr.Error())
+		return
+	}
+	// Create a new JWT refresh claims object
+	refreshClaims := services.JWTClaims{
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * time.Duration(cc.env.JWT_REFRESH_TOKEN_EXPIRES_AT)).Unix(),
 			Id:        fmt.Sprintf("%v", user.ID),
 		},
 	}
+	// Create a new JWT Refresh token using the claims and the secret key
+	refreshToken, refreshTokenErr := cc.jwtService.GenerateToken(refreshClaims, cc.env.JWT_REFRESH_SECRET)
+	if refreshTokenErr != nil {
+		cc.logger.Zap.Error("[SignedString] Error getting token: ", refreshTokenErr.Error())
+		responses.ErrorJSON(c, http.StatusInternalServerError, refreshTokenErr.Error())
+		return
+	}
+	data := map[string]interface{}{
+		"user":               user.ToMap(),
+		"access_token":       accessToken,
+		"refresh_token":      refreshToken,
+		"access_expires_at":  accessClaims.ExpiresAt,
+		"refresh_expires_at": refreshClaims.ExpiresAt,
+	}
+	responses.SuccessJSON(c, http.StatusOK, data)
+	return
+}
 
+func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
+	tokenString, err := cc.jwtService.GetTokenFromHeader(c)
+	if err != nil {
+		cc.logger.Zap.Error("Error getting token from header: ", err.Error())
+		err = errors.Unauthorized.Wrap(err, "Something went wrong")
+		responses.HandleError(c, err)
+		return
+	}
+	parsedToken, parseErr := cc.jwtService.ParseToken(tokenString, cc.env.JWT_REFRESH_SECRET)
+	if parseErr != nil {
+		cc.logger.Zap.Error("Error parsing token: ", parseErr.Error())
+		err = errors.Unauthorized.Wrap(parseErr, "Something went wrong")
+		responses.HandleError(c, err)
+		return
+	}
+	claims, verifyErr := cc.jwtService.VerifyToken(parsedToken)
+	if verifyErr != nil {
+		cc.logger.Zap.Error("Error veriefying token: ", verifyErr.Error())
+		err = errors.Unauthorized.Wrap(verifyErr, "Something went wrong")
+		responses.HandleError(c, err)
+		return
+	}
+	// Create a new JWT Access claims
+	accessClaims := services.JWTClaims{
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Minute * time.Duration(cc.env.JWT_ACCESS_TOKEN_EXPIRES_AT)).Unix(),
+			Id:        fmt.Sprintf("%v", claims.Id),
+		},
+		// Add other claims
+	}
 	// Create a new JWT token using the claims and the secret key
-	token, tokenErr := cc.jwtService.GenerateToken(claims)
+	accessToken, tokenErr := cc.jwtService.GenerateToken(accessClaims, cc.env.JWT_ACCESS_SECRET)
 	if tokenErr != nil {
 		cc.logger.Zap.Error("[SignedString] Error getting token: ", tokenErr.Error())
 		responses.ErrorJSON(c, http.StatusInternalServerError, tokenErr.Error())
 		return
 	}
 	data := map[string]interface{}{
-		"user":       user.ToMap(),
-		"token":      token,
-		"expires_at": claims.ExpiresAt,
+		"access_token": accessToken,
+		"expires_at":   accessClaims.ExpiresAt,
 	}
 	responses.SuccessJSON(c, http.StatusOK, data)
 	return
+
 }
