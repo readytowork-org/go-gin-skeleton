@@ -5,7 +5,6 @@ import (
 	"boilerplate-api/infrastructure"
 	"strings"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -30,10 +29,30 @@ type JWTClaims struct {
 	// ...other claims
 }
 
-func (m JWTAuthService) ParseToken(tokenString string) (*jwt.Token, error) {
+func (m JWTAuthService) GetTokenFromHeader(c *gin.Context) (string, error) {
+	// Get the token from the request header
+	header := c.GetHeader("Authorization")
+	if header == "" {
+		err := errors.BadRequest.New("Authorization token is required in header")
+		err = errors.SetCustomMessage(err, "Authorization token is required in header")
+		m.logger.Zap.Error("[GetHeader]: ", err.Error())
+		return "", err
+	}
+
+	if !strings.Contains(header, "Bearer") {
+		err := errors.BadRequest.New("Token type is required")
+		m.logger.Zap.Error("Missing token type: ", err.Error())
+		return "", err
+	}
+	tokenString := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
+	return tokenString, nil
+
+}
+
+func (m JWTAuthService) ParseToken(tokenString, secret string) (*jwt.Token, error) {
 	// Parse the token using the secret key
 	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(m.env.JWT_SECRET), nil
+		return []byte(secret), nil
 	})
 	if err != nil {
 		if !strings.Contains(err.Error(), "expired") {
@@ -48,49 +67,23 @@ func (m JWTAuthService) ParseToken(tokenString string) (*jwt.Token, error) {
 
 }
 
-func (m JWTAuthService) VerifyToken(c *gin.Context) (bool, error) {
-	// Get the token from the request header
-	header := c.GetHeader("Authorization")
-	if header == "" {
-		err := errors.BadRequest.New("Authorization token is required in header")
-		err = errors.SetCustomMessage(err, "Authorization token is required in header")
-		m.logger.Zap.Error("[GetHeader]: ", err.Error())
-		return false, err
-	}
-
-	if !strings.Contains(header, "Bearer") {
-		err := errors.BadRequest.New("Token type is required")
-		m.logger.Zap.Error("Missing token type: ", err.Error())
-		return false, err
-	}
-
-	tokenString := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
-	token, err := m.ParseToken(tokenString)
-	if err != nil {
-		m.logger.Zap.Error("Error parsing token", err.Error())
-		return false, err
-	}
-
+func (m JWTAuthService) VerifyToken(token *jwt.Token) (*JWTClaims, error) {
+	// Verfify token
 	claims, ok := token.Claims.(*JWTClaims)
 	if !ok || !token.Valid {
 		err := errors.BadRequest.New("Invalid token")
 		err = errors.SetCustomMessage(err, "Invalid token")
 		m.logger.Zap.Error("Invalid token [token.Valid]: ", err.Error())
-		return false, err
+		return nil, err
 	}
-	sentry.ConfigureScope(func(scope *sentry.Scope) {
-		scope.SetUser(sentry.User{ID: claims.Id})
-	})
-	// Can set anything in the request context and passes the request to the next handler.
-	c.Set("user_id", claims.Id)
-	return true, nil
+	return claims, nil
 
 }
 
-func (m JWTAuthService) GenerateToken(claims JWTClaims) (string, error) {
+func (m JWTAuthService) GenerateToken(claims JWTClaims, secret string) (string, error) {
 	// Create a new JWT token using the claims and the secret key
 	tokenClaim := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token, tokenErr := tokenClaim.SignedString([]byte(m.env.JWT_SECRET))
+	token, tokenErr := tokenClaim.SignedString([]byte(secret))
 	if tokenErr != nil {
 		return "", tokenErr
 	}
