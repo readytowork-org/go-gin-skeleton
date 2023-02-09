@@ -18,6 +18,7 @@ func (i ObtainJwtTokenRoutes) Setup() {
 	jwt := i.router.Gin.Group("/obtain-jwt-token")
 	{
 		jwt.POST("", i.jwtController.ObtainJwtToken)
+		jwt.POST("/refresh", i.jwtController.RefreshJwtToken)
 	}
 }
 
