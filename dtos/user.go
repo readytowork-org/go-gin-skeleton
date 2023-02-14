@@ -21,3 +21,12 @@ func (u *CreateUserRequestData) GetUser() models.User {
 		Password: u.Password,
 	}
 }
+
+// Dtos for User model
+type GetUserResponse struct {
+	models.Base
+	Email    string `gorm:"email" json:"email" validate:"required,email"`
+	FullName string `gorm:"full_name" json:"full_name" validate:"required"`
+	Phone    string `gorm:"phone" json:"phone"  validate:"required,phone"`
+	Gender   string `gorm:"gender" json:"gender" validate:"required,gender"`
+}
