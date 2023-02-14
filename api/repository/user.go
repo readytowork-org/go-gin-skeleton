@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"boilerplate-api/dtos"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
 	"boilerplate-api/utils"
@@ -38,8 +39,8 @@ func (c UserRepository) Create(User models.User) error {
 }
 
 // GetAllUser -> Get All users
-func (c UserRepository) GetAllUsers(pagination utils.Pagination) ([]models.User, int64, error) {
-	var users []models.User
+func (c UserRepository) GetAllUsers(pagination utils.Pagination) ([]dtos.GetUserResponse, int64, error) {
+	var users []dtos.GetUserResponse
 	var totalRows int64 = 0
 	queryBuilder := c.db.DB.Limit(pagination.PageSize).Offset(pagination.Offset).Order("created_at desc")
 	queryBuilder = queryBuilder.Model(&models.User{})
