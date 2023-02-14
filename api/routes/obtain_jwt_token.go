@@ -15,7 +15,7 @@ type ObtainJwtTokenRoutes struct {
 // Setup Obtain Jwt Token Routes
 func (i ObtainJwtTokenRoutes) Setup() {
 	i.logger.Zap.Info(" Setting up jwt routes")
-	jwt := i.router.Gin.Group("/obtain-jwt-token")
+	jwt := i.router.Gin.Group("/login")
 	{
 		jwt.POST("", i.jwtController.ObtainJwtToken)
 		jwt.POST("/refresh", i.jwtController.RefreshJwtToken)
