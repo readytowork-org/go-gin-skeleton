@@ -25,8 +25,8 @@ func (u *CreateUserRequestData) GetUser() models.User {
 // Dtos for User model
 type GetUserResponse struct {
 	models.Base
-	Email    string `gorm:"email" json:"email" validate:"required,email"`
-	FullName string `gorm:"full_name" json:"full_name" validate:"required"`
-	Phone    string `gorm:"phone" json:"phone"  validate:"required,phone"`
-	Gender   string `gorm:"gender" json:"gender" validate:"required,gender"`
+	Email    string `gorm:"email" json:"email"`
+	FullName string `gorm:"full_name" json:"full_name"`
+	Phone    string `gorm:"phone" json:"phone"`
+	Gender   string `gorm:"gender" json:"gender"`
 }
