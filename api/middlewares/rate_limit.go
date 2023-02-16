@@ -62,10 +62,8 @@ func (lm RateLimitMiddleware) Handle(options ...Option) gin.HandlerFunc {
 			Period: opt.period,
 		}
 
-		// Limiter instance
 		instance := limiter.New(store, rate)
 
-		// Returns the rate limit details for given identifier.
 		// FullPath is appended with IP address. `/api/users&&127.0.0.1` as key
 		context, err := instance.Get(c, c.FullPath()+"&&"+key)
 
