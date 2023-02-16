@@ -18,4 +18,8 @@ const (
 
 	//Adminrole ->
 	RoleAdmin= "admin"
+
+	// Rate Limit
+	RateLimit = "RateLimit"
+
 )
