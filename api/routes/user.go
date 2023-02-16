@@ -14,12 +14,13 @@ type UserRoutes struct {
 	middleware     middlewares.FirebaseAuthMiddleware
 	jwtMiddleware  middlewares.JWTAuthMiddleWare
 	trxMiddleware  middlewares.DBTransactionMiddleware
+	rateLimitMiddleware middlewares.RateLimitMiddleware
 }
 
 // Setup user routes
 func (i UserRoutes) Setup() {
 	i.logger.Zap.Info(" Setting up user routes")
-	users := i.router.Gin.Group("/users")
+	users := i.router.Gin.Group("/users").Use(i.rateLimitMiddleware.Handle())
 	{
 		users.GET("", i.userController.GetAllUsers)
 		users.POST("", i.trxMiddleware.DBTransactionHandle(), i.userController.CreateUser)
@@ -34,6 +35,7 @@ func NewUserRoutes(
 	middleware middlewares.FirebaseAuthMiddleware,
 	jwtMiddleware middlewares.JWTAuthMiddleWare,
 	trxMiddleware middlewares.DBTransactionMiddleware,
+	rateLimitMiddleware middlewares.RateLimitMiddleware,
 ) UserRoutes {
 	return UserRoutes{
 		router:         router,
@@ -42,5 +44,6 @@ func NewUserRoutes(
 		middleware:     middleware,
 		jwtMiddleware:  jwtMiddleware,
 		trxMiddleware:  trxMiddleware,
+		rateLimitMiddleware: rateLimitMiddleware,
 	}
 }
