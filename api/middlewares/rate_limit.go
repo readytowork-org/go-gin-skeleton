@@ -1,9 +1,10 @@
 package middlewares
 
 import (
+	"boilerplate-api/api/responses"
 	"boilerplate-api/constants"
+	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
-	"net/http"
 	"strconv"
 	"time"
 
@@ -38,19 +39,18 @@ func NewRateLimitMiddleware(logger infrastructure.Logger) RateLimitMiddleware {
 	}
 }
 
-func (lm RateLimitMiddleware) Handle(options ...Option) gin.HandlerFunc {
+func (rl RateLimitMiddleware) Handle(options ...Option) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		key := c.ClientIP() // Gets cient IP Address
 
-		lm.logger.Zap.Info("Setting up rate limit middleware")
+		rl.logger.Zap.Info("Setting up rate limit middleware")
 
-		// Setting up rate limit
 		// Limit -> # of API Calls
 		// Period -> in a given time frame
 		// setting default values
 		opt := RateLimitOption{
-			period: lm.option.period,
-			limit:  lm.option.limit,
+			period: rl.option.period,
+			limit:  rl.option.limit,
 		}
 
 		for _, o := range options {
@@ -64,11 +64,10 @@ func (lm RateLimitMiddleware) Handle(options ...Option) gin.HandlerFunc {
 
 		instance := limiter.New(store, rate)
 
-		// FullPath is appended with IP address. `/api/users&&127.0.0.1` as key
 		context, err := instance.Get(c, c.FullPath()+"&&"+key)
 
 		if err != nil {
-			lm.logger.Zap.Panic(err.Error())
+			rl.logger.Zap.Panic(err.Error())
 		}
 
 		c.Set(constants.RateLimit, instance)
@@ -80,9 +79,9 @@ func (lm RateLimitMiddleware) Handle(options ...Option) gin.HandlerFunc {
 
 		// Limit exceeded
 		if context.Reached {
-			c.JSON(http.StatusTooManyRequests, gin.H{
-				"message": "Rate Limit Exceed",
-			})
+		err := errors.TooManyRequests.New("Too many request")
+		err = errors.SetCustomMessage(err, "Rate limit has exceeded")
+		responses.HandleError(c, err)
 			c.Abort()
 			return
 		}

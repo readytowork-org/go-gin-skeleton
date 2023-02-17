@@ -18,6 +18,7 @@ const (
 	Conflict
 	InternalError
 	Unavailable
+	TooManyRequests
 )
 
 // GetStatusCode returns the status code for the error type
@@ -37,6 +38,8 @@ func GetStatusCode(httpErrorType HttpErrorType) int {
 		return http.StatusInternalServerError
 	case Unavailable:
 		return http.StatusServiceUnavailable
+	case TooManyRequests:
+		return http.StatusTooManyRequests
 	default:
 		return http.StatusInternalServerError
 	}
