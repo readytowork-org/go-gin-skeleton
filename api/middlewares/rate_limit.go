@@ -26,7 +26,6 @@ type Option func(*RateLimitOption)
 
 type RateLimitMiddleware struct {
 	logger infrastructure.Logger
-	option RateLimitOption
 	env infrastructure.Env
 }
 
