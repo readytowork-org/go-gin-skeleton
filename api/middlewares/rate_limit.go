@@ -27,15 +27,13 @@ type Option func(*RateLimitOption)
 type RateLimitMiddleware struct {
 	logger infrastructure.Logger
 	option RateLimitOption
+	env infrastructure.Env
 }
 
-func NewRateLimitMiddleware(logger infrastructure.Logger) RateLimitMiddleware {
+func NewRateLimitMiddleware(logger infrastructure.Logger,env infrastructure.Env) RateLimitMiddleware {
 	return RateLimitMiddleware{
 		logger: logger,
-		option: RateLimitOption{
-			period: constants.RateLimitPeriod,
-			limit:  constants.RateLimitRequests,
-		},
+		env: env,
 	}
 }
 
@@ -43,14 +41,14 @@ func (rl RateLimitMiddleware) Handle(options ...Option) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		key := c.ClientIP() // Gets cient IP Address
 
-		rl.logger.Zap.Info("Setting up rate limit middleware")
+		rl.logger.Zap.Info("Setting up rate limit middleware...")
 
 		// Limit -> # of API Calls
 		// Period -> in a given time frame
 		// setting default values
 		opt := RateLimitOption{
-			period: rl.option.period,
-			limit:  rl.option.limit,
+			period: rl.env.RateLimitPeriod,
+			limit:  rl.env.RateLimitRequests,
 		}
 
 		for _, o := range options {

@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"log"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -41,6 +42,9 @@ type Env struct {
 	JWT_REFRESH_SECRET           string `mapstructure:"JWT_REFRESH_SECRET"`
 	JWT_ACCESS_TOKEN_EXPIRES_AT  int    `mapstructure:"JWT_ACCESS_TOKEN_EXPIRES_AT"`
 	JWT_REFRESH_TOKEN_EXPIRES_AT int    `mapstructure:"JWT_REFRESH_TOKEN_EXPIRES_AT"`
+
+	RateLimitPeriod time.Duration    `mapstructure:"RATE_LIMIT_PERIOD"`
+	RateLimitRequests int64    `mapstructure:"RATE_LIMIT_REQUESTS"`
 }
 
 // NewEnv creates a new environment
