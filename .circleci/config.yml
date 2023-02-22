@@ -8,10 +8,10 @@ jobs:
 
       - image: circleci/mysql:8.0-ram
         environment:
-          MYSQL_ROOT_PASSWORD: $DB_PASSWORD
-          MYSQL_DATABASE: $DB_NAME
-          MYSQL_USER: $DB_USERNAME
-          MYSQL_PASSWORD: $DB_PASSWORD
+          MYSQL_ROOT_PASSWORD: p@$$w0rd
+          MYSQL_DATABASE: test_db
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: p@$$w0rd
 
     parallelism: 1
     working_directory: /go/src/github.com/readytowork-org/boilerplate-api
@@ -22,12 +22,12 @@ jobs:
       - run:
           name: Initialize the environment variable file
           command: |
-            echo "ENVIRONMENT=$ENVIRONMENT
-            DB_HOST=$DB_HOST
-            DB_PORT=$DB_PORT
-            DB_NAME=$DB_NAME
-            DB_USERNAME=$DB_USERNAME
-            DB_PASSWORD=$DB_PASSWORD
+            echo "ENVIRONMENT=local
+            DB_HOST=localhost
+            DB_PORT=3306
+            DB_NAME=test_db
+            DB_USERNAME=user
+            DB_PASSWORD=p@$$w0rd
             MAIL_CLIENT_ID=$MAIL_CLIENT_ID
             MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
             MailRefreshToken=$MailRefreshToken
