@@ -1,5 +1,5 @@
 version: 2.1
-# this is general circleCI implementation. 
+# this is general circleCI implementation.
 # This file might need some changes after setting up project for functional CICD
 jobs:
   build:
@@ -147,13 +147,13 @@ jobs:
       - deploy:
           name: Deploy to Google App Engine
           command: |
-            gcloud app deploy app.yml --project $GCLOUD_PROJECT_ID  --quiet
+            gcloud app deploy app.yaml --project $GCLOUD_PROJECT_ID  --quiet
 
       - deploy:
           name: Deploy CRON to Google App Engine Cloud Scheduler
           command: |
             gcloud app deploy cron.yaml --quiet
-            
+
       - run:
           name: Delete Old versions of App Engine
           command: |
