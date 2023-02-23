@@ -33,6 +33,7 @@ Boilerplate API template includes all the common packages and setup used for API
 - Environment Files
 - Logging (file saving on production) zap
 - Middlewares (cors)
+- Rate Limiting Middleware
 - Middleware transaction
 - Database Setup (mysql)
 - Models Setup and Automigrate (gorm)
@@ -50,8 +51,7 @@ Boilerplate API template includes all the common packages and setup used for API
 
 ## For auto generate of CRUD(Create, ReaD, Update & Delete) api following informations are needed and will be asked in terminal:
 
-
-- resource-name: name of CRUD in upper camelCase. examples:Food,Puppy,ProductCategory etc.  
+- resource-name: name of CRUD in upper camelCase. examples:Food,Puppy,ProductCategory etc.
 
 - resource-table-name: name of CRUD in lower snake case. examples:food,puppy,product_category etc.
 
