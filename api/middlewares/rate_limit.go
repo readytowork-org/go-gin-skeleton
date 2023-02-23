@@ -36,7 +36,7 @@ func NewRateLimitMiddleware(logger infrastructure.Logger,env infrastructure.Env)
 	}
 }
 
-func (rl RateLimitMiddleware) Handle(options ...Option) gin.HandlerFunc {
+func (rl RateLimitMiddleware) HandleRateLimit(limit int64, period time.Duration, options ...Option) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		key := c.ClientIP() // Gets cient IP Address
 
@@ -46,8 +46,8 @@ func (rl RateLimitMiddleware) Handle(options ...Option) gin.HandlerFunc {
 		// Period -> in a given time frame
 		// setting default values
 		opt := RateLimitOption{
-			period: rl.env.RateLimitPeriod,
-			limit:  rl.env.RateLimitRequests,
+			period: period,
+			limit:  limit,
 		}
 
 		for _, o := range options {
