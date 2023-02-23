@@ -26,13 +26,13 @@ type Option func(*RateLimitOption)
 
 type RateLimitMiddleware struct {
 	logger infrastructure.Logger
-	env infrastructure.Env
+	option Option
 }
 
-func NewRateLimitMiddleware(logger infrastructure.Logger,env infrastructure.Env) RateLimitMiddleware {
+func NewRateLimitMiddleware(logger infrastructure.Logger,option Option) RateLimitMiddleware {
 	return RateLimitMiddleware{
 		logger: logger,
-		env: env,
+		option: option,
 	}
 }
 
