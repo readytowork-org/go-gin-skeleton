@@ -94,6 +94,18 @@ jobs:
       - slack/notify-on-failure:
           only_for_branches: main
 
+  sonar:
+    working_directory: /go/src/github.com/readytowork-org/boilerplate-api
+    docker:
+      - image: circleci/golang:1.17
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo
+
+      - sonarcloud/scan:
+          sonar_token_variable_name: SONAR_TOKEN
+
   deploy_to_develop:
     docker:
       - image: google/cloud-sdk
@@ -257,7 +269,10 @@ workflows:
               only:
                 - develop
                 - main
-                - /HT-.*/
+                - sonarqube
+      - sonar:
+          requires:
+            - build
 
       - deploy_to_develop:
           context: boilerplate_dev
