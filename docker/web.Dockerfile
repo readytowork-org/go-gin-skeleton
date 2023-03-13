@@ -13,6 +13,11 @@ COPY . /clean_web
 
 ARG VERSION="4.13.0"
 
+RUN addgroup -S nonroot \
+    && adduser -S nonroot -G nonroot
+
+USER nonroot
+
 RUN set -x \
     && apk add --no-cache git \
     && git clone --branch "v${VERSION}" --depth 1 --single-branch https://github.com/golang-migrate/migrate /tmp/go-migrate
