@@ -15,3 +15,5 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: TEST
+        run: echo "testing"
