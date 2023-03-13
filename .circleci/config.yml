@@ -18,6 +18,7 @@ jobs:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
+
       - run:
           name: Run build
           command: |
@@ -27,6 +28,11 @@ jobs:
       - store_artifacts:
           path: /tmp/artifacts/build
 
+      -
+
+orbs:
+  sonarscanner: psl/sonarscanner@0.0.4
+
 workflows:
   ci:
     jobs:
@@ -34,4 +40,4 @@ workflows:
           filters:
             branches:
               only:
-                - sonarqube
+                - develop
