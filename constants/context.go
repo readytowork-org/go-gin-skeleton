@@ -18,4 +18,7 @@ const (
 
 	//Adminrole ->
 	RoleAdmin= "admin"
+
+	//USERID
+	UserID = "user_id"
 )
