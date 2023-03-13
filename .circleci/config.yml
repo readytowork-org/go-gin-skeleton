@@ -18,7 +18,6 @@ jobs:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
-
       - run:
           name: Run build
           command: |
