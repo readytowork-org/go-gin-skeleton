@@ -22,9 +22,9 @@ func (i UserRoutes) Setup() {
 	users := i.router.Gin.Group("/users")
 	{
 		users.GET("", i.userController.GetAllUsers)
-		users.GET("/profile",i.jwtMiddleware.Handle(), i.userController.GetUserProfile)
 		users.POST("", i.trxMiddleware.DBTransactionHandle(), i.userController.CreateUser)
 	}
+	i.router.Gin.GET("/profile",i.jwtMiddleware.Handle(), i.userController.GetUserProfile)
 }
 
 // NewUserRoutes -> creates new user controller
