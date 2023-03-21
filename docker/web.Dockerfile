@@ -1,5 +1,11 @@
 FROM golang:1.18-alpine
 
+# add user group
+RUN addgroup -S nonroot \
+    && adduser -S nonroot -G nonroot
+
+USER nonroot
+
 # Required because go requires gcc to build
 RUN apk add build-base
 

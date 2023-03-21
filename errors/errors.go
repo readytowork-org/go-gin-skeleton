@@ -7,49 +7,23 @@ import (
 	"github.com/pkg/errors"
 )
 
-type HttpErrorType uint
+type HttpErrorType int
 
 //these are unsigned integer constants of custom type HttpErrorType
 const (
-	BadRequest = HttpErrorType(iota)
-	Unauthorized
-	Forbidden
-	NotFound
-	Conflict
-	InternalError
-	Unavailable
-	TooManyRequests
+	BadRequest    = HttpErrorType(http.StatusBadRequest)
+	Unauthorized  = HttpErrorType(http.StatusUnauthorized)
+	Forbidden     = HttpErrorType(http.StatusForbidden)
+	NotFound      = HttpErrorType(http.StatusNotFound)
+	Conflict      = HttpErrorType(http.StatusConflict)
+	InternalError = HttpErrorType(http.StatusInternalServerError)
+	Unavailable   = HttpErrorType(http.StatusServiceUnavailable)
 )
-
-// GetStatusCode returns the status code for the error type
-func GetStatusCode(httpErrorType HttpErrorType) int {
-	switch httpErrorType {
-	case BadRequest:
-		return http.StatusBadRequest
-	case Unauthorized:
-		return http.StatusUnauthorized
-	case Forbidden:
-		return http.StatusForbidden
-	case NotFound:
-		return http.StatusNotFound
-	case Conflict:
-		return http.StatusConflict
-	case InternalError:
-		return http.StatusInternalServerError
-	case Unavailable:
-		return http.StatusServiceUnavailable
-	case TooManyRequests:
-		return http.StatusTooManyRequests
-	default:
-		return http.StatusInternalServerError
-	}
-}
 
 type responseError struct {
 	httpErrorType HttpErrorType
 	originalError error
 	customMessage CustomMessage
-	contextInfo   ErrorContext
 	context       []ErrorContext
 }
 

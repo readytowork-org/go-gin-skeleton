@@ -22,4 +22,6 @@ const (
 	// Rate Limit
 	RateLimit = "RateLimit"
 
+	//USERID
+	UserID = "user_id"
 )

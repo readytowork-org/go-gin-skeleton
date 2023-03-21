@@ -38,7 +38,7 @@ func (c UserService) GetAllUsers(pagination utils.Pagination) ([]dtos.GetUserRes
 	return c.repository.GetAllUsers(pagination)
 }
 
-func (c UserService) GetOneUser(Id string) (*models.User, error) {
+func (c UserService) GetOneUser(Id string) (*dtos.GetUserResponse, error) {
 	return c.repository.GetOneUser(Id)
 }
 

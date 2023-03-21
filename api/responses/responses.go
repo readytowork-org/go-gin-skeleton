@@ -35,8 +35,7 @@ type errResponse struct {
 
 // HandleError func
 func HandleError(c *gin.Context, err error) {
-	errorType := errors.GetErrorType(err)
-	status := errors.GetStatusCode(errorType)
+	status := errors.GetErrorType(err)
 
 	errorContext := errors.GetErrorContext(err)
 	customMessage := errors.GetCustomMessage(err)
@@ -55,5 +54,5 @@ func HandleError(c *gin.Context, err error) {
 	if errorContext != nil {
 		response.Errors = errorContext
 	}
-	c.JSON(status, gin.H{"error": &response})
+	c.JSON(int(status), gin.H{"error": &response})
 }
