@@ -3,7 +3,6 @@ package middlewares
 import (
 	"boilerplate-api/api/responses"
 	"boilerplate-api/api/services"
-	"boilerplate-api/constants"
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
 
@@ -45,8 +44,8 @@ func (m JWTAuthMiddleWare) Handle() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		// Parsing token
-		parsedToken, parseErr := m.jwtService.ParseToken(tokenString, m.env.JWT_ACCESS_SECRET)
+		// Parsing and Verifying token
+		parsedToken, parseErr := m.jwtService.ParseAndVerifyToken(tokenString, m.env.JWT_ACCESS_SECRET)
 		if parseErr != nil {
 			m.logger.Zap.Error("Error parsing token: ", parseErr.Error())
 			err = errors.Unauthorized.Wrap(parseErr, "Something went wrong")
@@ -54,11 +53,11 @@ func (m JWTAuthMiddleWare) Handle() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		//verify token
-		claims, verifyErr := m.jwtService.VerifyToken(parsedToken)
-		if verifyErr != nil {
-			m.logger.Zap.Error("Error veriefying token: ", verifyErr.Error())
-			err = errors.Unauthorized.Wrap(verifyErr, "Something went wrong")
+		// Retrieve claims
+		claims, claimsError := m.jwtService.RetrieveClaims(parsedToken)
+		if claimsError != nil {
+			m.logger.Zap.Error("Error veriefying token: ", claimsError.Error())
+			err = errors.Unauthorized.Wrap(claimsError, "Something went wrong")
 			responses.HandleError(c, err)
 			c.Abort()
 			return
@@ -68,7 +67,7 @@ func (m JWTAuthMiddleWare) Handle() gin.HandlerFunc {
 			scope.SetUser(sentry.User{ID: claims.Id})
 		})
 		// Can set anything in the request context and passes the request to the next handler.
-		c.Set(constants.UserID, claims.Id)
+		c.Set("user_id", claims.Id)
 		c.Next()
 
 	}

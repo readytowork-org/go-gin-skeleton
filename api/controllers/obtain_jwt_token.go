@@ -121,14 +121,14 @@ func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
 		responses.HandleError(c, err)
 		return
 	}
-	parsedToken, parseErr := cc.jwtService.ParseToken(tokenString, cc.env.JWT_REFRESH_SECRET)
+	parsedToken, parseErr := cc.jwtService.ParseAndVerifyToken(tokenString, cc.env.JWT_REFRESH_SECRET)
 	if parseErr != nil {
 		cc.logger.Zap.Error("Error parsing token: ", parseErr.Error())
 		err = errors.Unauthorized.Wrap(parseErr, "Something went wrong")
 		responses.HandleError(c, err)
 		return
 	}
-	claims, verifyErr := cc.jwtService.VerifyToken(parsedToken)
+	claims, verifyErr := cc.jwtService.RetrieveClaims(parsedToken)
 	if verifyErr != nil {
 		cc.logger.Zap.Error("Error veriefying token: ", verifyErr.Error())
 		err = errors.Unauthorized.Wrap(verifyErr, "Something went wrong")
