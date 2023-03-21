@@ -40,7 +40,7 @@ func (m JWTAuthMiddleWare) Handle() gin.HandlerFunc {
 		tokenString, err := m.jwtService.GetTokenFromHeader(c)
 		if err != nil {
 			m.logger.Zap.Error("Error getting token from header: ", err.Error())
-			err = errors.Unauthorized.Wrap(err, "Something went wrong")
+			err = errors.Unauthorized.Wrap(err, "Error getting token from header")
 			responses.HandleError(c, err)
 			c.Abort()
 			return
@@ -49,7 +49,7 @@ func (m JWTAuthMiddleWare) Handle() gin.HandlerFunc {
 		parsedToken, parseErr := m.jwtService.ParseAndVerifyToken(tokenString, m.env.JWT_ACCESS_SECRET)
 		if parseErr != nil {
 			m.logger.Zap.Error("Error parsing token: ", parseErr.Error())
-			err = errors.Unauthorized.Wrap(parseErr, "Something went wrong")
+			err = errors.Unauthorized.Wrap(parseErr, "Failed to parse and verify token")
 			responses.HandleError(c, err)
 			c.Abort()
 			return
@@ -57,8 +57,8 @@ func (m JWTAuthMiddleWare) Handle() gin.HandlerFunc {
 		// Retrieve claims
 		claims, claimsError := m.jwtService.RetrieveClaims(parsedToken)
 		if claimsError != nil {
-			m.logger.Zap.Error("Error veriefying token: ", claimsError.Error())
-			err = errors.Unauthorized.Wrap(claimsError, "Something went wrong")
+			m.logger.Zap.Error("Error retrieving claims: ", claimsError.Error())
+			err = errors.Unauthorized.Wrap(claimsError, "Failed to retrieve claims from token")
 			responses.HandleError(c, err)
 			c.Abort()
 			return
