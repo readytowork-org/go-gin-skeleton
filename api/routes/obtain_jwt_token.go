@@ -17,7 +17,7 @@ func (i ObtainJwtTokenRoutes) Setup() {
 	i.logger.Zap.Info(" Setting up jwt routes")
 	jwt := i.router.Gin.Group("/login")
 	{
-		jwt.POST("", i.jwtController.ObtainJwtToken)
+		jwt.POST("", i.jwtController.LoginUserWithJWT)
 		jwt.POST("/refresh", i.jwtController.RefreshJwtToken)
 	}
 }

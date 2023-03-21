@@ -42,7 +42,7 @@ func NewJwtAuthController(
 	}
 }
 
-func (cc JwtAuthController) ObtainJwtToken(c *gin.Context) {
+func (cc JwtAuthController) LoginUserWithJWT(c *gin.Context) {
 	reqData := dtos.JWTLoginRequestData{}
 	// Bind the request payload to a reqData struct
 	if err := c.ShouldBindJSON(&reqData); err != nil {
