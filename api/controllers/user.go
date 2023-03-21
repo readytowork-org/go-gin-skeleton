@@ -9,6 +9,7 @@ import (
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/utils"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -98,4 +99,17 @@ func (cc UserController) GetAllUsers(c *gin.Context) {
 	}
 
 	responses.JSONCount(c, http.StatusOK, users, count)
+}
+
+// GetUserProfile -> Returns logged in user profile
+func (uc UserController) GetUserProfile(c *gin.Context){
+	userID := fmt.Sprintf("%v",c.MustGet(constants.UserID))
+	user, err := uc.userService.GetOneUser(userID)
+	if err != nil {
+		uc.logger.Zap.Error("Error finding user profile", err.Error())
+		err := errors.InternalError.Wrap(err, "Failed to get users profile data")
+		responses.HandleError(c, err)
+		return
+	}
+	responses.JSON(c, http.StatusOK, user)
 }

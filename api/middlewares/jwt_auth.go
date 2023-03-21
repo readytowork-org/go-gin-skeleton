@@ -3,6 +3,7 @@ package middlewares
 import (
 	"boilerplate-api/api/responses"
 	"boilerplate-api/api/services"
+	"boilerplate-api/constants"
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
 
@@ -67,7 +68,7 @@ func (m JWTAuthMiddleWare) Handle() gin.HandlerFunc {
 			scope.SetUser(sentry.User{ID: claims.Id})
 		})
 		// Can set anything in the request context and passes the request to the next handler.
-		c.Set("user_id", claims.Id)
+		c.Set(constants.UserID, claims.Id)
 		c.Next()
 
 	}

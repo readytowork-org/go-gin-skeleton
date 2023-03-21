@@ -109,11 +109,8 @@ func (cc JwtAuthController) ObtainJwtToken(c *gin.Context) {
 		"user":               user.ToMap(),
 		"access_token":       accessToken,
 		"refresh_token":      refreshToken,
-		"access_expires_at":  accessClaims.ExpiresAt,
-		"refresh_expires_at": refreshClaims.ExpiresAt,
 	}
 	responses.SuccessJSON(c, http.StatusOK, data)
-	return
 }
 
 func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {

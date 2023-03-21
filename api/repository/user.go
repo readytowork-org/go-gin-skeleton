@@ -57,14 +57,14 @@ func (c UserRepository) GetAllUsers(pagination utils.Pagination) ([]dtos.GetUser
 	return users, totalRows, err
 }
 
-func (c UserRepository) GetOneUser(Id string) (*models.User, error) {
-	user := models.User{}
-	err := c.db.DB.Model(&user).Where("id = ?", Id).First(&user).Error
+func (c UserRepository) GetOneUser(Id string) (*dtos.GetUserResponse, error) {
+	user_model := models.User{}
+	var user dtos.GetUserResponse
+	err := c.db.DB.Model(&user_model).Where("id = ?", Id).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
-
 }
 
 func (c UserRepository) GetOneUserWithEmail(Email string) (*models.User, error) {
@@ -74,7 +74,6 @@ func (c UserRepository) GetOneUserWithEmail(Email string) (*models.User, error) 
 		return nil, err
 	}
 	return &user, nil
-
 }
 
 func (c UserRepository) GetOneUserWithPhone(Phone string) (*models.User, error) {

@@ -24,6 +24,7 @@ func (i UserRoutes) Setup() {
 		users.GET("", i.userController.GetAllUsers)
 		users.POST("", i.trxMiddleware.DBTransactionHandle(), i.userController.CreateUser)
 	}
+	i.router.Gin.GET("/profile",i.jwtMiddleware.Handle(), i.userController.GetUserProfile)
 }
 
 // NewUserRoutes -> creates new user controller
