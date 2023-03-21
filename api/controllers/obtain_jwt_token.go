@@ -42,7 +42,7 @@ func NewJwtAuthController(
 	}
 }
 
-func (cc JwtAuthController) ObtainJwtToken(c *gin.Context) {
+func (cc JwtAuthController) LoginUserWithJWT(c *gin.Context) {
 	reqData := dtos.JWTLoginRequestData{}
 	// Bind the request payload to a reqData struct
 	if err := c.ShouldBindJSON(&reqData); err != nil {
@@ -78,9 +78,9 @@ func (cc JwtAuthController) ObtainJwtToken(c *gin.Context) {
 
 	// Create a new JWT access claims object
 	accessClaims := services.JWTClaims{
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * time.Duration(cc.env.JWT_ACCESS_TOKEN_EXPIRES_AT)).Unix(),
-			Id:        fmt.Sprintf("%v", user.ID),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(cc.env.JWT_ACCESS_TOKEN_EXPIRES_AT))),
+			ID:        fmt.Sprintf("%v", user.ID),
 		},
 		//Add other claims
 	}
@@ -93,9 +93,9 @@ func (cc JwtAuthController) ObtainJwtToken(c *gin.Context) {
 	}
 	// Create a new JWT refresh claims object
 	refreshClaims := services.JWTClaims{
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * time.Duration(cc.env.JWT_REFRESH_TOKEN_EXPIRES_AT)).Unix(),
-			Id:        fmt.Sprintf("%v", user.ID),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * time.Duration(cc.env.JWT_REFRESH_TOKEN_EXPIRES_AT))),
+			ID:        fmt.Sprintf("%v", user.ID),
 		},
 	}
 	// Create a new JWT Refresh token using the claims and the secret key
@@ -121,14 +121,14 @@ func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
 		responses.HandleError(c, err)
 		return
 	}
-	parsedToken, parseErr := cc.jwtService.ParseToken(tokenString, cc.env.JWT_REFRESH_SECRET)
+	parsedToken, parseErr := cc.jwtService.ParseAndVerifyToken(tokenString, cc.env.JWT_REFRESH_SECRET)
 	if parseErr != nil {
 		cc.logger.Zap.Error("Error parsing token: ", parseErr.Error())
 		err = errors.Unauthorized.Wrap(parseErr, "Something went wrong")
 		responses.HandleError(c, err)
 		return
 	}
-	claims, verifyErr := cc.jwtService.VerifyToken(parsedToken)
+	claims, verifyErr := cc.jwtService.RetrieveClaims(parsedToken)
 	if verifyErr != nil {
 		cc.logger.Zap.Error("Error veriefying token: ", verifyErr.Error())
 		err = errors.Unauthorized.Wrap(verifyErr, "Something went wrong")
@@ -137,9 +137,9 @@ func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
 	}
 	// Create a new JWT Access claims
 	accessClaims := services.JWTClaims{
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * time.Duration(cc.env.JWT_ACCESS_TOKEN_EXPIRES_AT)).Unix(),
-			Id:        fmt.Sprintf("%v", claims.Id),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(cc.env.JWT_ACCESS_TOKEN_EXPIRES_AT))),
+			ID:        fmt.Sprintf("%v", claims.ID),
 		},
 		// Add other claims
 	}
@@ -155,6 +155,4 @@ func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
 		"expires_at":   accessClaims.ExpiresAt,
 	}
 	responses.SuccessJSON(c, http.StatusOK, data)
-	return
-
 }

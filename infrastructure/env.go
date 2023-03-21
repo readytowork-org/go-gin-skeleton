@@ -25,8 +25,8 @@ type Env struct {
 
 	MailClientID     string `mapstructure:"MAIL_CLIENT_ID"`
 	MailClientSecret string `mapstructure:"MAIL_CLIENT_SECRET"`
-	MailAccesstoken  string `mapstructure:"MailAccessToken"`
-	MailRefreshToken string `mapstructure:"MailRefreshToken"`
+	MailAccesstoken  string `mapstructure:"MAIL_ACCESS_TOKEN"`
+	MailRefreshToken string `mapstructure:"MAIL_REFRESH_TOKEN"`
 
 	AWS_S3_REGION  string `mapstructure:"AWS_S3_REGION"`
 	AWS_S3_BUCKET  string `mapstructure:"AWS_S3_BUCKET"`

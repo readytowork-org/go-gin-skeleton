@@ -25,7 +25,7 @@ func NewJWTAuthService(
 }
 
 type JWTClaims struct {
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 	// ...other claims
 }
 
@@ -49,7 +49,7 @@ func (m JWTAuthService) GetTokenFromHeader(c *gin.Context) (string, error) {
 
 }
 
-func (m JWTAuthService) ParseToken(tokenString, secret string) (*jwt.Token, error) {
+func (m JWTAuthService) ParseAndVerifyToken(tokenString, secret string) (*jwt.Token, error) {
 	// Parse the token using the secret key
 	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil
@@ -67,7 +67,7 @@ func (m JWTAuthService) ParseToken(tokenString, secret string) (*jwt.Token, erro
 
 }
 
-func (m JWTAuthService) VerifyToken(token *jwt.Token) (*JWTClaims, error) {
+func (m JWTAuthService) RetrieveClaims(token *jwt.Token) (*JWTClaims, error) {
 	// Verfify token
 	claims, ok := token.Claims.(*JWTClaims)
 	if !ok || !token.Valid {
