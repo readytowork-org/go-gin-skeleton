@@ -25,7 +25,7 @@ func NewJWTAuthService(
 }
 
 type JWTClaims struct {
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 	// ...other claims
 }
 

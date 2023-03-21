@@ -64,10 +64,10 @@ func (m JWTAuthMiddleWare) Handle() gin.HandlerFunc {
 		}
 		// ser user to the scope
 		sentry.ConfigureScope(func(scope *sentry.Scope) {
-			scope.SetUser(sentry.User{ID: claims.Id})
+			scope.SetUser(sentry.User{ID: claims.ID})
 		})
 		// Can set anything in the request context and passes the request to the next handler.
-		c.Set("user_id", claims.Id)
+		c.Set("user_id", claims.ID)
 		c.Next()
 
 	}

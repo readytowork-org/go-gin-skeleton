@@ -78,9 +78,9 @@ func (cc JwtAuthController) ObtainJwtToken(c *gin.Context) {
 
 	// Create a new JWT access claims object
 	accessClaims := services.JWTClaims{
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * time.Duration(cc.env.JWT_ACCESS_TOKEN_EXPIRES_AT)).Unix(),
-			Id:        fmt.Sprintf("%v", user.ID),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(cc.env.JWT_ACCESS_TOKEN_EXPIRES_AT))),
+			ID:        fmt.Sprintf("%v", user.ID),
 		},
 		//Add other claims
 	}
@@ -93,9 +93,9 @@ func (cc JwtAuthController) ObtainJwtToken(c *gin.Context) {
 	}
 	// Create a new JWT refresh claims object
 	refreshClaims := services.JWTClaims{
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * time.Duration(cc.env.JWT_REFRESH_TOKEN_EXPIRES_AT)).Unix(),
-			Id:        fmt.Sprintf("%v", user.ID),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * time.Duration(cc.env.JWT_REFRESH_TOKEN_EXPIRES_AT))),
+			ID:        fmt.Sprintf("%v", user.ID),
 		},
 	}
 	// Create a new JWT Refresh token using the claims and the secret key
@@ -137,9 +137,9 @@ func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
 	}
 	// Create a new JWT Access claims
 	accessClaims := services.JWTClaims{
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * time.Duration(cc.env.JWT_ACCESS_TOKEN_EXPIRES_AT)).Unix(),
-			Id:        fmt.Sprintf("%v", claims.Id),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(cc.env.JWT_ACCESS_TOKEN_EXPIRES_AT))),
+			ID:        fmt.Sprintf("%v", claims.ID),
 		},
 		// Add other claims
 	}
@@ -155,6 +155,4 @@ func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
 		"expires_at":   accessClaims.ExpiresAt,
 	}
 	responses.SuccessJSON(c, http.StatusOK, data)
-	return
-
 }
