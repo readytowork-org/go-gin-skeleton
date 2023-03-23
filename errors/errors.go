@@ -18,13 +18,13 @@ const (
 	Conflict      = HttpErrorType(http.StatusConflict)
 	InternalError = HttpErrorType(http.StatusInternalServerError)
 	Unavailable   = HttpErrorType(http.StatusServiceUnavailable)
+	TooManyRequests = HttpErrorType(http.StatusTooManyRequests)
 )
 
 type responseError struct {
 	httpErrorType HttpErrorType
 	originalError error
 	customMessage CustomMessage
-	contextInfo   ErrorContext
 	context       []ErrorContext
 }
 

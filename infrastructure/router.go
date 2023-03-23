@@ -32,10 +32,6 @@ func NewRouter(env Env) Router {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	if env.Environment == "production" {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
 	httpRouter := gin.Default()
 
 	httpRouter.Use(cors.New(cors.Config{
