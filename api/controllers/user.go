@@ -3,6 +3,7 @@ package controllers
 import (
 	"boilerplate-api/api/responses"
 	"boilerplate-api/api/services"
+	"boilerplate-api/api/validators"
 	"boilerplate-api/constants"
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
@@ -19,6 +20,7 @@ type UserController struct {
 	logger      infrastructure.Logger
 	userService services.UserService
 	env         infrastructure.Env
+	validator   validators.UserProfileValidator
 }
 
 // NewUserController -> constructor
@@ -26,11 +28,13 @@ func NewUserController(
 	logger infrastructure.Logger,
 	userService services.UserService,
 	env infrastructure.Env,
+	validator validators.UserProfileValidator,
 ) UserController {
 	return UserController{
 		logger:      logger,
 		userService: userService,
 		env:         env,
+		validator:   validator,
 	}
 }
 
@@ -45,7 +49,13 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		responses.HandleError(c, err)
 		return
 	}
-
+	if validationErr := cc.validator.Validate.Struct(user); validationErr != nil {
+		err := errors.BadRequest.Wrap(validationErr, "Validation error")
+		err = errors.SetCustomMessage(err, "Invalid input information")
+		err = errors.AddErrorContextBlock(err, cc.validator.GenerateValidationResponse(validationErr))
+		responses.HandleError(c, err)
+		return
+	}
 	if err := cc.userService.WithTrx(trx).CreateUser(user); err != nil {
 		cc.logger.Zap.Error("Error [CreateUser] [db CreateUser]: ", err.Error())
 		err := errors.InternalError.Wrap(err, "Failed to create user")
@@ -53,7 +63,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		return
 	}
 
-	responses.SuccessJSON(c, http.StatusOK, "User Created Sucessfully")
+	responses.SuccessJSON(c, http.StatusOK, &user)
 }
 
 // GetAllUser -> Get All User
