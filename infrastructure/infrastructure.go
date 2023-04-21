@@ -17,4 +17,5 @@ var Module = fx.Options(
 	fx.Provide(NewGmailService),
 	fx.Provide(NewAWSConfig),
 	fx.Provide(NewS3Client),
+	fx.Provide(NewGCPBilling),
 )

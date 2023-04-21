@@ -8,6 +8,7 @@ var Module = fx.Options(
 	fx.Provide(NewUtilityRoutes),
 	fx.Provide(NewObtainJwtTokenRoutes),
 	fx.Provide(NewUserRoutes),
+	fx.Provide(NewGCPBillingRoutes),
 )
 
 // Routes contains multiple routes
@@ -22,12 +23,14 @@ type Route interface {
 func NewRoutes(
 	utilityRoutes UtilityRoutes,
 	userRoutes UserRoutes,
+	gCPBillingRoutes GCPBillingRoutes,
 	obtainJwtTokenRoutes ObtainJwtTokenRoutes,
 ) Routes {
 	return Routes{
 		utilityRoutes,
 		obtainJwtTokenRoutes,
 		userRoutes,
+		gCPBillingRoutes,
 	}
 }
 

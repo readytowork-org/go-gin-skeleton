@@ -16,16 +16,16 @@ func NewBucketStorage(logger Logger, env Env) *storage.Client {
 	}
 	client, err := storage.NewClient(ctx, option.WithCredentialsFile("serviceAccountKey.json"))
 	if err != nil {
-		logger.Zap.Fatal(err.Error())
+		logger.Zap.Errorf(err.Error())
 	}
 
 	bucket := client.Bucket(bucketName)
 	_, err = bucket.Attrs(ctx)
 	if err == storage.ErrBucketNotExist {
-		logger.Zap.Fatalf("Provided bucket %v doesn't exists", bucketName)
+		logger.Zap.Errorf("Provided bucket %v doesn't exists", bucketName)
 	}
 	if err != nil {
-		logger.Zap.Fatalf("Cloud bucket error: %v", err.Error())
+		logger.Zap.Errorf("Cloud bucket error: %v", err.Error())
 	}
 	bucketAttrsToUpdate := storage.BucketAttrsToUpdate{
 		CORS: []storage.CORS{
@@ -37,7 +37,7 @@ func NewBucketStorage(logger Logger, env Env) *storage.Client {
 			}},
 	}
 	if _, err := bucket.Update(ctx, bucketAttrsToUpdate); err != nil {
-		logger.Zap.Fatalf("Cloud bucket update error: %v", err.Error())
+		logger.Zap.Errorf("Cloud bucket update error: %v", err.Error())
 	}
 	return client
 }
