@@ -6,7 +6,7 @@ dev:
 migrate-up:
 		$(MIGRATE) up
 migrate-down:
-		$(MIGRATE) down 
+		$(MIGRATE) down
 force:
 		@read -p  "Which version do you want to force?" VERSION; \
 		$(MIGRATE) force $$VERSION
@@ -21,6 +21,9 @@ drop:
 create:
 		@read -p  "What is the name of migration?" NAME; \
 		${MIGRATE} create -ext sql -seq -dir migration  $$NAME
+
+swag-generate:
+		swag init --parseDependency --parseInternal
 
 crud:
 	bash automate/scripts/crud.sh

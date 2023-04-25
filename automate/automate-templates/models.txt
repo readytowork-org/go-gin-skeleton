@@ -12,7 +12,7 @@ func (c {{ucresource}}) TableName() string {
 }
 
 // ToMap ->  maps {{plcresource}}
-func (c *{{ucresource}}) ToMap() map[string]interface{} {
+func (c {{ucresource}}) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"id":              c.ID,
 		"title":           c.Title,

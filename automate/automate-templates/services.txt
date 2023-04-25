@@ -12,7 +12,7 @@ type {{ucresource}}Service struct {
 	repository repository.{{ucresource}}Repository
 }
 
-// New{{ucresource}}Service  -> creates a new {{ucresource}}service
+// New{{ucresource}}Service  -> creates a new {{ucresource}}Service
 func New{{ucresource}}Service(repository repository.{{ucresource}}Repository) {{ucresource}}Service {
 	return {{ucresource}}Service{
 		repository: repository,

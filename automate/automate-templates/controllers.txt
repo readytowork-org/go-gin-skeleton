@@ -31,6 +31,14 @@ func New{{ucresource}}Controller(
 }
 
 // Create{{ucresource}} -> Create {{ucresource}}
+// @Summary				Create {{ucresource}}
+// @Description			Create {{ucresource}}
+// @Param				JSON body string true "Enter JSON" SchemaExample()
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Produce				application/json
+// @Tags				{{ucresource}}
+// @Success				200 {object} responses.Success "OK"
+// @Router				/{{pluralresourcetable}} [post]
 func (cc {{ucresource}}Controller) Create{{ucresource}}(c *gin.Context) {
 	{{lcresource}} := models.{{ucresource}}{}
 
@@ -52,38 +60,62 @@ func (cc {{ucresource}}Controller) Create{{ucresource}}(c *gin.Context) {
 }
 
 // GetAll{{ucresource}} -> Get All {{ucresource}}
+// @Summary				Get all {{ucresource}}.
+// @Param				pageSize query string false "4"
+// @Param				page query string false "Page no"
+// @Param				keyword query string false "search by name"
+// @Description			Return all the {{ucresource}}
+// @Produce				application/json
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Tags				{{ucresource}}
+// @Success 			200 {array} models.{{ucresource}}
+// @Router				/{{pluralresourcetable}} [get]
 func (cc {{ucresource}}Controller) GetAll{{ucresource}}(c *gin.Context) {
-
 	pagination := utils.BuildPagination(c)
 	pagination.Sort = "created_at desc"
-	{{plcresource}}, count, err := cc.{{ucresource}}Service.GetAll{{ucresource}}(pagination)
 
+	{{plcresource}}, count, err := cc.{{ucresource}}Service.GetAll{{ucresource}}(pagination)
 	if err != nil {
 		cc.logger.Zap.Error("Error finding {{ucresource}} records", err.Error())
 		err := errors.InternalError.Wrap(err, "Failed To Find {{ucresource}}")
 		responses.HandleError(c, err)
 		return
 	}
-	responses.JSONCount(c, http.StatusOK, {{plcresource}}, count)
 
+	responses.JSONCount(c, http.StatusOK, {{plcresource}}, count)
 }
 
 // GetOne{{ucresource}} -> Get One {{ucresource}}
+// @Summary				Get one {{ucresource}} by id
+// @Description			Get one {{ucresource}} by id
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Produce				application/json
+// @Tags				{{ucresource}}
+// @Success 			200 {object} models.Admin
+// @Router				/{{pluralresourcetable}}/{id} [get]
 func (cc {{ucresource}}Controller) GetOne{{ucresource}}(c *gin.Context) {
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-	{{lcresource}}, err := cc.{{ucresource}}Service.GetOne{{ucresource}}(ID)
 
+	{{lcresource}}, err := cc.{{ucresource}}Service.GetOne{{ucresource}}(ID)
 	if err != nil {
 		cc.logger.Zap.Error("Error [GetOne{{ucresource}}] [db GetOne{{ucresource}}]: ", err.Error())
 		err := errors.InternalError.Wrap(err, "Failed To Find {{ucresource}}")
 		responses.HandleError(c, err)
 		return
 	}
-	responses.JSON(c, http.StatusOK, {{lcresource}})
 
+	responses.JSON(c, http.StatusOK, {{lcresource}})
 }
 
 // UpdateOne{{ucresource}} -> Update One {{ucresource}} By Id
+// @Summary				Update One {{ucresource}} By Id
+// @Description			Update One {{ucresource}} By Id
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Param				JSON body string true "Enter JSON" SchemaExample()
+// @Produce				application/json
+// @Tags				{{ucresource}}
+// @Success 			200 {object} responses.Success
+// @Router				/{{pluralresourcetable}}/{id} [put]
 func (cc {{ucresource}}Controller) UpdateOne{{ucresource}}(c *gin.Context) {
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 	{{lcresource}} := models.{{ucresource}}{}
@@ -107,10 +139,17 @@ func (cc {{ucresource}}Controller) UpdateOne{{ucresource}}(c *gin.Context) {
 }
 
 // DeleteOne{{ucresource}} -> Delete One {{ucresource}} By Id
+// @Summary				Delete One {{ucresource}} By Id
+// @Description			Delete One {{ucresource}} By Id
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Produce				application/json
+// @Tags				{{ucresource}}
+// @Success 			200 {object} responses.Success
+// @Router				/{{pluralresourcetable}}/{id} [delete]
 func (cc {{ucresource}}Controller) DeleteOne{{ucresource}}(c *gin.Context) {
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-	err := cc.{{ucresource}}Service.DeleteOne{{ucresource}}(ID)
 
+	err := cc.{{ucresource}}Service.DeleteOne{{ucresource}}(ID)
 	if err != nil {
 		cc.logger.Zap.Error("Error [DeleteOne{{ucresource}}] [db DeleteOne{{ucresource}}]: ", err.Error())
 		err := errors.InternalError.Wrap(err, "Failed to Delete {{ucresource}}")
