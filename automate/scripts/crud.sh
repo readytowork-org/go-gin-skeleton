@@ -8,6 +8,10 @@ first_lower () {
   echo `echo $1 | awk '{$1=tolower(substr($1,0,1))substr($1,2)}1'`
 }
 
+dash_case () {
+  echo `echo $1 | sed -e 's/_\([a-z]\)/-\1/g'`
+}
+
 printf "\n *** Go Gin GORM Scaffold Generator *** \n"
 printf "This scaffolder assumes that you are using RTW clean-gin template.\n"
 echo "Enter resource name(eg: ProductCategory):"; read uc_resource
@@ -17,6 +21,7 @@ echo "Enter plural resource name(eg: ProductCategories):"; read plural_resource
 
 lc_resource=$(first_lower $uc_resource)
 plc_resource=$(first_lower $plural_resource)
+route_name=$(dash_case $plural_resource_table)
 ROOT=$(pwd)
 
 printf "\n* Generating Scaffold for ${uc_resource} *\n\n"
@@ -33,6 +38,7 @@ placeholder_value_hash=(
   "{{projectname}}:$project_name"
   "{{resourcetable}}:$resource_table"
   "{{pluralresourcetable}}:$plural_resource_table"
+  "{{route_name}}:$route_name"
 )
 entity_path_hash=(
   "models:${ROOT}/models"
@@ -42,7 +48,7 @@ entity_path_hash=(
   "repository:${ROOT}/api/repository"
 )
 
-# if files already exists then terminate the process 
+# if files already exists then terminate the process
 for str in ${entity_path_hash[@]}; do
     FILE="${entity##*:}/${resource_table}.go"
     if test -f "$FILE"; then
@@ -55,13 +61,13 @@ done
 for entity in "${entity_path_hash[@]}"; do
   entity_name="${entity%%:*}"
   entity_path="${entity##*:}"
-  file_to_write="$entity_path/${resource_table}.go" 
+  file_to_write="$entity_path/${resource_table}.go"
 
   cat "${ROOT}/automate/automate-templates/${entity_name}.txt" >> $file_to_write
   for item in "${placeholder_value_hash[@]}"; do
     placeholder="${item%%:*}"
     value="${item##*:}"
-    
+
     if [[ $os_name == "Darwin" ]];
     then
         sed -i "" "s/$placeholder/$value/g" $file_to_write
@@ -100,7 +106,7 @@ then
   sed -i "" "s/func NewRoutes(/func NewRoutes(\n\t ${lc_resource}Routes ${uc_resource}Routes,/g" $fx_route_path
   sed -i "" "s/return Routes{/return Routes{\n\t ${lc_resource}Routes,/g" $fx_route_path
   sed -i "" "s/fx.Provide(NewRoutes),/fx.Provide(NewRoutes),\n  fx.Provide(New${uc_resource}Routes),/g" $fx_route_path
-else 
+else
   sed -i  "s/func NewRoutes(/func NewRoutes(\n\t ${lc_resource}Routes ${uc_resource}Routes,/g" $fx_route_path
   sed -i  "s/return Routes{/return Routes{\n\t ${lc_resource}Routes,/g" $fx_route_path
   sed -i  "s/fx.Provide(NewRoutes),/fx.Provide(NewRoutes),\n  fx.Provide(New${uc_resource}Routes),/g" $fx_route_path
