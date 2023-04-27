@@ -46,7 +46,7 @@ func bootstrap(
 	appStop := func(context.Context) error {
 		logger.Zap.Info("Stopping Application")
 		conn, _ := database.DB.DB()
-		conn.Close()
+		_ = conn.Close()
 		return nil
 	}
 
@@ -73,7 +73,7 @@ func bootstrap(
 
 			logger.Zap.Info("Migrating DB schema...")
 			go func() {
-				if env.Environment == "production"{
+				if env.Environment == "production" {
 					migrations.Migrate()
 				}
 				middlewares.Setup()
@@ -81,9 +81,9 @@ func bootstrap(
 				logger.Zap.Info("🌱 seeding data...")
 				seeds.Run()
 				if env.ServerPort == "" {
-					handler.Gin.Run()
+					_ = handler.Gin.Run()
 				} else {
-					handler.Gin.Run(":" + env.ServerPort)
+					_ = handler.Gin.Run(":" + env.ServerPort)
 				}
 			}()
 			return nil

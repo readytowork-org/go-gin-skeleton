@@ -1,36 +1,36 @@
 package repository
 
 import (
-	"{{projectname}}/infrastructure"
-	"{{projectname}}/models"
-	"{{projectname}}/utils"
+	"{{project_name}}/infrastructure"
+	"{{project_name}}/models"
+	"{{project_name}}/utils"
 )
 
-// {{ucresource}}Repository database structure
-type {{ucresource}}Repository struct {
+// {{uc_resource}}Repository database structure
+type {{uc_resource}}Repository struct {
 	db     infrastructure.Database
 	logger infrastructure.Logger
 }
 
-// New{{ucresource}}Repository creates a new {{ucresource}} repository
-func New{{ucresource}}Repository(db infrastructure.Database, logger infrastructure.Logger) {{ucresource}}Repository {
-	return {{ucresource}}Repository{
+// New{{uc_resource}}Repository creates a new {{uc_resource}} repository
+func New{{uc_resource}}Repository(db infrastructure.Database, logger infrastructure.Logger) {{uc_resource}}Repository {
+	return {{uc_resource}}Repository{
 		db:     db,
 		logger: logger,
 	}
 }
 
 
-// Create {{ucresource}}
-func (c {{ucresource}}Repository) Create({{ucresource}} models.{{ucresource}}) (models.{{ucresource}}, error) {
-	return {{ucresource}}, c.db.DB.Create(&{{ucresource}}).Error
+// Create {{uc_resource}}
+func (c {{uc_resource}}Repository) Create({{uc_resource}} models.{{uc_resource}}) (models.{{uc_resource}}, error) {
+	return {{uc_resource}}, c.db.DB.Create(&{{uc_resource}}).Error
 }
 
-// GetAll{{ucresource}} -> Get All {{plcresource}}
-func (c {{ucresource}}Repository) GetAll{{ucresource}}(pagination utils.Pagination) ([]models.{{ucresource}}, int64, error) {
-	var {{plcresource}} []models.{{ucresource}}
+// GetAll{{uc_resource}} Get All {{plc_resource}}
+func (c {{uc_resource}}Repository) GetAll{{uc_resource}}(pagination utils.Pagination) ([]models.{{uc_resource}}, int64, error) {
+	var {{plc_resource}} []models.{{uc_resource}}
 	var totalRows int64 = 0
-	queryBuilder := c.db.DB.Model(&models.{{ucresource}}{}).Offset(pagination.Offset).Order(pagination.Sort)
+	queryBuilder := c.db.DB.Model(&models.{{uc_resource}}{}).Offset(pagination.Offset).Order(pagination.Sort)
 
 	if !pagination.All{
 		queryBuilder=queryBuilder.Limit(pagination.PageSize)
@@ -38,37 +38,37 @@ func (c {{ucresource}}Repository) GetAll{{ucresource}}(pagination utils.Paginati
 
 	if pagination.Keyword != "" {
 		searchQuery := "%" + pagination.Keyword + "%"
-		queryBuilder.Where(c.db.DB.Where("`{{resourcetable}}`.`title` LIKE ?", searchQuery))
+		queryBuilder.Where(c.db.DB.Where("`{{resource_table}}`.`title` LIKE ?", searchQuery))
 	}
 
 	err := queryBuilder.
-		Find(&{{plcresource}}).
+		Find(&{{plc_resource}}).
 		Offset(-1).
 		Limit(-1).
 		Count(&totalRows).Error
-	return {{plcresource}}, totalRows, err
+	return {{plc_resource}}, totalRows, err
 }
 
-// GetOne{{ucresource}} -> Get One {{ucresource}} By Id
-func (c {{ucresource}}Repository) GetOne{{ucresource}}(ID int64) (models.{{ucresource}}, error) {
-	{{ucresource}} := models.{{ucresource}}{}
-	return {{ucresource}}, c.db.DB.
-		Where("id = ?", ID).First(&{{ucresource}}).Error
+// GetOne{{uc_resource}} Get One {{uc_resource}} By Id
+func (c {{uc_resource}}Repository) GetOne{{uc_resource}}(ID int64) (models.{{uc_resource}}, error) {
+	{{uc_resource}} := models.{{uc_resource}}{}
+	return {{uc_resource}}, c.db.DB.
+		Where("id = ?", ID).First(&{{uc_resource}}).Error
 }
 
-// UpdateOne{{ucresource}} -> Update One {{ucresource}} By Id
-func (c {{ucresource}}Repository) UpdateOne{{ucresource}}({{ucresource}} models.{{ucresource}}) error {
-	return c.db.DB.Model(&models.{{ucresource}}{}).
-		Where("id = ?", {{ucresource}}.ID).
+// UpdateOne{{uc_resource}} Update One {{uc_resource}} By Id
+func (c {{uc_resource}}Repository) UpdateOne{{uc_resource}}({{uc_resource}} models.{{uc_resource}}) error {
+	return c.db.DB.Model(&models.{{uc_resource}}{}).
+		Where("id = ?", {{uc_resource}}.ID).
 		Updates(map[string]interface{}{
-			"title":           {{ucresource}}.Title,
+			"title":           {{uc_resource}}.Title,
 		}).Error
 }
 
-// DeleteOne{{ucresource}} -> Delete One {{ucresource}} By Id
-func (c {{ucresource}}Repository) DeleteOne{{ucresource}}(ID int64) error {
+// DeleteOne{{uc_resource}} Delete One {{uc_resource}} By Id
+func (c {{uc_resource}}Repository) DeleteOne{{uc_resource}}(ID int64) error {
 	return c.db.DB.
 		Where("id = ?", ID).
-		Delete(&models.{{ucresource}}{}).
+		Delete(&models.{{uc_resource}}{}).
 		Error
 }

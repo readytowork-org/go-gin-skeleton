@@ -1,10 +1,10 @@
 package middlewares
 
 import (
-	"boilerplate-api/api/responses"
 	"boilerplate-api/constants"
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
+	"boilerplate-api/responses"
 	"strconv"
 	"time"
 
@@ -40,8 +40,8 @@ func (rl RateLimitMiddleware) HandleRateLimit(limit int64, period time.Duration)
 
 		rl.logger.Zap.Info("Setting up rate limit middleware...")
 
-		// Limit -> # of API Calls
-		// Period -> in a given time frame
+		// Limit # of API Calls
+		// Period in a given time frame
 		// setting default values
 		opt := RateLimitOption{
 			period: period,
@@ -70,9 +70,9 @@ func (rl RateLimitMiddleware) HandleRateLimit(limit int64, period time.Duration)
 
 		// Limit exceeded
 		if context.Reached {
-		err := errors.TooManyRequests.New("Too many request")
-		err = errors.SetCustomMessage(err, "Rate limit has exceeded")
-		responses.HandleError(c, err)
+			err := errors.TooManyRequests.New("Too many request")
+			err = errors.SetCustomMessage(err, "Rate limit has exceeded")
+			responses.HandleError(c, err)
 			c.Abort()
 			return
 		}

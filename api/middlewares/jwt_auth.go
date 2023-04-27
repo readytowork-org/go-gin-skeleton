@@ -1,11 +1,11 @@
 package middlewares
 
 import (
-	"boilerplate-api/api/responses"
 	"boilerplate-api/api/services"
 	"boilerplate-api/constants"
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
+	"boilerplate-api/responses"
 
 	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
@@ -33,7 +33,7 @@ func NewJWTAuthMiddleWare(
 	}
 }
 
-// Authenticate user with jwt using this middleware
+// Handle user with jwt using this middleware
 func (m JWTAuthMiddleWare) Handle() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//Getting token from header
@@ -46,7 +46,7 @@ func (m JWTAuthMiddleWare) Handle() gin.HandlerFunc {
 			return
 		}
 		// Parsing and Verifying token
-		parsedToken, parseErr := m.jwtService.ParseAndVerifyToken(tokenString, m.env.JWT_ACCESS_SECRET)
+		parsedToken, parseErr := m.jwtService.ParseAndVerifyToken(tokenString, m.env.JwtAccessSecret)
 		if parseErr != nil {
 			m.logger.Zap.Error("Error parsing token: ", parseErr.Error())
 			err = errors.Unauthorized.Wrap(parseErr, "Failed to parse and verify token")

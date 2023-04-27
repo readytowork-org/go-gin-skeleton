@@ -7,7 +7,7 @@ import (
 	"boilerplate-api/infrastructure"
 )
 
-// UserRoutes -> struct
+// UserRoutes struct
 type UserRoutes struct {
 	logger              infrastructure.Logger
 	router              infrastructure.Router
@@ -18,7 +18,7 @@ type UserRoutes struct {
 	rateLimitMiddleware middlewares.RateLimitMiddleware
 }
 
-// NewUserRoutes -> creates new user controller
+// NewUserRoutes creates new user controller
 func NewUserRoutes(
 	logger infrastructure.Logger,
 	router infrastructure.Router,

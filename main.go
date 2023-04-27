@@ -8,6 +8,6 @@ import (
 )
 
 func main() {
-	godotenv.Load()
+	_ = godotenv.Load()
 	fx.New(bootstrap.Module).Run()
 }

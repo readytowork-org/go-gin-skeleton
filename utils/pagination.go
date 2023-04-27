@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Pagination -> struct for Pagination
+// Pagination struct for Pagination
 type Pagination struct {
 	Sort     string `form:"sort"`
 	Keyword  string `form:"keyword"`
@@ -15,7 +15,7 @@ type Pagination struct {
 	PageSize int
 }
 
-// BuildPagination -> builds the pagination
+// BuildPagination builds the pagination
 func BuildPagination(c *gin.Context) (pagination Pagination) {
 	_ = c.BindQuery(&pagination)
 

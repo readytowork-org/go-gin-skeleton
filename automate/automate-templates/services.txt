@@ -1,46 +1,46 @@
 package services
 
 import (
-	"{{projectname}}/api/repository"
-	"{{projectname}}/models"
-	"{{projectname}}/utils"
+	"{{project_name}}/api/repository"
+	"{{project_name}}/models"
+	"{{project_name}}/utils"
 
 )
 
-// {{ucresource}}Service -> struct
-type {{ucresource}}Service struct {
-	repository repository.{{ucresource}}Repository
+// {{uc_resource}}Service struct
+type {{uc_resource}}Service struct {
+	repository repository.{{uc_resource}}Repository
 }
 
-// New{{ucresource}}Service  -> creates a new {{ucresource}}Service
-func New{{ucresource}}Service(repository repository.{{ucresource}}Repository) {{ucresource}}Service {
-	return {{ucresource}}Service{
+// New{{uc_resource}}Service creates a new {{uc_resource}}Service
+func New{{uc_resource}}Service(repository repository.{{uc_resource}}Repository) {{uc_resource}}Service {
+	return {{uc_resource}}Service{
 		repository: repository,
 	}
 }
 
-// Create{{ucresource}} -> call to create the {{ucresource}}
-func (c {{ucresource}}Service) Create{{ucresource}}({{lcresource}} models.{{ucresource}}) (models.{{ucresource}}, error) {
-	return c.repository.Create({{lcresource}})
+// Create{{uc_resource}} call to create the {{uc_resource}}
+func (c {{uc_resource}}Service) Create{{uc_resource}}({{lc_resource}} models.{{uc_resource}}) (models.{{uc_resource}}, error) {
+	return c.repository.Create({{lc_resource}})
 }
 
-// GetAll{{ucresource}} -> call to create the {{ucresource}}
-func (c {{ucresource}}Service) GetAll{{ucresource}}(pagination utils.Pagination) ([]models.{{ucresource}}, int64, error) {
-	return c.repository.GetAll{{ucresource}}(pagination)
+// GetAll{{uc_resource}} call to create the {{uc_resource}}
+func (c {{uc_resource}}Service) GetAll{{uc_resource}}(pagination utils.Pagination) ([]models.{{uc_resource}}, int64, error) {
+	return c.repository.GetAll{{uc_resource}}(pagination)
 }
 
-// GetOne{{ucresource}} -> Get One {{ucresource}} By Id
-func (c {{ucresource}}Service) GetOne{{ucresource}}(ID int64) (models.{{ucresource}}, error) {
-	return c.repository.GetOne{{ucresource}}(ID)
+// GetOne{{uc_resource}} Get One {{uc_resource}} By Id
+func (c {{uc_resource}}Service) GetOne{{uc_resource}}(ID int64) (models.{{uc_resource}}, error) {
+	return c.repository.GetOne{{uc_resource}}(ID)
 }
 
-// UpdateOne{{ucresource}} -> Update One {{ucresource}} By Id
-func (c {{ucresource}}Service) UpdateOne{{ucresource}}({{lcresource}} models.{{ucresource}}) error {
-	return c.repository.UpdateOne{{ucresource}}({{lcresource}})
+// UpdateOne{{uc_resource}} Update One {{uc_resource}} By Id
+func (c {{uc_resource}}Service) UpdateOne{{uc_resource}}({{lc_resource}} models.{{uc_resource}}) error {
+	return c.repository.UpdateOne{{uc_resource}}({{lc_resource}})
 }
 
-// DeleteOne{{ucresource}} -> Delete One {{ucresource}} By Id
-func (c {{ucresource}}Service) DeleteOne{{ucresource}}(ID int64) error {
-	return c.repository.DeleteOne{{ucresource}}(ID)
+// DeleteOne{{uc_resource}} Delete One {{uc_resource}} By Id
+func (c {{uc_resource}}Service) DeleteOne{{uc_resource}}(ID int64) error {
+	return c.repository.DeleteOne{{uc_resource}}(ID)
 
 }

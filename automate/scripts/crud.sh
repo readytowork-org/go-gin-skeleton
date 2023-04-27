@@ -32,12 +32,12 @@ read -r _ project_name _ < go.mod
 project_name=$(echo $project_name | tr -d '\r')
 
 placeholder_value_hash=(
-  "{{ucresource}}:$uc_resource"
-  "{{plcresource}}:$plc_resource"
-  "{{lcresource}}:$lc_resource"
-  "{{projectname}}:$project_name"
-  "{{resourcetable}}:$resource_table"
-  "{{pluralresourcetable}}:$plural_resource_table"
+  "{{uc_resource}}:$uc_resource"
+  "{{plc_resource}}:$plc_resource"
+  "{{lc_resource}}:$lc_resource"
+  "{{project_name}}:$project_name"
+  "{{resource_table}}:$resource_table"
+  "{{plural_resource_table}}:$plural_resource_table"
   "{{route_name}}:$route_name"
 )
 entity_path_hash=(

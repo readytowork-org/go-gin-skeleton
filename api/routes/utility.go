@@ -5,14 +5,14 @@ import (
 	"boilerplate-api/infrastructure"
 )
 
-// UtilityRoutes -> utility routes struct
+// UtilityRoutes utility routes struct
 type UtilityRoutes struct {
 	router            infrastructure.Router
 	Logger            infrastructure.Logger
 	UtilityController controllers.UtilityController
 }
 
-//NewUtilityRoute -> returns new utility route
+// NewUtilityRoutes returns new utility route
 func NewUtilityRoutes(
 	logger infrastructure.Logger,
 	router infrastructure.Router,
@@ -25,7 +25,7 @@ func NewUtilityRoutes(
 	}
 }
 
-//Setup -> sets up route for util entities
+// Setup sets up route for util entities
 func (u UtilityRoutes) Setup() {
 	utils := u.router.Gin.Group("/utils")
 	{

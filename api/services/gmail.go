@@ -1,11 +1,11 @@
 package services
 
 import (
-	"encoding/base64"
-	"errors"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
 	"boilerplate-api/utils"
+	"encoding/base64"
+	"errors"
 
 	"google.golang.org/api/gmail/v1"
 )
@@ -38,12 +38,12 @@ func (g GmailService) SendEmail(params models.EmailParams) (bool, error) {
 
 	if params.Lang != "en" {
 		msgStringJP, _ := utils.ToISO2022JP(msgString)
-		msg = []byte(msgStringJP)
+		msg = msgStringJP
 	} else {
 		msg = []byte(msgString)
 	}
 	message := gmail.Message{
-		Raw: base64.URLEncoding.EncodeToString([]byte(msg)),
+		Raw: base64.URLEncoding.EncodeToString(msg),
 	}
 	_, err = g.gmailService.Users.Messages.Send("me", &message).Do()
 	if err != nil {

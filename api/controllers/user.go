@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"boilerplate-api/api/responses"
 	"boilerplate-api/api/services"
 	"boilerplate-api/api/validators"
 	"boilerplate-api/constants"
 	"boilerplate-api/dtos"
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
+	"boilerplate-api/responses"
 	"boilerplate-api/utils"
 	"fmt"
 	"net/http"
@@ -16,7 +16,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// UserController -> struct
 type UserController struct {
 	logger      infrastructure.Logger
 	userService services.UserService
@@ -24,7 +23,7 @@ type UserController struct {
 	validator   validators.UserValidator
 }
 
-// NewUserController -> constructor
+// NewUserController Creates New user controller
 func NewUserController(
 	logger infrastructure.Logger,
 	userService services.UserService,
@@ -39,7 +38,7 @@ func NewUserController(
 	}
 }
 
-// CreateUser -> Create User
+// CreateUser Create User
 func (cc UserController) CreateUser(c *gin.Context) {
 	reqData := dtos.CreateUserRequestData{}
 	trx := c.MustGet(constants.DBTransaction).(*gorm.DB)
@@ -64,13 +63,13 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		return
 	}
 
-	if userEmail, _ := cc.userService.GetOneUserWithEmail(reqData.Email); userEmail != nil {
+	if _, err := cc.userService.GetOneUserWithEmail(reqData.Email); err != nil {
 		cc.logger.Zap.Error("Error [CreateUser] [db CreateUser]: User with this email already exists")
 		responses.ErrorJSON(c, http.StatusBadRequest, "User with this email already exists")
 		return
 	}
 
-	if userContact, _ := cc.userService.GetOneUserWithPhone(reqData.Phone); userContact != nil {
+	if _, err := cc.userService.GetOneUserWithPhone(reqData.Phone); err != nil {
 		cc.logger.Zap.Error("Error [db GetOneUserWithPhone]: User with this phone already exists")
 		responses.ErrorJSON(c, http.StatusBadRequest, "User with this phone already exists")
 		return
@@ -83,14 +82,14 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		return
 	}
 
-	responses.SuccessJSON(c, http.StatusOK, "User Created Sucessfully")
+	responses.SuccessJSON(c, http.StatusOK, "User Created Successfully")
 }
 
-// GetAllUsers -> Get All User
+// GetAllUsers Get All User
 func (cc UserController) GetAllUsers(c *gin.Context) {
 	pagination := utils.BuildPagination(c)
-	users, count, err := cc.userService.GetAllUsers(pagination)
 
+	users, count, err := cc.userService.GetAllUsers(pagination)
 	if err != nil {
 		cc.logger.Zap.Error("Error finding user records", err.Error())
 		err := errors.InternalError.Wrap(err, "Failed to get users data")
@@ -101,9 +100,10 @@ func (cc UserController) GetAllUsers(c *gin.Context) {
 	responses.JSONCount(c, http.StatusOK, users, count)
 }
 
-// GetUserProfile -> Returns logged in user profile
+// GetUserProfile Returns logged in user profile
 func (cc UserController) GetUserProfile(c *gin.Context) {
 	userID := fmt.Sprintf("%v", c.MustGet(constants.UserID))
+
 	user, err := cc.userService.GetOneUser(userID)
 	if err != nil {
 		cc.logger.Zap.Error("Error finding user profile", err.Error())
@@ -111,5 +111,6 @@ func (cc UserController) GetUserProfile(c *gin.Context) {
 		responses.HandleError(c, err)
 		return
 	}
+
 	responses.JSON(c, http.StatusOK, user)
 }
