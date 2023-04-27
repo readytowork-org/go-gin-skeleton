@@ -38,6 +38,7 @@ func New{{uc_resource}}Controller(
 // @Produce				application/json
 // @Tags				{{uc_resource}}
 // @Success				200 {object} responses.Success "OK"
+// @Failure      		400 {object} responses.Error
 // @Router				/{{plural_resource_table}} [post]
 func (cc {{uc_resource}}Controller) Create{{uc_resource}}(c *gin.Context) {
 	{{lc_resource}} := models.{{uc_resource}}{}
@@ -69,6 +70,7 @@ func (cc {{uc_resource}}Controller) Create{{uc_resource}}(c *gin.Context) {
 // @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
 // @Tags				{{uc_resource}}
 // @Success 			200 {array} responses.DataCount{data=[]models.{{uc_resource}}}
+// @Failure      		500 {object} responses.Error
 // @Router				/{{plural_resource_table}} [get]
 func (cc {{uc_resource}}Controller) GetAll{{uc_resource}}(c *gin.Context) {
 	pagination := utils.BuildPagination(c)
@@ -92,6 +94,7 @@ func (cc {{uc_resource}}Controller) GetAll{{uc_resource}}(c *gin.Context) {
 // @Produce				application/json
 // @Tags				{{uc_resource}}
 // @Success 			200 {array} responses.Data{data=models.{{uc_resource}}}
+// @Failure      		500 {object} responses.Error
 // @Router				/{{plural_resource_table}}/{id} [get]
 func (cc {{uc_resource}}Controller) GetOne{{uc_resource}}(c *gin.Context) {
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -110,11 +113,13 @@ func (cc {{uc_resource}}Controller) GetOne{{uc_resource}}(c *gin.Context) {
 // UpdateOne{{uc_resource}} Update One {{uc_resource}} By Id
 // @Summary				Update One {{uc_resource}} By Id
 // @Description			Update One {{uc_resource}} By Id
-// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
-// @Param				JSON body string true "Enter JSON" SchemaExample()
+// @Param               Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Param				data body models.{{uc_resource}} true "Enter JSON"
 // @Produce				application/json
 // @Tags				{{uc_resource}}
 // @Success 			200 {object} responses.Success
+// @Failure      		400 {object} responses.Error
+// @Failure      		500 {object} responses.Error
 // @Router				/{{plural_resource_table}}/{id} [put]
 func (cc {{uc_resource}}Controller) UpdateOne{{uc_resource}}(c *gin.Context) {
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -145,6 +150,7 @@ func (cc {{uc_resource}}Controller) UpdateOne{{uc_resource}}(c *gin.Context) {
 // @Produce				application/json
 // @Tags				{{uc_resource}}
 // @Success 			200 {object} responses.Success
+// @Failure      		500 {object} responses.Error
 // @Router				/{{plural_resource_table}}/{id} [delete]
 func (cc {{uc_resource}}Controller) DeleteOne{{uc_resource}}(c *gin.Context) {
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
