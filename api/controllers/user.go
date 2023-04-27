@@ -75,8 +75,8 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		responses.ErrorJSON(c, http.StatusBadRequest, "User with this phone already exists")
 		return
 	}
-	user := reqData.GetUser()
-	if err := cc.userService.WithTrx(trx).CreateUser(user); err != nil {
+
+	if err := cc.userService.WithTrx(trx).CreateUser(reqData.User); err != nil {
 		cc.logger.Zap.Error("Error [CreateUser] [db CreateUser]: ", err.Error())
 		err := errors.InternalError.Wrap(err, "Failed to create user")
 		responses.HandleError(c, err)
@@ -86,7 +86,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 	responses.SuccessJSON(c, http.StatusOK, "User Created Sucessfully")
 }
 
-// GetAllUser -> Get All User
+// GetAllUsers -> Get All User
 func (cc UserController) GetAllUsers(c *gin.Context) {
 	pagination := utils.BuildPagination(c)
 	users, count, err := cc.userService.GetAllUsers(pagination)
@@ -102,11 +102,11 @@ func (cc UserController) GetAllUsers(c *gin.Context) {
 }
 
 // GetUserProfile -> Returns logged in user profile
-func (uc UserController) GetUserProfile(c *gin.Context){
-	userID := fmt.Sprintf("%v",c.MustGet(constants.UserID))
-	user, err := uc.userService.GetOneUser(userID)
+func (cc UserController) GetUserProfile(c *gin.Context) {
+	userID := fmt.Sprintf("%v", c.MustGet(constants.UserID))
+	user, err := cc.userService.GetOneUser(userID)
 	if err != nil {
-		uc.logger.Zap.Error("Error finding user profile", err.Error())
+		cc.logger.Zap.Error("Error finding user profile", err.Error())
 		err := errors.InternalError.Wrap(err, "Failed to get users profile data")
 		responses.HandleError(c, err)
 		return
