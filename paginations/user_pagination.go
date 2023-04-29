@@ -1,4 +1,4 @@
-package utils
+package paginations
 
 type UserPagination struct {
 	Pagination

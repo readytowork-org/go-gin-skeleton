@@ -7,8 +7,8 @@ import (
 	"boilerplate-api/dtos"
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
+	"boilerplate-api/paginations"
 	"boilerplate-api/responses"
-	"boilerplate-api/utils"
 	"fmt"
 	"net/http"
 
@@ -103,6 +103,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 // @Param				pageSize query string false "4"
 // @Param				page query string false "Page no"
 // @Param				keyword query string false "search by name"
+// @Param				Keyword2 query string false "search by type"
 // @Description			Return all the User
 // @Produce				application/json
 // @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
@@ -111,10 +112,9 @@ func (cc UserController) CreateUser(c *gin.Context) {
 // @Failure      		500 {object} responses.Error
 // @Router				/users [get]
 func (cc UserController) GetAllUsers(c *gin.Context) {
-	pagination := utils.UserPagination{}
-	pagination.BuildPagination(c)
+	pagination := paginations.BuildPagination[*paginations.UserPagination](c)
 
-	users, count, err := cc.userService.GetAllUsers(pagination)
+	users, count, err := cc.userService.GetAllUsers(*pagination)
 	if err != nil {
 		cc.logger.Zap.Error("Error finding user records", err.Error())
 		err := errors.InternalError.Wrap(err, "Failed to get users data")
