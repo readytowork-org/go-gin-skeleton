@@ -100,8 +100,8 @@ func (cc UserController) CreateUser(c *gin.Context) {
 
 // GetAllUsers Get All User
 // @Summary				Get all User.
-// @Param				pageSize query string false "4"
-// @Param				page query string false "Page no"
+// @Param				page_size query string false "10"
+// @Param				page query string false "Page no" "1"
 // @Param				keyword query string false "search by name"
 // @Param				Keyword2 query string false "search by type"
 // @Description			Return all the User
