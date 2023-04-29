@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Pagination struct for Pagination
+// // Pagination struct for Pagination
 type Pagination struct {
 	Sort     string `form:"sort"`
 	Keyword  string `form:"keyword"`
@@ -16,23 +16,18 @@ type Pagination struct {
 }
 
 // BuildPagination builds the pagination
-func BuildPagination(c *gin.Context) (pagination Pagination) {
-	_ = c.BindQuery(&pagination)
+func (m *Pagination) BuildPagination(c *gin.Context) {
+	_ = c.BindQuery(&m)
 
-	pagination.PageSize = 10
-	pageSizeStr := c.Query("pageSize")
-	if pageSizeStr == "Infinity" {
-		pagination.All = true
+	m.PageSize = 10
+	if pageSizeStr := c.Query("pageSize"); pageSizeStr == "Infinity" {
+		m.All = true
+	} else if pageSizeStr != "" {
+		m.PageSize, _ = strconv.Atoi(pageSizeStr)
 	}
 
-	if !pagination.All && pageSizeStr != "" {
-		pagination.PageSize, _ = strconv.Atoi(pageSizeStr)
+	if m.Offset <= 0 {
+		m.Offset = 1
 	}
-
-	if pagination.Offset <= 0 {
-		pagination.Offset = 1
-	}
-	pagination.Offset = (pagination.Offset - 1) * pagination.PageSize
-
-	return pagination
+	m.Offset = (m.Offset - 1) * m.PageSize
 }

@@ -39,7 +39,7 @@ func (c UserRepository) Create(User models.User) error {
 }
 
 // GetAllUsers Get All users
-func (c UserRepository) GetAllUsers(pagination utils.Pagination) (users []dtos.GetUserResponse, count int64, err error) {
+func (c UserRepository) GetAllUsers(pagination utils.UserPagination) (users []dtos.GetUserResponse, count int64, err error) {
 	queryBuilder := c.db.DB.Limit(pagination.PageSize).Offset(pagination.Offset).Order("created_at desc")
 	queryBuilder = queryBuilder.Model(&models.User{})
 

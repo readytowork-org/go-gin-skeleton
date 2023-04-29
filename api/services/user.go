@@ -33,7 +33,7 @@ func (c UserService) CreateUser(user models.User) error {
 }
 
 // GetAllUsers to get all the User
-func (c UserService) GetAllUsers(pagination utils.Pagination) ([]dtos.GetUserResponse, int64, error) {
+func (c UserService) GetAllUsers(pagination utils.UserPagination) ([]dtos.GetUserResponse, int64, error) {
 	return c.repository.GetAllUsers(pagination)
 }
 

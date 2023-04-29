@@ -111,7 +111,8 @@ func (cc UserController) CreateUser(c *gin.Context) {
 // @Failure      		500 {object} responses.Error
 // @Router				/users [get]
 func (cc UserController) GetAllUsers(c *gin.Context) {
-	pagination := utils.BuildPagination(c)
+	pagination := utils.UserPagination{}
+	pagination.BuildPagination(c)
 
 	users, count, err := cc.userService.GetAllUsers(pagination)
 	if err != nil {
