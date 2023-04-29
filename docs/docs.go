@@ -97,6 +97,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "search by type",
+                        "name": "Keyword2",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "default": "Bearer \u003cAdd access token here\u003e",
                         "description": "Insert your access token",
                         "name": "Authorization",
@@ -327,12 +333,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
+	Version:          "1.0",
+	Host:             "localhost:8000/",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Boilerplate API",
+	Description:      "An API in Go using Gin framework",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

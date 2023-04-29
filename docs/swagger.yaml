@@ -87,10 +87,11 @@ definitions:
       msg:
         type: string
     type: object
+host: localhost:8000/
 info:
   contact: {}
-  description: A API in Go using Gin framework
-  title: Frail Check API
+  description: An API in Go using Gin framework
+  title: Boilerplate API
   version: "1.0"
 paths:
   /profile:
@@ -139,6 +140,10 @@ paths:
       - description: search by name
         in: query
         name: keyword
+        type: string
+      - description: search by type
+        in: query
+        name: Keyword2
         type: string
       - default: Bearer <Add access token here>
         description: Insert your access token

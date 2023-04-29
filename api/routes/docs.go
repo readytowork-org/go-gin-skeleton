@@ -1,6 +1,7 @@
 package routes
 
 import (
+	_ "boilerplate-api/docs"
 	"boilerplate-api/infrastructure"
 
 	swaggerFiles "github.com/swaggo/files"
