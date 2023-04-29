@@ -79,8 +79,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "4",
-                        "name": "pageSize",
+                        "description": "10",
+                        "name": "page_size",
                         "in": "query"
                     },
                     {
