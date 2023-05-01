@@ -1,11 +1,12 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "A API in Go using Gin framework",
-        "title": "Skeleton API",
+        "description": "An API in Go using Gin framework",
+        "title": "Boilerplate API",
         "contact": {},
         "version": "1.0"
     },
+    "host": "localhost:8000/",
     "paths": {
         "/profile": {
             "get": {
@@ -71,8 +72,8 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "4",
-                        "name": "pageSize",
+                        "description": "10",
+                        "name": "page_size",
                         "in": "query"
                     },
                     {
@@ -85,6 +86,12 @@
                         "type": "string",
                         "description": "search by name",
                         "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "search by type",
+                        "name": "Keyword2",
                         "in": "query"
                     },
                     {

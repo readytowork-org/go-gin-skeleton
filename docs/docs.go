@@ -79,8 +79,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "4",
-                        "name": "pageSize",
+                        "description": "10",
+                        "name": "page_size",
                         "in": "query"
                     },
                     {
@@ -93,6 +93,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "search by name",
                         "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "search by type",
+                        "name": "Keyword2",
                         "in": "query"
                     },
                     {
@@ -327,12 +333,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
+	Version:          "1.0",
+	Host:             "localhost:8000/",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Boilerplate API",
+	Description:      "An API in Go using Gin framework",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }
