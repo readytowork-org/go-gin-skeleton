@@ -93,7 +93,7 @@ func (cc {{uc_resource}}Controller) GetAll{{uc_resource}}(c *gin.Context) {
 // @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
 // @Produce				application/json
 // @Tags				{{uc_resource}}
-// @Success 			200 {array} responses.Data{data=models.{{uc_resource}}}
+// @Success 			200 {object} responses.Data{data=models.{{uc_resource}}}
 // @Failure      		500 {object} responses.Error
 // @Router				/{{plural_resource_table}}/{id} [get]
 func (cc {{uc_resource}}Controller) GetOne{{uc_resource}}(c *gin.Context) {
