@@ -21,22 +21,12 @@ func BuildPagination[T IPagination](c *gin.Context) (m T) {
 type Pagination struct {
 	Sort     string `form:"sort"`
 	Keyword  string `form:"keyword"`
-	Offset   int    `form:"page"`
-	All      bool
-	PageSize int
+	Offset   int    `form:"page,default=1"`
+	All      bool	`form:all`
+	PageSize int	`form:page_size,default=10`
 }
 
 // Build builds the pagination
 func (m *Pagination) Build(c *gin.Context) {
-	m.PageSize = 10
-	if pageSizeStr := c.Query("pageSize"); pageSizeStr == "Infinity" {
-		m.All = true
-	} else if pageSizeStr != "" {
-		m.PageSize, _ = strconv.Atoi(pageSizeStr)
-	}
-
-	if m.Offset <= 0 {
-		m.Offset = 1
-	}
 	m.Offset = (m.Offset - 1) * m.PageSize
 }
