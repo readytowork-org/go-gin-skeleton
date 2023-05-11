@@ -8,6 +8,7 @@ import (
 	"boilerplate-api/api/services"
 	"boilerplate-api/api/validators"
 	"boilerplate-api/cli"
+	"boilerplate-api/docs"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/seeds"
 	"boilerplate-api/utils"
@@ -71,9 +72,14 @@ func bootstrap(
 			logger.Zap.Info("------ Boilerplate 📺 ------")
 			logger.Zap.Info("------------------------")
 
-			logger.Zap.Info("Migrating DB schema...")
 			go func() {
+				if env.Environment != "production" && env.HOST != "" {
+					logger.Zap.Info("Setting Swagger Host...")
+					docs.SwaggerInfo.Host = env.HOST
+				}
+
 				if env.Environment == "production" {
+					logger.Zap.Info("Migrating DB schema...")
 					migrations.Migrate()
 				}
 				middlewares.Setup()
