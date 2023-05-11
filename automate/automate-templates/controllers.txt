@@ -33,7 +33,7 @@ func New{{uc_resource}}Controller(
 // Create{{uc_resource}} Create {{uc_resource}}
 // @Summary				Create {{uc_resource}}
 // @Description			Create {{uc_resource}}
-// @Param				JSON body string true "Enter JSON" SchemaExample()
+// @Param				JSON body models.{{uc_resource}}{} true "Enter JSON"
 // @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
 // @Produce				application/json
 // @Tags				{{uc_resource}}
