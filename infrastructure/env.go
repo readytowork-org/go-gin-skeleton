@@ -49,6 +49,7 @@ type Env struct {
 	ProjectName       string `mapstructure:"PROJECT_NAME"`
 	BillingAccountId  string `mapstructure:"BILLING_ACCOUNT_ID"`
 	BudgetDisplayName string `mapstructure:"BUDGET_DISPLAY_NAME"`
+	BudgetAmount      int64  `mapstructure:"BUDGET_AMOUNT"`
 }
 
 // NewEnv creates a new environment

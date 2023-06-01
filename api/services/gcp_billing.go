@@ -35,7 +35,7 @@ func NewGCPBillingService(
 func (s GCPBillingService) GetBillingInfo(
 	ctx context.Context,
 ) (*cloudbilling.ProjectBillingInfo, error) {
-	projectName := "projects/" + s.env.ProjectName
+	projectName := fmt.Sprintf("projects/%s", s.env.ProjectName)
 	billingInfo, err := s.gcpBilling.BillingClient.Projects.GetBillingInfo(projectName).Do()
 
 	return billingInfo, err
@@ -47,7 +47,7 @@ func (s GCPBillingService) GetExistingBudgetList(
 ) (*budgetspb.Budget, error) {
 	var budgetList []*budgetspb.Budget
 	var err error
-	parentId := "billingAccounts/" + s.env.BillingAccountId
+	parentId := fmt.Sprintf("billingAccounts/%s", s.env.BillingAccountId)
 	req := budgetspb.ListBudgetsRequest{
 		Parent: parentId,
 	}
@@ -70,34 +70,50 @@ func (s GCPBillingService) GetExistingBudgetList(
 	return nil, err
 }
 
-func (s GCPBillingService) CreateBudget(ctx context.Context) (*budgetspb.Budget, error) {
-	fmt.Println("s.env.BudgetDisplayName")
-	fmt.Println(s.env.BudgetDisplayName)
+func (s GCPBillingService) GetBudgetCreateUpdateRequest() *budgetspb.Budget {
+	projectName := fmt.Sprintf("projects/%s", s.env.ProjectName)
 
-	parentId := fmt.Sprintf("billingAccounts/%s", s.env.BillingAccountId)
 	budget := &budgetspb.Budget{
-		DisplayName: "Weekly Budget",
+		DisplayName: "Project Budget",
 		Name:        s.env.BudgetDisplayName,
 		BudgetFilter: &budgetspb.Filter{
 			CreditTypesTreatment: budgetspb.Filter_INCLUDE_ALL_CREDITS,
-			Projects:             []string{s.env.ProjectName},
+			Projects:             []string{projectName},
 		},
 		Amount: &budgetspb.BudgetAmount{
 			BudgetAmount: &budgetspb.BudgetAmount_SpecifiedAmount{
 				SpecifiedAmount: &money.Money{
-					Units:        5000,
+					Units:        s.env.BudgetAmount,
 					Nanos:        0,
 					CurrencyCode: "JPY",
 				},
 			},
 		},
+		ThresholdRules: []*budgetspb.ThresholdRule{
+			{
+				ThresholdPercent: 0.4,
+				SpendBasis:       budgetspb.ThresholdRule_CURRENT_SPEND,
+			},
+			{
+				ThresholdPercent: 0.7,
+				SpendBasis:       budgetspb.ThresholdRule_CURRENT_SPEND,
+			},
+			{
+				ThresholdPercent: 0.9,
+				SpendBasis:       budgetspb.ThresholdRule_CURRENT_SPEND,
+			},
+		},
 	}
+	return budget
+}
+
+func (s GCPBillingService) CreateBudget(ctx context.Context) (*budgetspb.Budget, error) {
+	parentId := fmt.Sprintf("billingAccounts/%s", s.env.BillingAccountId)
+	budget := s.GetBudgetCreateUpdateRequest()
 	createRequest := budgetspb.CreateBudgetRequest{
 		Parent: parentId,
 		Budget: budget,
 	}
-	// TODO: Fill request struct fields.
-	// See https://pkg.go.dev/cloud.google.com/go/billing/budgets/apiv1/budgetspb#ListBudgetsRequest.
 
 	billingInfo, err := s.gcpBilling.BudgetClient.CreateBudget(ctx, &createRequest)
 	if err != nil {
@@ -119,15 +135,11 @@ func (s GCPBillingService) CreateOrUpdateBudget(ctx context.Context) (*budgetspb
 
 func (s GCPBillingService) EditBudget(ctx context.Context, budget *budgetspb.Budget) (*budgetspb.Budget, error) {
 	// Modify the budget configuration here
-	// budget.Amount.BudgetAmount = &budgetspb.Money{Units: 500, Nanos: 0}
-	// budget.ThresholdRules = []*budgetspb.ThresholdRule{
-	// 	{
-	// 		ThresholdPercent:  0.9,
-	// 		SpendBasis:        budgetspb.ThresholdRule_CURRENCY,
-	// 		ThresholdBehavior: budgetspb.ThresholdRule_THRESHOLD_BEHAVIOR_UNSPECIFIED,
-	// 		// Add additional threshold rules if needed
-	// 	},
-	// }
+	envBudget := s.GetBudgetCreateUpdateRequest()
+
+	budget.Amount.BudgetAmount = envBudget.Amount.BudgetAmount
+	budget.ThresholdRules = envBudget.ThresholdRules
+
 	editRequest := budgetspb.UpdateBudgetRequest{
 		Budget: budget,
 	}
