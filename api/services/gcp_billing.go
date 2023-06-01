@@ -91,15 +91,19 @@ func (s GCPBillingService) GetBudgetCreateUpdateRequest() *budgetspb.Budget {
 		},
 		ThresholdRules: []*budgetspb.ThresholdRule{
 			{
-				ThresholdPercent: 0.4,
+				ThresholdPercent: 0.25,
 				SpendBasis:       budgetspb.ThresholdRule_CURRENT_SPEND,
 			},
 			{
-				ThresholdPercent: 0.7,
+				ThresholdPercent: 0.50,
 				SpendBasis:       budgetspb.ThresholdRule_CURRENT_SPEND,
 			},
 			{
-				ThresholdPercent: 0.9,
+				ThresholdPercent: 0.75,
+				SpendBasis:       budgetspb.ThresholdRule_CURRENT_SPEND,
+			},
+			{
+				ThresholdPercent: 1,
 				SpendBasis:       budgetspb.ThresholdRule_CURRENT_SPEND,
 			},
 		},
