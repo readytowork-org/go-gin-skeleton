@@ -25,7 +25,6 @@ func NewRoutes(
 	utilityRoutes UtilityRoutes,
 	userRoutes UserRoutes,
 	gCPBillingRoutes GCPBillingRoutes,
-	obtainJwtTokenRoutes ObtainJwtTokenRoutes,
 	jwtAuthRoutes JwtAuthRoutes,
 	docsRoutes DocsRoutes,
 ) Routes {

@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"boilerplate-api/api/responses"
 	"boilerplate-api/api/services"
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
+	"boilerplate-api/responses"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -39,7 +39,7 @@ func (cc GCPBillingController) GetCost(c *gin.Context) {
 		responses.HandleError(c, err)
 		return
 	}
-	responses.SuccessJSON(c, http.StatusOK, billingData)
+	responses.InterfaceJson(c, http.StatusOK, billingData)
 }
 
 // GCPBilling -> Get Cost
@@ -51,7 +51,7 @@ func (cc GCPBillingController) GetBudgetInfo(c *gin.Context) {
 		responses.HandleError(c, err)
 		return
 	}
-	responses.SuccessJSON(c, http.StatusOK, billingData)
+	responses.InterfaceJson(c, http.StatusOK, billingData)
 }
 
 // GCPBilling -> Get Cost
@@ -63,5 +63,5 @@ func (cc GCPBillingController) CreateUpdateBudget(c *gin.Context) {
 		responses.HandleError(c, err)
 		return
 	}
-	responses.SuccessJSON(c, http.StatusOK, billingData)
+	responses.InterfaceJson(c, http.StatusOK, billingData)
 }
