@@ -16,12 +16,12 @@ type User struct {
 }
 
 // TableName gives table name of model
-func (u User) TableName() string {
+func (u *User) TableName() string {
 	return "users"
 }
 
 // ToMap convert User to map
-func (u User) ToMap() map[string]interface{} {
+func (u *User) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"email":     u.Email,
 		"full_name": u.FullName,
@@ -30,7 +30,7 @@ func (u User) ToMap() map[string]interface{} {
 	}
 }
 
-// Runs before inserting a row into table
+// BeforeCreate Runs before inserting a row into table
 func (u *User) BeforeCreate(db *gorm.DB) error {
 	var Zap *zap.SugaredLogger
 	password, err := bcrypt.GenerateFromPassword([]byte(u.Password), 10)

@@ -6,7 +6,8 @@ import "go.uber.org/fx"
 var Module = fx.Options(
 	fx.Provide(NewRoutes),
 	fx.Provide(NewUtilityRoutes),
-	fx.Provide(NewObtainJwtTokenRoutes),
+	fx.Provide(NewDocsRoutes),
+	fx.Provide(NewJwtAuthRoutes),
 	fx.Provide(NewUserRoutes),
 	fx.Provide(NewGCPBillingRoutes),
 )
@@ -25,12 +26,15 @@ func NewRoutes(
 	userRoutes UserRoutes,
 	gCPBillingRoutes GCPBillingRoutes,
 	obtainJwtTokenRoutes ObtainJwtTokenRoutes,
+	jwtAuthRoutes JwtAuthRoutes,
+	docsRoutes DocsRoutes,
 ) Routes {
 	return Routes{
 		utilityRoutes,
-		obtainJwtTokenRoutes,
+		jwtAuthRoutes,
 		userRoutes,
 		gCPBillingRoutes,
+		docsRoutes,
 	}
 }
 

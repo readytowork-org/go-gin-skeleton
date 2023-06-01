@@ -4,18 +4,17 @@ import (
 	"boilerplate-api/dtos"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
-	"boilerplate-api/utils"
-
+	"boilerplate-api/paginations"
 	"gorm.io/gorm"
 )
 
-// UserRepository -> database structure
+// UserRepository database structure
 type UserRepository struct {
 	db     infrastructure.Database
 	logger infrastructure.Logger
 }
 
-// NewUserRepository -> creates a new User repository
+// NewUserRepository creates a new User repository
 func NewUserRepository(db infrastructure.Database, logger infrastructure.Logger) UserRepository {
 	return UserRepository{
 		db:     db,
@@ -33,15 +32,13 @@ func (c UserRepository) WithTrx(trxHandle *gorm.DB) UserRepository {
 	return c
 }
 
-// Save -> User
+// Create user
 func (c UserRepository) Create(User models.User) error {
 	return c.db.DB.Create(&User).Error
 }
 
-// GetAllUser -> Get All users
-func (c UserRepository) GetAllUsers(pagination utils.Pagination) ([]dtos.GetUserResponse, int64, error) {
-	var users []dtos.GetUserResponse
-	var totalRows int64 = 0
+// GetAllUsers Get All users
+func (c UserRepository) GetAllUsers(pagination paginations.UserPagination) (users []dtos.GetUserResponse, count int64, err error) {
 	queryBuilder := c.db.DB.Limit(pagination.PageSize).Offset(pagination.Offset).Order("created_at desc")
 	queryBuilder = queryBuilder.Model(&models.User{})
 
@@ -49,38 +46,33 @@ func (c UserRepository) GetAllUsers(pagination utils.Pagination) ([]dtos.GetUser
 		searchQuery := "%" + pagination.Keyword + "%"
 		queryBuilder.Where(c.db.DB.Where("`users`.`name` LIKE ?", searchQuery))
 	}
-	err := queryBuilder.
+
+	return users, count, queryBuilder.
 		Find(&users).
 		Offset(-1).
 		Limit(-1).
-		Count(&totalRows).Error
-	return users, totalRows, err
+		Count(&count).
+		Error
 }
 
-func (c UserRepository) GetOneUser(Id string) (*dtos.GetUserResponse, error) {
-	user_model := models.User{}
-	var user dtos.GetUserResponse
-	err := c.db.DB.Model(&user_model).Where("id = ?", Id).First(&user).Error
-	if err != nil {
-		return nil, err
-	}
-	return &user, nil
+func (c UserRepository) GetOneUser(Id string) (userModel dtos.GetUserResponse, err error) {
+	return userModel, c.db.DB.
+		Model(&userModel).
+		Where("id = ?", Id).
+		First(&userModel).
+		Error
 }
 
-func (c UserRepository) GetOneUserWithEmail(Email string) (*models.User, error) {
-	user := models.User{}
-	err := c.db.DB.Model(&user).Where("email = ?", Email).First(&user).Error
-	if err != nil {
-		return nil, err
-	}
-	return &user, nil
+func (c UserRepository) GetOneUserWithEmail(Email string) (user models.User, err error) {
+	return user, c.db.DB.Model(&user).
+		Where("email = ?", Email).
+		First(&user).
+		Error
 }
 
-func (c UserRepository) GetOneUserWithPhone(Phone string) (*models.User, error) {
-	user := models.User{}
-	if err := c.db.DB.First(&user, "phone = ?", Phone).Error; err != nil {
-		return nil, err
-	}
-	return &user, nil
+func (c UserRepository) GetOneUserWithPhone(Phone string) (user models.User, err error) {
+	return user, c.db.DB.
+		First(&user, "phone = ?", Phone).
+		Error
 
 }

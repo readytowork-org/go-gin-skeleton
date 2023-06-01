@@ -1,43 +1,43 @@
 package routes
 
 import (
-	"{{projectname}}/api/controllers"
-	"{{projectname}}/api/middlewares"
-	"{{projectname}}/infrastructure"
+	"{{project_name}}/api/controllers"
+	"{{project_name}}/api/middlewares"
+	"{{project_name}}/infrastructure"
 )
 
-// {{ucresource}}Routes -> struct
-type {{ucresource}}Routes struct {
+// {{uc_resource}}Routes struct
+type {{uc_resource}}Routes struct {
 	logger                    infrastructure.Logger
 	router                    infrastructure.Router
-	{{lcresource}}Controller controllers.{{ucresource}}Controller
+	{{lc_resource}}Controller controllers.{{uc_resource}}Controller
 	middleware                middlewares.FirebaseAuthMiddleware
 }
 
-// New{{ucresource}}Routes -> creates new {{ucresource}} controller
-func New{{ucresource}}Routes(
+// New{{uc_resource}}Routes creates new {{uc_resource}} controller
+func New{{uc_resource}}Routes(
 	logger infrastructure.Logger,
 	router infrastructure.Router,
-	{{lcresource}}Controller controllers.{{ucresource}}Controller,
+	{{lc_resource}}Controller controllers.{{uc_resource}}Controller,
 	middleware middlewares.FirebaseAuthMiddleware,
-) {{ucresource}}Routes {
-	return {{ucresource}}Routes{
+) {{uc_resource}}Routes {
+	return {{uc_resource}}Routes{
 		router:                    router,
 		logger:                    logger,
-		{{lcresource}}Controller: {{lcresource}}Controller,
+		{{lc_resource}}Controller: {{lc_resource}}Controller,
 		middleware:                middleware,
 	}
 }
 
-// Setup {{lcresource}} routes
-func (c {{ucresource}}Routes) Setup() {
-	c.logger.Zap.Info(" Setting up {{ucresource}} routes")
-	{{lcresource}} := c.router.Gin.Group("/{{pluralresourcetable}}")
+// Setup {{lc_resource}} routes
+func (c {{uc_resource}}Routes) Setup() {
+	c.logger.Zap.Info(" Setting up {{uc_resource}} routes")
+	{{lc_resource}} := c.router.Gin.Group("/{{route_name}}")
 	{
-		{{lcresource}}.POST("", c.{{lcresource}}Controller.Create{{ucresource}})
-		{{lcresource}}.GET("", c.{{lcresource}}Controller.GetAll{{ucresource}})
-		{{lcresource}}.GET("/:id", c.{{lcresource}}Controller.GetOne{{ucresource}})
-		{{lcresource}}.PUT("/:id", c.{{lcresource}}Controller.UpdateOne{{ucresource}})
-		{{lcresource}}.DELETE("/:id", c.{{lcresource}}Controller.DeleteOne{{ucresource}})
+		{{lc_resource}}.POST("", c.{{lc_resource}}Controller.Create{{uc_resource}})
+		{{lc_resource}}.GET("", c.{{lc_resource}}Controller.GetAll{{uc_resource}})
+		{{lc_resource}}.GET("/:id", c.{{lc_resource}}Controller.GetOne{{uc_resource}})
+		{{lc_resource}}.PUT("/:id", c.{{lc_resource}}Controller.UpdateOne{{uc_resource}})
+		{{lc_resource}}.DELETE("/:id", c.{{lc_resource}}Controller.DeleteOne{{uc_resource}})
 	}
 }

@@ -1,9 +1,9 @@
 package middlewares
 
 import (
-	"boilerplate-api/api/responses"
 	"boilerplate-api/api/services"
 	"boilerplate-api/constants"
+	"boilerplate-api/responses"
 	"net/http"
 	"strings"
 
@@ -15,7 +15,7 @@ import (
 // FirebaseAuthMiddleware structure
 type FirebaseAuthMiddleware struct {
 	service     services.FirebaseService
-	userservice services.UserService
+	userService services.UserService
 }
 
 // NewFirebaseAuthMiddleware creates new firebase authentication
@@ -25,14 +25,14 @@ func NewFirebaseAuthMiddleware(
 ) FirebaseAuthMiddleware {
 	return FirebaseAuthMiddleware{
 		service:     service,
-		userservice: userservice,
+		userService: userservice,
 	}
 }
 
 // Handle handles auth requests
-func (m FirebaseAuthMiddleware) Handle() gin.HandlerFunc {
+func (f FirebaseAuthMiddleware) Handle() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token, err := m.getTokenFromHeader(c)
+		token, err := f.getTokenFromHeader(c)
 
 		if err != nil {
 			responses.ErrorJSON(c, http.StatusUnauthorized, err.Error())
@@ -52,9 +52,9 @@ func (m FirebaseAuthMiddleware) Handle() gin.HandlerFunc {
 }
 
 // HandleAdminOnly handles middleware for admin role only
-func (m FirebaseAuthMiddleware) HandleAdminOnly() gin.HandlerFunc {
+func (f FirebaseAuthMiddleware) HandleAdminOnly() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token, err := m.getTokenFromHeader(c)
+		token, err := f.getTokenFromHeader(c)
 
 		if err != nil {
 			responses.ErrorJSON(c, http.StatusUnauthorized, err.Error())
@@ -62,7 +62,7 @@ func (m FirebaseAuthMiddleware) HandleAdminOnly() gin.HandlerFunc {
 			return
 		}
 
-		if !m.isAdmin(token.Claims) {
+		if !f.isAdmin(token.Claims) {
 			responses.ErrorJSON(c, http.StatusUnauthorized, "un-authorized request")
 			c.Abort()
 			return
@@ -80,11 +80,11 @@ func (m FirebaseAuthMiddleware) HandleAdminOnly() gin.HandlerFunc {
 }
 
 // getTokenFromHeader gets token from header
-func (m FirebaseAuthMiddleware) getTokenFromHeader(c *gin.Context) (*auth.Token, error) {
+func (f FirebaseAuthMiddleware) getTokenFromHeader(c *gin.Context) (*auth.Token, error) {
 	header := c.GetHeader("Authorization")
 	idToken := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
 
-	token, err := m.service.VerifyToken(idToken)
+	token, err := f.service.VerifyToken(idToken)
 	if err != nil {
 		return nil, err
 	}
@@ -92,8 +92,8 @@ func (m FirebaseAuthMiddleware) getTokenFromHeader(c *gin.Context) (*auth.Token,
 	return token, nil
 }
 
-// isAdmin check if cliams is admin
-func (M FirebaseAuthMiddleware) isAdmin(claims map[string]interface{}) bool {
+// isAdmin check if claims is admin
+func (f FirebaseAuthMiddleware) isAdmin(claims map[string]interface{}) bool {
 
 	role := claims["role"]
 	isAdmin := false
@@ -104,5 +104,3 @@ func (M FirebaseAuthMiddleware) isAdmin(claims map[string]interface{}) bool {
 	return isAdmin
 
 }
-
-

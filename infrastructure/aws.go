@@ -14,8 +14,8 @@ func NewAWSConfig(logger Logger, env Env) aws.Config {
 		context.TODO(),
 		config.WithCredentialsProvider(
 			credentials.NewStaticCredentialsProvider(
-				env.AWS_ACCESS_KEY,
-				env.AWS_SECRET_KEY,
+				env.AwsAccessKey,
+				env.AwsSecretKey,
 				""),
 		),
 	)

@@ -23,6 +23,7 @@ jobs:
           name: Initialize the environment variable file
           command: |
             echo "ENVIRONMENT=local
+            HOST=$HOST
             DB_HOST=localhost
             DB_PORT=3306
             DB_NAME=test_db
@@ -110,6 +111,7 @@ jobs:
           name: Initialize the environment variable file
           command: |
             echo "ENVIRONMENT=$ENVIRONMENT
+            HOST=$HOST
             DB_HOST=$DB_HOST
             DB_PORT=$DB_PORT
             DB_NAME=$DB_NAME
@@ -191,6 +193,7 @@ jobs:
           name: Initialize the environment variable file
           command: |
             echo "ENVIRONMENT=$ENVIRONMENT
+            HOST=$HOST
             DB_HOST=$DB_HOST
             DB_PORT=$DB_PORT
             DB_NAME=$DB_NAME

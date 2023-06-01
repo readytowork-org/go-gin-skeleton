@@ -56,7 +56,7 @@ func (fb *FirebaseService) GetUserByEmail(email string) (*auth.UserRecord, error
 	return user, err
 }
 
-// UpdateUser -> update firebase user.
+// UpdateUser update firebase user.
 func (fb *FirebaseService) UpdateUser(UID string, user *auth.UserToUpdate) (*auth.UserRecord, error) {
 
 	return fb.client.UpdateUser(context.Background(), UID, user)
@@ -84,7 +84,7 @@ func (fb *FirebaseService) UpdateEmailVerification(uid string) error {
 	return err
 }
 
-// DisableUser  -> Whether or not the user to  disabled. true for disabled; false for enabled.
+// DisableUser  Whether or not the user to  disabled. true for disabled; false for enabled.
 func (fb *FirebaseService) DisableUser(uid string, enable bool) error {
 	params := (&auth.UserToUpdate{}).
 		Disabled(enable)

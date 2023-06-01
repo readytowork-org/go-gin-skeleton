@@ -1,12 +1,12 @@
 package controllers
 
 import (
-	"boilerplate-api/api/responses"
 	"boilerplate-api/api/services"
 	"boilerplate-api/api/validators"
 	"boilerplate-api/dtos"
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
+	"boilerplate-api/responses"
 	"boilerplate-api/utils"
 	"fmt"
 	"net/http"
@@ -16,7 +16,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-// JwtAuthController -> struct
+// JwtAuthController struct
 type JwtAuthController struct {
 	logger      infrastructure.Logger
 	userService services.UserService
@@ -25,7 +25,7 @@ type JwtAuthController struct {
 	validator   validators.UserValidator
 }
 
-// NewJwtAuthController -> constructor
+// NewJwtAuthController constructor
 func NewJwtAuthController(
 	logger infrastructure.Logger,
 	userService services.UserService,
@@ -51,6 +51,7 @@ func (cc JwtAuthController) LoginUserWithJWT(c *gin.Context) {
 		responses.HandleError(c, err)
 		return
 	}
+
 	// validating using custom validator
 	if validationErr := cc.validator.Validate.Struct(reqData); validationErr != nil {
 		cc.logger.Zap.Error("[Validate Struct] Validation error: ", validationErr.Error())
@@ -60,6 +61,7 @@ func (cc JwtAuthController) LoginUserWithJWT(c *gin.Context) {
 		responses.HandleError(c, err)
 		return
 	}
+
 	// Check if the user exists with provided email address
 	user, err := cc.userService.GetOneUserWithEmail(reqData.Email)
 	if err != nil {
@@ -79,38 +81,42 @@ func (cc JwtAuthController) LoginUserWithJWT(c *gin.Context) {
 	// Create a new JWT access claims object
 	accessClaims := services.JWTClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(cc.env.JWT_ACCESS_TOKEN_EXPIRES_AT))),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(cc.env.JwtAccessTokenExpiresAt))),
 			ID:        fmt.Sprintf("%v", user.ID),
 		},
 		//Add other claims
 	}
+
 	// Create a new JWT Access token using the claims and the secret key
-	accessToken, tokenErr := cc.jwtService.GenerateToken(accessClaims, cc.env.JWT_ACCESS_SECRET)
+	accessToken, tokenErr := cc.jwtService.GenerateToken(accessClaims, cc.env.JwtAccessSecret)
 	if tokenErr != nil {
 		cc.logger.Zap.Error("[SignedString] Error getting token: ", tokenErr.Error())
 		responses.ErrorJSON(c, http.StatusInternalServerError, tokenErr.Error())
 		return
 	}
+
 	// Create a new JWT refresh claims object
 	refreshClaims := services.JWTClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * time.Duration(cc.env.JWT_REFRESH_TOKEN_EXPIRES_AT))),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * time.Duration(cc.env.JwtRefreshTokenExpiresAt))),
 			ID:        fmt.Sprintf("%v", user.ID),
 		},
 	}
+
 	// Create a new JWT Refresh token using the claims and the secret key
-	refreshToken, refreshTokenErr := cc.jwtService.GenerateToken(refreshClaims, cc.env.JWT_REFRESH_SECRET)
+	refreshToken, refreshTokenErr := cc.jwtService.GenerateToken(refreshClaims, cc.env.JwtRefreshSecret)
 	if refreshTokenErr != nil {
 		cc.logger.Zap.Error("[SignedString] Error getting token: ", refreshTokenErr.Error())
 		responses.ErrorJSON(c, http.StatusInternalServerError, refreshTokenErr.Error())
 		return
 	}
+
 	data := map[string]interface{}{
-		"user":               user.ToMap(),
-		"access_token":       accessToken,
-		"refresh_token":      refreshToken,
+		"user":          user.ToMap(),
+		"access_token":  accessToken,
+		"refresh_token": refreshToken,
 	}
-	responses.SuccessJSON(c, http.StatusOK, data)
+	responses.JSON(c, http.StatusOK, data)
 }
 
 func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
@@ -121,13 +127,15 @@ func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
 		responses.HandleError(c, err)
 		return
 	}
-	parsedToken, parseErr := cc.jwtService.ParseAndVerifyToken(tokenString, cc.env.JWT_REFRESH_SECRET)
+
+	parsedToken, parseErr := cc.jwtService.ParseAndVerifyToken(tokenString, cc.env.JwtRefreshSecret)
 	if parseErr != nil {
 		cc.logger.Zap.Error("Error parsing token: ", parseErr.Error())
 		err = errors.Unauthorized.Wrap(parseErr, "Something went wrong")
 		responses.HandleError(c, err)
 		return
 	}
+
 	claims, verifyErr := cc.jwtService.RetrieveClaims(parsedToken)
 	if verifyErr != nil {
 		cc.logger.Zap.Error("Error veriefying token: ", verifyErr.Error())
@@ -135,16 +143,18 @@ func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
 		responses.HandleError(c, err)
 		return
 	}
+
 	// Create a new JWT Access claims
 	accessClaims := services.JWTClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(cc.env.JWT_ACCESS_TOKEN_EXPIRES_AT))),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(cc.env.JwtAccessTokenExpiresAt))),
 			ID:        fmt.Sprintf("%v", claims.ID),
 		},
 		// Add other claims
 	}
+
 	// Create a new JWT token using the claims and the secret key
-	accessToken, tokenErr := cc.jwtService.GenerateToken(accessClaims, cc.env.JWT_ACCESS_SECRET)
+	accessToken, tokenErr := cc.jwtService.GenerateToken(accessClaims, cc.env.JwtAccessSecret)
 	if tokenErr != nil {
 		cc.logger.Zap.Error("[SignedString] Error getting token: ", tokenErr.Error())
 		responses.ErrorJSON(c, http.StatusInternalServerError, tokenErr.Error())
@@ -154,5 +164,6 @@ func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
 		"access_token": accessToken,
 		"expires_at":   accessClaims.ExpiresAt,
 	}
-	responses.SuccessJSON(c, http.StatusOK, data)
+
+	responses.JSON(c, http.StatusOK, data)
 }

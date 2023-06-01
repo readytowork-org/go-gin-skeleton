@@ -7,7 +7,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-// NewBucketStorage -> creates a new storage client
+// NewBucketStorage creates a new storage client
 func NewBucketStorage(logger Logger, env Env) *storage.Client {
 	bucketName := env.StorageBucketName
 	ctx := context.Background()

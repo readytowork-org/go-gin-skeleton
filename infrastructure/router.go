@@ -10,13 +10,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Router -> Gin Router
+// Router Gin Router
 type Router struct {
 	Gin *gin.Engine
 	Env Env
 }
 
-//NewRouter : all the routes are defined here
+// NewRouter : all the routes are defined here
 func NewRouter(env Env) Router {
 
 	if env.Environment != "local" {

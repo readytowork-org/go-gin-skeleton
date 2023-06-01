@@ -3,120 +3,165 @@ package controllers
 import (
 	"net/http"
 	"strconv"
-	"{{projectname}}/api/responses"
-	"{{projectname}}/api/services"
-	"{{projectname}}/infrastructure"
-	"{{projectname}}/models"
-	"{{projectname}}/utils"
-	"{{projectname}}/errors"
+	"{{project_name}}/api/responses"
+	"{{project_name}}/api/services"
+	"{{project_name}}/infrastructure"
+	"{{project_name}}/models"
+	"{{project_name}}/utils"
+	"{{project_name}}/errors"
 
 	"github.com/gin-gonic/gin"
 )
 
-// {{ucresource}}Controller -> struct
-type {{ucresource}}Controller struct {
+// {{uc_resource}}Controller struct
+type {{uc_resource}}Controller struct {
 	logger                 infrastructure.Logger
-	{{ucresource}}Service  services.{{ucresource}}Service
+	{{uc_resource}}Service  services.{{uc_resource}}Service
 }
 
-// New{{ucresource}}Controller -> constructor
-func New{{ucresource}}Controller(
+// New{{uc_resource}}Controller constructor
+func New{{uc_resource}}Controller(
 	logger infrastructure.Logger,
-	{{ucresource}}Service services.{{ucresource}}Service,
-) {{ucresource}}Controller {
-	return {{ucresource}}Controller{
+	{{uc_resource}}Service services.{{uc_resource}}Service,
+) {{uc_resource}}Controller {
+	return {{uc_resource}}Controller{
 		logger:                  logger,
-		{{ucresource}}Service:  {{ucresource}}Service,
+		{{uc_resource}}Service:  {{uc_resource}}Service,
 	}
 }
 
-// Create{{ucresource}} -> Create {{ucresource}}
-func (cc {{ucresource}}Controller) Create{{ucresource}}(c *gin.Context) {
-	{{lcresource}} := models.{{ucresource}}{}
+// Create{{uc_resource}} Create {{uc_resource}}
+// @Summary				Create {{uc_resource}}
+// @Description			Create {{uc_resource}}
+// @Param				JSON body models.{{uc_resource}}{} true "Enter JSON"
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Produce				application/json
+// @Tags				{{uc_resource}}
+// @Success				200 {object} responses.Success "OK"
+// @Failure      		400 {object} responses.Error
+// @Router				/{{plural_resource_table}} [post]
+func (cc {{uc_resource}}Controller) Create{{uc_resource}}(c *gin.Context) {
+	{{lc_resource}} := models.{{uc_resource}}{}
 
-	if err := c.ShouldBindJSON(&{{lcresource}}); err != nil {
-		cc.logger.Zap.Error("Error [Create{{ucresource}}] (ShouldBindJson) : ", err)
-		err := errors.BadRequest.Wrap(err, "Failed to bind {{ucresource}}")
+	if err := c.ShouldBindJSON(&{{lc_resource}}); err != nil {
+		cc.logger.Zap.Error("Error [Create{{uc_resource}}] (ShouldBindJson) : ", err)
+		err := errors.BadRequest.Wrap(err, "Failed to bind {{uc_resource}}")
 		responses.HandleError(c, err)
 		return
 	}
 
-	if _, err := cc.{{ucresource}}Service.Create{{ucresource}}({{lcresource}}); err != nil {
-		cc.logger.Zap.Error("Error [Create{{ucresource}}] [db Create{{ucresource}}]: ", err.Error())
-		err := errors.BadRequest.Wrap(err, "Failed To Create {{ucresource}}")
+	if _, err := cc.{{uc_resource}}Service.Create{{uc_resource}}({{lc_resource}}); err != nil {
+		cc.logger.Zap.Error("Error [Create{{uc_resource}}] [db Create{{uc_resource}}]: ", err.Error())
+		err := errors.BadRequest.Wrap(err, "Failed To Create {{uc_resource}}")
 		responses.HandleError(c, err)
 		return
 	}
 
-	responses.SuccessJSON(c, http.StatusOK, "{{ucresource}} Created Sucessfully")
+	responses.SuccessJSON(c, http.StatusOK, "{{uc_resource}} Created Successfully")
 }
 
-// GetAll{{ucresource}} -> Get All {{ucresource}}
-func (cc {{ucresource}}Controller) GetAll{{ucresource}}(c *gin.Context) {
-
+// GetAll{{uc_resource}} Get All {{uc_resource}}
+// @Summary				Get all {{uc_resource}}.
+// @Param				page_size query string false "10"
+// @Param				page query string false "Page no" "1"
+// @Param				keyword query string false "search by name"
+// @Description			Return all the {{uc_resource}}
+// @Produce				application/json
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Tags				{{uc_resource}}
+// @Success 			200 {array} responses.DataCount{data=[]models.{{uc_resource}}}
+// @Failure      		500 {object} responses.Error
+// @Router				/{{plural_resource_table}} [get]
+func (cc {{uc_resource}}Controller) GetAll{{uc_resource}}(c *gin.Context) {
 	pagination := utils.BuildPagination(c)
 	pagination.Sort = "created_at desc"
-	{{plcresource}}, count, err := cc.{{ucresource}}Service.GetAll{{ucresource}}(pagination)
 
+	{{plc_resource}}, count, err := cc.{{uc_resource}}Service.GetAll{{uc_resource}}(pagination)
 	if err != nil {
-		cc.logger.Zap.Error("Error finding {{ucresource}} records", err.Error())
-		err := errors.InternalError.Wrap(err, "Failed To Find {{ucresource}}")
+		cc.logger.Zap.Error("Error finding {{uc_resource}} records", err.Error())
+		err := errors.InternalError.Wrap(err, "Failed To Find {{uc_resource}}")
 		responses.HandleError(c, err)
 		return
 	}
-	responses.JSONCount(c, http.StatusOK, {{plcresource}}, count)
 
+	responses.JSONCount(c, http.StatusOK, {{plc_resource}}, count)
 }
 
-// GetOne{{ucresource}} -> Get One {{ucresource}}
-func (cc {{ucresource}}Controller) GetOne{{ucresource}}(c *gin.Context) {
+// GetOne{{uc_resource}} Get One {{uc_resource}}
+// @Summary				Get one {{uc_resource}} by id
+// @Description			Get one {{uc_resource}} by id
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Produce				application/json
+// @Tags				{{uc_resource}}
+// @Success 			200 {object} responses.Data{data=models.{{uc_resource}}}
+// @Failure      		500 {object} responses.Error
+// @Router				/{{plural_resource_table}}/{id} [get]
+func (cc {{uc_resource}}Controller) GetOne{{uc_resource}}(c *gin.Context) {
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-	{{lcresource}}, err := cc.{{ucresource}}Service.GetOne{{ucresource}}(ID)
 
+	{{lc_resource}}, err := cc.{{uc_resource}}Service.GetOne{{uc_resource}}(ID)
 	if err != nil {
-		cc.logger.Zap.Error("Error [GetOne{{ucresource}}] [db GetOne{{ucresource}}]: ", err.Error())
-		err := errors.InternalError.Wrap(err, "Failed To Find {{ucresource}}")
+		cc.logger.Zap.Error("Error [GetOne{{uc_resource}}] [db GetOne{{uc_resource}}]: ", err.Error())
+		err := errors.InternalError.Wrap(err, "Failed To Find {{uc_resource}}")
 		responses.HandleError(c, err)
 		return
 	}
-	responses.JSON(c, http.StatusOK, {{lcresource}})
 
+	responses.JSON(c, http.StatusOK, {{lc_resource}})
 }
 
-// UpdateOne{{ucresource}} -> Update One {{ucresource}} By Id
-func (cc {{ucresource}}Controller) UpdateOne{{ucresource}}(c *gin.Context) {
+// UpdateOne{{uc_resource}} Update One {{uc_resource}} By Id
+// @Summary				Update One {{uc_resource}} By Id
+// @Description			Update One {{uc_resource}} By Id
+// @Param               Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Param				data body models.{{uc_resource}} true "Enter JSON"
+// @Produce				application/json
+// @Tags				{{uc_resource}}
+// @Success 			200 {object} responses.Success
+// @Failure      		400 {object} responses.Error
+// @Failure      		500 {object} responses.Error
+// @Router				/{{plural_resource_table}}/{id} [put]
+func (cc {{uc_resource}}Controller) UpdateOne{{uc_resource}}(c *gin.Context) {
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-	{{lcresource}} := models.{{ucresource}}{}
+	{{lc_resource}} := models.{{uc_resource}}{}
 
-	if err := c.ShouldBindJSON(&{{lcresource}}); err != nil {
-		cc.logger.Zap.Error("Error [Update{{ucresource}}] (ShouldBindJson) : ", err)
-		err := errors.BadRequest.Wrap(err, "failed to update {{lcresource}}")
+	if err := c.ShouldBindJSON(&{{lc_resource}}); err != nil {
+		cc.logger.Zap.Error("Error [Update{{uc_resource}}] (ShouldBindJson) : ", err)
+		err := errors.BadRequest.Wrap(err, "failed to update {{lc_resource}}")
 		responses.HandleError(c, err)
 		return
 	}
-	{{lcresource}}.ID = ID
+	{{lc_resource}}.ID = ID
 
-	if err := cc.{{ucresource}}Service.UpdateOne{{ucresource}}({{lcresource}}); err != nil {
-		cc.logger.Zap.Error("Error [Update{{ucresource}}] [db Update{{ucresource}}]: ", err.Error())
-		err := errors.InternalError.Wrap(err, "failed to update {{lcresource}}")
+	if err := cc.{{uc_resource}}Service.UpdateOne{{uc_resource}}({{lc_resource}}); err != nil {
+		cc.logger.Zap.Error("Error [Update{{uc_resource}}] [db Update{{uc_resource}}]: ", err.Error())
+		err := errors.InternalError.Wrap(err, "failed to update {{lc_resource}}")
 		responses.HandleError(c, err)
 		return
 	}
 
-	responses.SuccessJSON(c, http.StatusOK, "{{ucresource}} Updated Sucessfully")
+	responses.SuccessJSON(c, http.StatusOK, "{{uc_resource}} Updated Successfully")
 }
 
-// DeleteOne{{ucresource}} -> Delete One {{ucresource}} By Id
-func (cc {{ucresource}}Controller) DeleteOne{{ucresource}}(c *gin.Context) {
+// DeleteOne{{uc_resource}} Delete One {{uc_resource}} By Id
+// @Summary				Delete One {{uc_resource}} By Id
+// @Description			Delete One {{uc_resource}} By Id
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Produce				application/json
+// @Tags				{{uc_resource}}
+// @Success 			200 {object} responses.Success
+// @Failure      		500 {object} responses.Error
+// @Router				/{{plural_resource_table}}/{id} [delete]
+func (cc {{uc_resource}}Controller) DeleteOne{{uc_resource}}(c *gin.Context) {
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-	err := cc.{{ucresource}}Service.DeleteOne{{ucresource}}(ID)
 
+	err := cc.{{uc_resource}}Service.DeleteOne{{uc_resource}}(ID)
 	if err != nil {
-		cc.logger.Zap.Error("Error [DeleteOne{{ucresource}}] [db DeleteOne{{ucresource}}]: ", err.Error())
-		err := errors.InternalError.Wrap(err, "Failed to Delete {{ucresource}}")
+		cc.logger.Zap.Error("Error [DeleteOne{{uc_resource}}] [db DeleteOne{{uc_resource}}]: ", err.Error())
+		err := errors.InternalError.Wrap(err, "Failed to Delete {{uc_resource}}")
 		responses.HandleError(c, err)
 		return
 	}
 
-	responses.SuccessJSON(c, http.StatusOK, "{{ucresource}} Deleted Sucessfully")
+	responses.SuccessJSON(c, http.StatusOK, "{{uc_resource}} Deleted Successfully")
 }

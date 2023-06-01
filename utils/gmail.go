@@ -14,7 +14,7 @@ import (
 	"golang.org/x/text/transform"
 )
 
-// ToISO2022JP -> Convert UTF-8 to ISO2022JP
+// ToISO2022JP Convert UTF-8 to ISO2022JP
 func ToISO2022JP(str string) ([]byte, error) {
 	reader := strings.NewReader(str)
 	transformer := japanese.ISO2022JP.NewEncoder()
@@ -22,7 +22,7 @@ func ToISO2022JP(str string) ([]byte, error) {
 	return ioutil.ReadAll(transform.NewReader(reader, transformer))
 }
 
-//ParseTemplate -> to parse the template with given data
+// ParseTemplate to parse the template with given data
 func ParseTemplate(templateFileName string, data interface{}) (string, error) {
 	templatePath, err := filepath.Abs(fmt.Sprintf("templates/emails/%s", templateFileName))
 	if err != nil {
@@ -40,7 +40,7 @@ func ParseTemplate(templateFileName string, data interface{}) (string, error) {
 	return body, nil
 }
 
-//IsInterfaceEmpty -> to check if the interface is empty
+// IsInterfaceEmpty to check if the interface is empty
 func IsInterfaceEmpty(x interface{}) bool {
 	return x == reflect.Zero(reflect.TypeOf(x)).Interface()
 }

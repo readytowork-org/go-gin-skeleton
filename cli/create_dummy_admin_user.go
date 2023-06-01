@@ -10,7 +10,7 @@ import (
 // CreateDummyAdminUser command
 type CreateDummyAdminUser struct {
 	logger          infrastructure.Logger
-	firebaseSerivce services.FirebaseService
+	firebaseService services.FirebaseService
 }
 
 // NewCreateDummyAdminUser creates instance of admin user
@@ -20,7 +20,7 @@ func NewCreateDummyAdminUser(
 ) CreateDummyAdminUser {
 	return CreateDummyAdminUser{
 		logger:          logger,
-		firebaseSerivce: firebaseService,
+		firebaseService: firebaseService,
 	}
 }
 
@@ -39,7 +39,7 @@ func (c CreateDummyAdminUser) Run() {
 
 	password, _ := passwordPrompt.Run()
 
-	_, err := c.firebaseSerivce.CreateUser(email, password)
+	_, err := c.firebaseService.CreateUser(email, password)
 
 	if err != nil {
 		c.logger.Zap.Error("firebase dummy admin user can't be created: ", err.Error())

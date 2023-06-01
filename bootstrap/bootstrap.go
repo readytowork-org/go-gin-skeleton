@@ -8,6 +8,7 @@ import (
 	"boilerplate-api/api/services"
 	"boilerplate-api/api/validators"
 	"boilerplate-api/cli"
+	"boilerplate-api/docs"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/seeds"
 	"boilerplate-api/utils"
@@ -46,7 +47,7 @@ func bootstrap(
 	appStop := func(context.Context) error {
 		logger.Zap.Info("Stopping Application")
 		conn, _ := database.DB.DB()
-		conn.Close()
+		_ = conn.Close()
 		return nil
 	}
 
@@ -71,9 +72,14 @@ func bootstrap(
 			logger.Zap.Info("------ Boilerplate 📺 ------")
 			logger.Zap.Info("------------------------")
 
-			logger.Zap.Info("Migrating DB schema...")
 			go func() {
-				if env.Environment == "production"{
+				if env.Environment != "production" && env.HOST != "" {
+					logger.Zap.Info("Setting Swagger Host...")
+					docs.SwaggerInfo.Host = env.HOST
+				}
+
+				if env.Environment == "production" {
+					logger.Zap.Info("Migrating DB schema...")
 					migrations.Migrate()
 				}
 				middlewares.Setup()
@@ -81,9 +87,9 @@ func bootstrap(
 				logger.Zap.Info("🌱 seeding data...")
 				seeds.Run()
 				if env.ServerPort == "" {
-					handler.Gin.Run()
+					_ = handler.Gin.Run()
 				} else {
-					handler.Gin.Run(":" + env.ServerPort)
+					_ = handler.Gin.Run(":" + env.ServerPort)
 				}
 			}()
 			return nil

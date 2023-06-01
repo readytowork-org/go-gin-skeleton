@@ -8,13 +8,13 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-//Migrations -> Migration Struct
+// Migrations Migration Struct
 type Migrations struct {
 	logger Logger
 	env    Env
 }
 
-//NewMigrations -> return new Migrations struct
+// NewMigrations return new Migrations struct
 func NewMigrations(
 	logger Logger,
 	env Env,
@@ -25,7 +25,7 @@ func NewMigrations(
 	}
 }
 
-//Migrate -> migrates all table
+// Migrate migrates all table
 func (m Migrations) Migrate() {
 	m.logger.Zap.Info("Migrating schemas...")
 

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"regexp"
 
-	validator "github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10"
 )
 
 // UserValidator structure
@@ -14,7 +14,7 @@ type UserValidator struct {
 	Validate *validator.Validate
 }
 
-//Register Custom Validators
+// NewUserValidator Register Custom Validators
 func NewUserValidator() UserValidator {
 	v := validator.New()
 	_ = v.RegisterValidation("phone", func(fl validator.FieldLevel) bool {
@@ -26,8 +26,8 @@ func NewUserValidator() UserValidator {
 	})
 	_ = v.RegisterValidation("gender", func(fl validator.FieldLevel) bool {
 		if fl.Field().String() != "" {
-			var val_type constants.Gender
-			if err := val_type.IsValidVal(fl.Field().String()); err != nil {
+			var valType constants.Gender
+			if err := valType.IsValidVal(fl.Field().String()); err != nil {
 				return false
 			}
 		}
