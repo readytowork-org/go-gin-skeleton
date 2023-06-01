@@ -41,3 +41,27 @@ func (cc GCPBillingController) GetCost(c *gin.Context) {
 	}
 	responses.SuccessJSON(c, http.StatusOK, billingData)
 }
+
+// GCPBilling -> Get Cost
+func (cc GCPBillingController) GetBudgetInfo(c *gin.Context) {
+	billingData, err := cc.service.GetExistingBudgetList(c)
+	if err != nil {
+		cc.logger.Zap.Error("Error fetching Billing Info records", err.Error())
+		err := errors.InternalError.Wrap(err, "Failed To Find Billing info for GCP project")
+		responses.HandleError(c, err)
+		return
+	}
+	responses.SuccessJSON(c, http.StatusOK, billingData)
+}
+
+// GCPBilling -> Get Cost
+func (cc GCPBillingController) CreateUpdateBudget(c *gin.Context) {
+	billingData, err := cc.service.CreateOrUpdateBudget(c)
+	if err != nil {
+		cc.logger.Zap.Error("Error fetching Billing Info records", err.Error())
+		err := errors.InternalError.Wrap(err, "Failed To Find Billing info for GCP project")
+		responses.HandleError(c, err)
+		return
+	}
+	responses.SuccessJSON(c, http.StatusOK, billingData)
+}

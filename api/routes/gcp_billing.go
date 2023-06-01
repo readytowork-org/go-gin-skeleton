@@ -30,5 +30,7 @@ func (u GCPBillingRoutes) Setup() {
 	gcpBilling := u.router.Gin.Group("/gcp-billing")
 	{
 		gcpBilling.GET("", u.GCPBillingController.GetCost)
+		gcpBilling.GET("budget", u.GCPBillingController.GetBudgetInfo)
+		gcpBilling.POST("budget", u.GCPBillingController.CreateUpdateBudget)
 	}
 }

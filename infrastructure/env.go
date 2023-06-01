@@ -43,8 +43,12 @@ type Env struct {
 	JWT_ACCESS_TOKEN_EXPIRES_AT  int    `mapstructure:"JWT_ACCESS_TOKEN_EXPIRES_AT"`
 	JWT_REFRESH_TOKEN_EXPIRES_AT int    `mapstructure:"JWT_REFRESH_TOKEN_EXPIRES_AT"`
 
-	RateLimitPeriod time.Duration    `mapstructure:"RATE_LIMIT_PERIOD"`
-	RateLimitRequests int64    `mapstructure:"RATE_LIMIT_REQUESTS"`
+	RateLimitPeriod   time.Duration `mapstructure:"RATE_LIMIT_PERIOD"`
+	RateLimitRequests int64         `mapstructure:"RATE_LIMIT_REQUESTS"`
+
+	ProjectName       string `mapstructure:"PROJECT_NAME"`
+	BillingAccountId  string `mapstructure:"BILLING_ACCOUNT_ID"`
+	BudgetDisplayName string `mapstructure:"BUDGET_DISPLAY_NAME"`
 }
 
 // NewEnv creates a new environment

@@ -32,6 +32,8 @@ require (
 	gorm.io/gorm v1.24.2
 )
 
+require cloud.google.com/go/billing v1.13.0 // indirect
+
 require (
 	cloud.google.com/go v0.107.0 // indirect
 	cloud.google.com/go/compute v1.18.0 // indirect
