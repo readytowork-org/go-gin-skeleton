@@ -4,17 +4,16 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.16
+      - image: cimg/go:1.18
 
-      - image: circleci/mysql:8.0-ram
+      - image: cimg/mysql:8.0
         environment:
-          MYSQL_ROOT_PASSWORD: p@$$w0rd
           MYSQL_DATABASE: test_db
           MYSQL_USER: test_user
-          MYSQL_PASSWORD: p@$$w0rd
+          MYSQL_PASSWORD: p@ssw0rd
 
     parallelism: 1
-    working_directory: /go/src/github.com/readytowork-org/boilerplate-api
+    working_directory: ~/go/src/github.com/readytowork-org/boilerplate-api
 
     steps:
       - checkout
@@ -27,8 +26,8 @@ jobs:
             DB_HOST=localhost
             DB_PORT=3306
             DB_NAME=test_db
-            DB_USERNAME=user
-            DB_PASSWORD=p@$$w0rd
+            DB_USERNAME=test_user
+            DB_PASSWORD=p@ssw0rd
             MAIL_CLIENT_ID=$MAIL_CLIENT_ID
             MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
             MAIL_REFRESH_TOKEN=$MAIL_REFRESH_TOKEN
@@ -53,18 +52,7 @@ jobs:
       - run:
           name: Initialize firebase service account key file
           command: |
-            echo "{
-              \"type\": \"$TYPE_FB_SERVICE_ACCOUNT_KEY\", 
-              \"project_id\": \"$PROJECT_ID_FB_SERVICE_ACCOUNT_KEY\", 
-              \"private_key_id\": \"$PRIVATE_KEY_ID_FB_SERVICE_ACCOUNT_KEY\",
-              \"private_key\": \"$PRIVATE_KEY_FB_SERVICE_ACCOUNT_KEY\",
-              \"client_email\": \"$CLIENT_EMAIL_FB_SERVICE_ACCOUNT_KEY\",
-              \"client_id\": \"$CLIENT_ID_FB_SERVICE_ACCOUNT_KEY\",
-              \"auth_uri\": \"$AUTH_URL_FB_SERVICE_ACCOUNT_KEY\",
-              \"token_uri\": \"$TOKEN_URI_FB_SERVICE_ACCOUNT_KEY\",
-              \"auth_provider_x509_cert_url\": \"$AUTH_PROVIDER_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\",
-              \"client_x509_cert_url\": \"$CLIENT_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\"
-            }" > serviceAccountKey.json
+            echo "$FIREBASE_SERVICE_ACCOUNT_KEY" > serviceAccountKey.json
 
       - run:
           name: Build repo
@@ -126,18 +114,7 @@ jobs:
       - run:
           name: Initialize firebase service account key file
           command: |
-            echo "{
-              \"type\": \"$TYPE_FB_SERVICE_ACCOUNT_KEY\", 
-              \"project_id\": \"$PROJECT_ID_FB_SERVICE_ACCOUNT_KEY\", 
-              \"private_key_id\": \"$PRIVATE_KEY_ID_FB_SERVICE_ACCOUNT_KEY\",
-              \"private_key\": \"$PRIVATE_KEY_FB_SERVICE_ACCOUNT_KEY\",
-              \"client_email\": \"$CLIENT_EMAIL_FB_SERVICE_ACCOUNT_KEY\",
-              \"client_id\": \"$CLIENT_ID_FB_SERVICE_ACCOUNT_KEY\",
-              \"auth_uri\": \"$AUTH_URL_FB_SERVICE_ACCOUNT_KEY\",
-              \"token_uri\": \"$TOKEN_URI_FB_SERVICE_ACCOUNT_KEY\",
-              \"auth_provider_x509_cert_url\": \"$AUTH_PROVIDER_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\",
-              \"client_x509_cert_url\": \"$CLIENT_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\"
-            }" > serviceAccountKey.json
+            echo "$FIREBASE_SERVICE_ACCOUNT_KEY" > serviceAccountKey.json
 
       - run:
           name: Authenticating and configuring the Google Cloud Platform
@@ -208,18 +185,7 @@ jobs:
       - run:
           name: Initialize firebase service account key file
           command: |
-            echo "{
-               \"type\": \"$TYPE_FB_SERVICE_ACCOUNT_KEY\", 
-               \"project_id\": \"$PROJECT_ID_FB_SERVICE_ACCOUNT_KEY\", 
-               \"private_key_id\": \"$PRIVATE_KEY_ID_FB_SERVICE_ACCOUNT_KEY\",
-               \"private_key\": \"$PRIVATE_KEY_FB_SERVICE_ACCOUNT_KEY\",
-               \"client_email\": \"$CLIENT_EMAIL_FB_SERVICE_ACCOUNT_KEY\",
-               \"client_id\": \"$CLIENT_ID_FB_SERVICE_ACCOUNT_KEY\",
-               \"auth_uri\": \"$AUTH_URL_FB_SERVICE_ACCOUNT_KEY\",
-               \"token_uri\": \"$TOKEN_URI_FB_SERVICE_ACCOUNT_KEY\",
-               \"auth_provider_x509_cert_url\": \"$AUTH_PROVIDER_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\",
-               \"client_x509_cert_url\": \"$CLIENT_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\"
-             }" > serviceAccountKey.json
+            echo "$FIREBASE_SERVICE_ACCOUNT_KEY" > serviceAccountKey.json
 
       - run:
           name: Authenticating and configuring the Google Cloud Platform
