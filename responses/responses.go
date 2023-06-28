@@ -44,6 +44,10 @@ func JSONCount(c *gin.Context, statusCode int, data interface{}, count int64) {
 	c.JSON(statusCode, DataCount{Data: Data{Data: data}, Count: count})
 }
 
+func InterfaceJson(c *gin.Context, statusCode int, data interface{}) {
+	c.JSON(statusCode, data)
+}
+
 type errResponse struct {
 	Message string      `json:"message"`
 	Error   string      `json:"error"`

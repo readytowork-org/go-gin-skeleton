@@ -2,7 +2,6 @@ package paginations
 
 import (
 	"github.com/gin-gonic/gin"
-	"strconv"
 )
 
 type IPagination interface {

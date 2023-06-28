@@ -46,6 +46,12 @@ type Env struct {
 
 	RateLimitPeriod   time.Duration `mapstructure:"RATE_LIMIT_PERIOD"`
 	RateLimitRequests int64         `mapstructure:"RATE_LIMIT_REQUESTS"`
+
+	ProjectName       string `mapstructure:"PROJECT_NAME"`
+	BillingAccountId  string `mapstructure:"BILLING_ACCOUNT_ID"`
+	BudgetDisplayName string `mapstructure:"BUDGET_DISPLAY_NAME"`
+	BudgetAmount      int64  `mapstructure:"BUDGET_AMOUNT"`
+	SetBudget         int    `mapstructure:"SET_BUDGET"`
 }
 
 // NewEnv creates a new environment
