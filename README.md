@@ -25,6 +25,7 @@ Boilerplate API template includes all the common packages and setup used for API
 | `make drop`         | Drop everything inside database                |
 | `make create`       | Create new migration file(up & down)           |
 | `make crud`         | Create crud template                           |
+| `swag-generate`     | Run this command to generate swag docs         |
 
 ### Implemented Feature
 
