@@ -11,7 +11,7 @@ var Module = fx.Options(
 	fx.Provide(NewFBApp),
 	fx.Provide(NewFBAuth),
 	fx.Provide(NewFirestoreClient),
-	fx.Provide(NewBucketStorage),
+	// fx.Provide(NewBucketStorage),
 	fx.Provide(NewFCMClient),
 	fx.Provide(NewMigrations),
 	fx.Provide(NewGmailService),
