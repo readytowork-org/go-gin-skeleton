@@ -25,6 +25,9 @@ create:
 crud:
 	bash automate/scripts/crud.sh
 
+pre-commit:
+	git config core.hooksPath hooks
+
 .PHONY: migrate-up migrate-down force goto drop create
 
 .PHONY: migrate-up migrate-down force goto drop create auto-create
