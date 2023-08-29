@@ -1,20 +1,19 @@
 version: 2.1
-# this is general circleCI implementation. 
+# this is general circleCI implementation.
 # This file might need some changes after setting up project for functional CICD
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.16
+      - image: cimg/go:1.18
 
-      - image: circleci/mysql:8.0-ram
+      - image: cimg/mysql:8.0
         environment:
-          MYSQL_ROOT_PASSWORD: $DB_PASSWORD
-          MYSQL_DATABASE: $DB_NAME
-          MYSQL_USER: $DB_USERNAME
-          MYSQL_PASSWORD: $DB_PASSWORD
+          MYSQL_DATABASE: test_db
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: p@ssw0rd
 
     parallelism: 1
-    working_directory: /go/src/github.com/readytowork-org/boilerplate-api
+    working_directory: ~/go/src/github.com/readytowork-org/boilerplate-api
 
     steps:
       - checkout
@@ -22,15 +21,16 @@ jobs:
       - run:
           name: Initialize the environment variable file
           command: |
-            echo "ENVIRONMENT=$ENVIRONMENT
-            DB_HOST=$DB_HOST
-            DB_PORT=$DB_PORT
-            DB_NAME=$DB_NAME
-            DB_USERNAME=$DB_USERNAME
-            DB_PASSWORD=$DB_PASSWORD
+            echo "ENVIRONMENT=local
+            HOST=$HOST
+            DB_HOST=localhost
+            DB_PORT=3306
+            DB_NAME=test_db
+            DB_USERNAME=test_user
+            DB_PASSWORD=p@ssw0rd
             MAIL_CLIENT_ID=$MAIL_CLIENT_ID
             MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
-            MailRefreshToken=$MailRefreshToken
+            MAIL_REFRESH_TOKEN=$MAIL_REFRESH_TOKEN
             STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
             SENTRY_DSN=$SENTRY_DSN " > .env
 
@@ -52,18 +52,7 @@ jobs:
       - run:
           name: Initialize firebase service account key file
           command: |
-            echo "{
-              \"type\": \"$TYPE_FB_SERVICE_ACCOUNT_KEY\", 
-              \"project_id\": \"$PROJECT_ID_FB_SERVICE_ACCOUNT_KEY\", 
-              \"private_key_id\": \"$PRIVATE_KEY_ID_FB_SERVICE_ACCOUNT_KEY\",
-              \"private_key\": \"$PRIVATE_KEY_FB_SERVICE_ACCOUNT_KEY\",
-              \"client_email\": \"$CLIENT_EMAIL_FB_SERVICE_ACCOUNT_KEY\",
-              \"client_id\": \"$CLIENT_ID_FB_SERVICE_ACCOUNT_KEY\",
-              \"auth_uri\": \"$AUTH_URL_FB_SERVICE_ACCOUNT_KEY\",
-              \"token_uri\": \"$TOKEN_URI_FB_SERVICE_ACCOUNT_KEY\",
-              \"auth_provider_x509_cert_url\": \"$AUTH_PROVIDER_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\",
-              \"client_x509_cert_url\": \"$CLIENT_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\"
-            }" > serviceAccountKey.json
+            echo "$FIREBASE_SERVICE_ACCOUNT_KEY" > serviceAccountKey.json
 
       - run:
           name: Build repo
@@ -110,6 +99,7 @@ jobs:
           name: Initialize the environment variable file
           command: |
             echo "ENVIRONMENT=$ENVIRONMENT
+            HOST=$HOST
             DB_HOST=$DB_HOST
             DB_PORT=$DB_PORT
             DB_NAME=$DB_NAME
@@ -117,25 +107,14 @@ jobs:
             DB_PASSWORD=$DB_PASSWORD
             MAIL_CLIENT_ID=$MAIL_CLIENT_ID
             MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
-            MailRefreshToken=$MailRefreshToken
+            MAIL_REFRESH_TOKEN=$MAIL_REFRESH_TOKEN
             STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
             SENTRY_DSN=$SENTRY_DSN " > .env
 
       - run:
           name: Initialize firebase service account key file
           command: |
-            echo "{
-              \"type\": \"$TYPE_FB_SERVICE_ACCOUNT_KEY\", 
-              \"project_id\": \"$PROJECT_ID_FB_SERVICE_ACCOUNT_KEY\", 
-              \"private_key_id\": \"$PRIVATE_KEY_ID_FB_SERVICE_ACCOUNT_KEY\",
-              \"private_key\": \"$PRIVATE_KEY_FB_SERVICE_ACCOUNT_KEY\",
-              \"client_email\": \"$CLIENT_EMAIL_FB_SERVICE_ACCOUNT_KEY\",
-              \"client_id\": \"$CLIENT_ID_FB_SERVICE_ACCOUNT_KEY\",
-              \"auth_uri\": \"$AUTH_URL_FB_SERVICE_ACCOUNT_KEY\",
-              \"token_uri\": \"$TOKEN_URI_FB_SERVICE_ACCOUNT_KEY\",
-              \"auth_provider_x509_cert_url\": \"$AUTH_PROVIDER_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\",
-              \"client_x509_cert_url\": \"$CLIENT_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\"
-            }" > serviceAccountKey.json
+            echo "$FIREBASE_SERVICE_ACCOUNT_KEY" > serviceAccountKey.json
 
       - run:
           name: Authenticating and configuring the Google Cloud Platform
@@ -147,13 +126,13 @@ jobs:
       - deploy:
           name: Deploy to Google App Engine
           command: |
-            gcloud app deploy app.yml --project $GCLOUD_PROJECT_ID  --quiet
+            gcloud app deploy app.yaml --project $GCLOUD_PROJECT_ID  --quiet
 
       - deploy:
           name: Deploy CRON to Google App Engine Cloud Scheduler
           command: |
             gcloud app deploy cron.yaml --quiet
-            
+
       - run:
           name: Delete Old versions of App Engine
           command: |
@@ -191,6 +170,7 @@ jobs:
           name: Initialize the environment variable file
           command: |
             echo "ENVIRONMENT=$ENVIRONMENT
+            HOST=$HOST
             DB_HOST=$DB_HOST
             DB_PORT=$DB_PORT
             DB_NAME=$DB_NAME
@@ -198,25 +178,14 @@ jobs:
             DB_PASSWORD=$DB_PASSWORD
             MAIL_CLIENT_ID=$MAIL_CLIENT_ID
             MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
-            MailRefreshToken=$MailRefreshToken
+            MAIL_REFRESH_TOKEN=$MAIL_REFRESH_TOKEN
             STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
             SENTRY_DSN=$SENTRY_DSN " > .env
 
       - run:
           name: Initialize firebase service account key file
           command: |
-            echo "{
-               \"type\": \"$TYPE_FB_SERVICE_ACCOUNT_KEY\", 
-               \"project_id\": \"$PROJECT_ID_FB_SERVICE_ACCOUNT_KEY\", 
-               \"private_key_id\": \"$PRIVATE_KEY_ID_FB_SERVICE_ACCOUNT_KEY\",
-               \"private_key\": \"$PRIVATE_KEY_FB_SERVICE_ACCOUNT_KEY\",
-               \"client_email\": \"$CLIENT_EMAIL_FB_SERVICE_ACCOUNT_KEY\",
-               \"client_id\": \"$CLIENT_ID_FB_SERVICE_ACCOUNT_KEY\",
-               \"auth_uri\": \"$AUTH_URL_FB_SERVICE_ACCOUNT_KEY\",
-               \"token_uri\": \"$TOKEN_URI_FB_SERVICE_ACCOUNT_KEY\",
-               \"auth_provider_x509_cert_url\": \"$AUTH_PROVIDER_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\",
-               \"client_x509_cert_url\": \"$CLIENT_X509_CERT_URL_FB_SERVICE_ACCOUNT_KEY\"
-             }" > serviceAccountKey.json
+            echo "$FIREBASE_SERVICE_ACCOUNT_KEY" > serviceAccountKey.json
 
       - run:
           name: Authenticating and configuring the Google Cloud Platform
@@ -228,7 +197,7 @@ jobs:
       - deploy:
           name: Deploy to Google App Engine
           command: |
-            gcloud app deploy app.yml --project $GCLOUD_PROJECT_ID --quiet
+            gcloud app deploy app.yaml --project $GCLOUD_PROJECT_ID --quiet
 
       - deploy:
           name: Deploy CRON to Google App Engine Cloud Scheduler

@@ -10,7 +10,7 @@ import (
 // CreateAdminUser command
 type CreateAdminUser struct {
 	logger          infrastructure.Logger
-	firebaseSerivce services.FirebaseService
+	firebaseService services.FirebaseService
 }
 
 // NewCreateAdminUser creates instance of admin user
@@ -20,7 +20,7 @@ func NewCreateAdminUser(
 ) CreateAdminUser {
 	return CreateAdminUser{
 		logger:          logger,
-		firebaseSerivce: firebaseService,
+		firebaseService: firebaseService,
 	}
 }
 
@@ -40,7 +40,7 @@ func (c CreateAdminUser) Run() {
 	password, _ := passwordPrompt.Run()
 
 	c.logger.Zap.Info("creating admin user...")
-	err := c.firebaseSerivce.CreateAdminUser(email, password)
+	err := c.firebaseService.CreateAdminUser(email, password)
 
 	if err != nil {
 		c.logger.Zap.Error("firebase admin user cant be created: ", err.Error())

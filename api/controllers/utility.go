@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"boilerplate-api/api/responses"
 	"boilerplate-api/api/services"
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
+	"boilerplate-api/responses"
 	"boilerplate-api/utils"
 	"net/http"
 	"path/filepath"
@@ -32,7 +32,7 @@ func NewUtilityController(logger infrastructure.Logger,
 	}
 }
 
-// Response -> response for the util scope
+// Response for the util scope
 type Response struct {
 	Success bool        `json:"success"`
 	Message string      `json:"message"`
@@ -43,7 +43,7 @@ type Response struct {
 
 const storageURL string = "https://storage.googleapis.com/"
 
-// FileUploadHandler -> handles file upload
+// FileUploadHandler handles file upload
 func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 	file, uploadFile, err := ctx.Request.FormFile("file")
 	if err != nil {
@@ -131,10 +131,10 @@ type Input struct {
 }
 
 // FileUploadS3Handler handles aws s3 file upload
-func (cc UtilityController) FileUploadS3Handler(ctx *gin.Context) {
+func (uc UtilityController) FileUploadS3Handler(ctx *gin.Context) {
 	file, fileHeader, err := ctx.Request.FormFile("file")
 	if err != nil {
-		cc.logger.Zap.Error("Error Get File from request: ", err.Error())
+		uc.logger.Zap.Error("Error Get File from request: ", err.Error())
 		err := errors.BadRequest.Wrap(err, "Failed to get file form request")
 		responses.HandleError(ctx, err)
 		return
@@ -142,7 +142,7 @@ func (cc UtilityController) FileUploadS3Handler(ctx *gin.Context) {
 	var input Input
 	err = ctx.ShouldBind(&input)
 	if err != nil {
-		cc.logger.Zap.Error("Error Failed to bind input:: ", err.Error())
+		uc.logger.Zap.Error("Error Failed to bind input:: ", err.Error())
 		err := errors.BadRequest.Wrap(err, "Failed to bind")
 		responses.HandleError(ctx, err)
 		return
@@ -152,9 +152,9 @@ func (cc UtilityController) FileUploadS3Handler(ctx *gin.Context) {
 	fileName := utils.GenerateRandomFileName() + fileExtension
 	originalFileNamePath := *input.Path + "/" + fileName
 
-	uploadedFileURL, err := cc.s3Bucket.UploadtoS3(file, fileHeader, originalFileNamePath)
+	uploadedFileURL, err := uc.s3Bucket.UploadToS3(file, fileHeader, originalFileNamePath)
 	if err != nil {
-		cc.logger.Zap.Error("Error Failed to upload File:: ", err.Error())
+		uc.logger.Zap.Error("Error Failed to upload File:: ", err.Error())
 		err := errors.BadRequest.Wrap(err, "Failed to upload file to s3 bucket")
 		responses.HandleError(ctx, err)
 		return

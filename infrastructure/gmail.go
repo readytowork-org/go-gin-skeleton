@@ -10,7 +10,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-// NewGmailService -> receive gmail service client
+// NewGmailService receive gmail service client
 func NewGmailService(logger Logger, env Env) *gmail.Service {
 	ctx := context.Background()
 

@@ -1,18 +1,18 @@
 package models
 
-// {{ucresource}} -> DB model
-type {{ucresource}} struct {
+// {{uc_resource}} DB model
+type {{uc_resource}} struct {
 	Base
 	Title          string     `json:"title"`
 }
 
-// TableName  -> returns table name of model
-func (c {{ucresource}}) TableName() string {
-	return "{{pluralresourcetable}}"
+// TableName returns table name of model
+func (c {{uc_resource}}) TableName() string {
+	return "{{plural_resource_table}}"
 }
 
-// ToMap ->  maps {{plcresource}}
-func (c *{{ucresource}}) ToMap() map[string]interface{} {
+// ToMap  maps {{plc_resource}}
+func (c {{uc_resource}}) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"id":              c.ID,
 		"title":           c.Title,

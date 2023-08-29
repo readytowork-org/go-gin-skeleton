@@ -10,13 +10,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Router -> Gin Router
+// Router Gin Router
 type Router struct {
 	Gin *gin.Engine
 	Env Env
 }
 
-//NewRouter : all the routes are defined here
+// NewRouter : all the routes are defined here
 func NewRouter(env Env) Router {
 
 	if env.Environment != "local" {
@@ -28,10 +28,6 @@ func NewRouter(env Env) Router {
 			fmt.Printf("Sentry initialization failed: %v\n", err)
 		}
 	}
-	if env.Environment == "production" {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
 	if env.Environment == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}

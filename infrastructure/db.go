@@ -41,8 +41,8 @@ func NewDatabase(Zaplogger Logger, env Env) Database {
 			env.DBName,
 		)
 	}
-	if env.Environment == "production"{
-		newLogger = logger.Default.LogMode(logger.Silent);
+	if env.Environment == "production" {
+		newLogger = logger.Default.LogMode(logger.Silent)
 	}
 	db, err := gorm.Open(mysql.Open(url), &gorm.Config{Logger: newLogger})
 	_ = db.Exec("CREATE DATABASE IF NOT EXISTS " + env.DBName + ";")

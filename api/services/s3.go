@@ -11,14 +11,14 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
-// S3BucketService -> handles the file upload functions
+// S3BucketService handles the file upload functions
 type S3BucketService struct {
 	logger infrastructure.Logger
 	client *s3.Client
 	env    infrastructure.Env
 }
 
-// NewS3BucketService -> initilization for the AWS S3 BucketService struct
+// NewS3BucketService initialization for the AWS S3 BucketService struct
 func NewS3BucketService(
 	logger infrastructure.Logger,
 	client *s3.Client,
@@ -31,8 +31,8 @@ func NewS3BucketService(
 	}
 }
 
-// UploadFile -> uploads the file to the aws s3 bucket
-func (s S3BucketService) UploadtoS3(
+// UploadToS3 uploads the file to the aws s3 bucket
+func (s S3BucketService) UploadToS3(
 	file multipart.File,
 	fileHeader *multipart.FileHeader,
 	fileName string,
@@ -40,7 +40,7 @@ func (s S3BucketService) UploadtoS3(
 
 	uploader := manager.NewUploader(s.client)
 	result, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
-		Bucket:      aws.String(s.env.AWS_S3_BUCKET),
+		Bucket:      aws.String(s.env.AwsS3Bucket),
 		Key:         aws.String(fileName),
 		Body:        file,
 		ContentType: aws.String(fileHeader.Header.Get("content-type")),

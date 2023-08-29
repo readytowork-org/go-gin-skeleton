@@ -19,14 +19,14 @@ import (
 	"golang.org/x/oauth2/google"
 )
 
-// StorageBucketService -> handles the file upload/download functions
+// StorageBucketService the file upload/download functions
 type StorageBucketService struct {
 	logger infrastructure.Logger
 	client *storage.Client
 	env    infrastructure.Env
 }
 
-// NewStorageBucketService -> initilization for the StorageBucketService struct
+// NewStorageBucketService for the StorageBucketService struct
 func NewStorageBucketService(
 	logger infrastructure.Logger,
 	client *storage.Client,
@@ -39,7 +39,7 @@ func NewStorageBucketService(
 	}
 }
 
-// UploadBinary -> uploads the binary to the cloud storage
+// UploadBinary the binary to the cloud storage
 func (s StorageBucketService) UploadBinary(
 	ctx context.Context,
 	file []byte,
@@ -87,7 +87,7 @@ func (s StorageBucketService) UploadBinary(
 
 }
 
-// UploadFile -> uploads the file to the cloud storage
+// UploadFile uploads the file to the cloud storage
 func (s StorageBucketService) UploadFile(
 	ctx context.Context,
 	file multipart.File,
@@ -133,7 +133,7 @@ func (s StorageBucketService) UploadFile(
 	return path, nil
 }
 
-// GetObjectSignedURL -> gets the signed url for the stored object
+// GetObjectSignedURL the signed url for the stored object
 func (s StorageBucketService) GetObjectSignedURL(
 	object string,
 ) (string, error) {
@@ -167,7 +167,7 @@ func (s StorageBucketService) GetObjectSignedURL(
 	return u, nil
 }
 
-// RemoveObject -> removes the file from the storage bucket
+// RemoveObject removes the file from the storage bucket
 func (s StorageBucketService) RemoveObject(objectName string) error {
 
 	bucketName := s.env.StorageBucketName
@@ -182,7 +182,7 @@ func (s StorageBucketService) RemoveObject(objectName string) error {
 	objectToDelete := s.client.Bucket(bucketName).Object(objectName)
 	attrs, err := objectToDelete.Attrs(ctx)
 	if err != nil {
-		return fmt.Errorf("Object(%q).Attrs: %v", objectToDelete, err)
+		return fmt.Errorf("Object(%v).Attrs: %v", objectToDelete, err)
 	}
 	if err != nil {
 		return fmt.Errorf("object.Attrs: %v", err)

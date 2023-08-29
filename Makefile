@@ -2,11 +2,14 @@ include .env
 MIGRATE=docker-compose exec web migrate -path=migration -database "mysql://${DB_USERNAME}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}" -verbose
 
 dev:
-		gin appPort ${SERVER_PORT} -i run server.go
+		bash automate/scripts/gin-watch.sh ${SERVER_PORT}
+
 migrate-up:
 		$(MIGRATE) up
+
 migrate-down:
-		$(MIGRATE) down 
+		$(MIGRATE) down
+
 force:
 		@read -p  "Which version do you want to force?" VERSION; \
 		$(MIGRATE) force $$VERSION
@@ -21,6 +24,10 @@ drop:
 create:
 		@read -p  "What is the name of migration?" NAME; \
 		${MIGRATE} create -ext sql -seq -dir migration  $$NAME
+
+swag-generate:
+		swag fmt
+		swag init --parseDependency --parseInternal
 
 crud:
 	bash automate/scripts/crud.sh

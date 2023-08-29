@@ -38,7 +38,7 @@ func NewApplication(
 // Start starts cli application
 func (c Application) Start() {
 	c.logger.Zap.Info("⛑  Start CLI...")
-	names := []string{}
+	var names []string
 	commandMap := map[string]Command{}
 
 	for _, command := range c.commands {

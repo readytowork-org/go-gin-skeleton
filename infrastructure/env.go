@@ -2,12 +2,14 @@ package infrastructure
 
 import (
 	"log"
+	"time"
 
 	"github.com/spf13/viper"
 )
 
 // Env has environment stored
 type Env struct {
+	HOST        string `mapstructure:"HOST"`
 	ServerPort  string `mapstructure:"SERVER_PORT"`
 	Environment string `mapstructure:"ENVIRONMENT"`
 	LogOutput   string `mapstructure:"LogOutput"`
@@ -25,22 +27,31 @@ type Env struct {
 
 	MailClientID     string `mapstructure:"MAIL_CLIENT_ID"`
 	MailClientSecret string `mapstructure:"MAIL_CLIENT_SECRET"`
-	MailAccesstoken  string `mapstructure:"MailAccessToken"`
-	MailRefreshToken string `mapstructure:"MailRefreshToken"`
+	MailAccesstoken  string `mapstructure:"MAIL_ACCESS_TOKEN"`
+	MailRefreshToken string `mapstructure:"MAIL_REFRESH_TOKEN"`
 
-	AWS_S3_REGION  string `mapstructure:"AWS_S3_REGION"`
-	AWS_S3_BUCKET  string `mapstructure:"AWS_S3_BUCKET"`
-	AWS_ACCESS_KEY string `mapstructure:"AWS_ACCESS_KEY"`
-	AWS_SECRET_KEY string `mapstructure:"AWS_SECRET_KEY"`
+	AwsS3Region  string `mapstructure:"AWS_S3_REGION"`
+	AwsS3Bucket  string `mapstructure:"AWS_S3_BUCKET"`
+	AwsAccessKey string `mapstructure:"AWS_ACCESS_KEY"`
+	AwsSecretKey string `mapstructure:"AWS_SECRET_KEY"`
 
-	TwilioBaseURL                string `mapstructure:"TWILIO_BASE_URL"`
-	TwilioSID                    string `mapstructure:"TWILIO_SID"`
-	TwilioAuthToken              string `mapstructure:"TWILIO_AUTH_TOKEN"`
-	TwilioSMSFrom                string `mapstructure:"TWILIO_SMS_FROM"`
-	JWT_ACCESS_SECRET            string `mapstructure:"JWT_ACCESS_SECRET"`
-	JWT_REFRESH_SECRET           string `mapstructure:"JWT_REFRESH_SECRET"`
-	JWT_ACCESS_TOKEN_EXPIRES_AT  int    `mapstructure:"JWT_ACCESS_TOKEN_EXPIRES_AT"`
-	JWT_REFRESH_TOKEN_EXPIRES_AT int    `mapstructure:"JWT_REFRESH_TOKEN_EXPIRES_AT"`
+	TwilioBaseURL            string `mapstructure:"TWILIO_BASE_URL"`
+	TwilioSID                string `mapstructure:"TWILIO_SID"`
+	TwilioAuthToken          string `mapstructure:"TWILIO_AUTH_TOKEN"`
+	TwilioSMSFrom            string `mapstructure:"TWILIO_SMS_FROM"`
+	JwtAccessSecret          string `mapstructure:"JWT_ACCESS_SECRET"`
+	JwtRefreshSecret         string `mapstructure:"JWT_REFRESH_SECRET"`
+	JwtAccessTokenExpiresAt  int    `mapstructure:"JWT_ACCESS_TOKEN_EXPIRES_AT"`
+	JwtRefreshTokenExpiresAt int    `mapstructure:"JWT_REFRESH_TOKEN_EXPIRES_AT"`
+
+	RateLimitPeriod   time.Duration `mapstructure:"RATE_LIMIT_PERIOD"`
+	RateLimitRequests int64         `mapstructure:"RATE_LIMIT_REQUESTS"`
+
+	ProjectName       string `mapstructure:"PROJECT_NAME"`
+	BillingAccountId  string `mapstructure:"BILLING_ACCOUNT_ID"`
+	BudgetDisplayName string `mapstructure:"BUDGET_DISPLAY_NAME"`
+	BudgetAmount      int64  `mapstructure:"BUDGET_AMOUNT"`
+	SetBudget         int    `mapstructure:"SET_BUDGET"`
 }
 
 // NewEnv creates a new environment

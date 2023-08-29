@@ -1,6 +1,8 @@
 package services
 
 import (
+	"boilerplate-api/infrastructure"
+	"boilerplate-api/models"
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
@@ -8,8 +10,6 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
-	"boilerplate-api/infrastructure"
-	"boilerplate-api/models"
 )
 
 // ErrorResponse twilio error response
