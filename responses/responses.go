@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Success struct {
+type Message struct {
 	Msg string `json:"msg"`
 }
 
@@ -36,7 +36,7 @@ func ErrorJSON(c *gin.Context, statusCode int, data interface{}) {
 
 // SuccessJSON : json error response function
 func SuccessJSON(c *gin.Context, statusCode int, data string) {
-	c.JSON(statusCode, Success{Msg: data})
+	c.JSON(statusCode, Message{Msg: data})
 }
 
 // JSONCount : json response function
@@ -46,6 +46,18 @@ func JSONCount(c *gin.Context, statusCode int, data interface{}, count int64) {
 
 func InterfaceJson(c *gin.Context, statusCode int, data interface{}) {
 	c.JSON(statusCode, data)
+}
+
+func UnauthorizedError(ctx *gin.Context) {
+	ctx.JSON(401, Message{Msg: "Unauthorized user"})
+}
+
+func CredentialsError(ctx *gin.Context) {
+	ctx.JSON(401, Message{Msg: "Please provide valid credentials"})
+}
+
+func InternalServerError(ctx *gin.Context) {
+	ctx.JSON(500, Message{Msg: "An error has occurred. Please try again later."})
 }
 
 type errResponse struct {
@@ -67,9 +79,6 @@ func HandleError(c *gin.Context, err error) {
 	response.Message = customMessage
 
 	if customMessage == "" {
-		response.Message = "An error has occurred. Please try again later."
-	}
-	if status == 500 {
 		response.Message = "An error has occurred. Please try again later."
 	}
 	if errorContext != nil {
