@@ -44,8 +44,6 @@ If you know what you are doing you can disable this check using:
 EOF
 	exit 1
 fi
-curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.54.2
-
 # If there are whitespace errors, print the offending file names and fail.
 git diff-index --check --cached $against --
 
