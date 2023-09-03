@@ -32,9 +32,15 @@ swag-generate:
 crud:
 	bash automate/scripts/crud.sh
 
-pre-commit:
+install:
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.54.2
 	git config core.hooksPath hooks
 
-.PHONY: migrate-up migrate-down force goto drop create
+start: install
+	docker-compose up
 
-.PHONY: migrate-up migrate-down force goto drop create auto-create
+run:
+	docker-compose up
+
+
+.PHONY: migrate-up migrate-down force goto drop create auto-create 
