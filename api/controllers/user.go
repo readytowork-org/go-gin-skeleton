@@ -95,7 +95,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		return
 	}
 
-	responses.SuccessJSON(c, http.StatusOK, "User Created Successfully")
+	responses.SuccessJSON(c, "User Created Successfully")
 }
 
 // GetAllUsers Get All User
