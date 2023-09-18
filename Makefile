@@ -32,4 +32,7 @@ swag-generate:
 crud:
 	bash automate/scripts/crud.sh
 
+inject-jwt:
+	bash automate/scripts/inject_jwt.sh
+
 .PHONY: dev migrate-up migrate-down force goto drop create swag-generate crud
