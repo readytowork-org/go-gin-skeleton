@@ -1,0 +1,41 @@
+package routes
+
+import (
+	"{{{{project_name}}}}/api/controllers"
+	"{{{{project_name}}}}/api/middlewares"
+	"{{{{project_name}}}}/constants"
+	"{{{{project_name}}}}/infrastructure"
+)
+
+// JwtAuthRoutes struct
+type JwtAuthRoutes struct {
+	logger              infrastructure.Logger
+	router              infrastructure.Router
+	jwtController       controllers.JwtAuthController
+	rateLimitMiddleware middlewares.RateLimitMiddleware
+}
+
+// NewJwtAuthRoutes creates new jwt controller
+func NewJwtAuthRoutes(
+	logger infrastructure.Logger,
+	router infrastructure.Router,
+	jwtController controllers.JwtAuthController,
+	rateLimitMiddleware middlewares.RateLimitMiddleware,
+) JwtAuthRoutes {
+	return JwtAuthRoutes{
+		router:              router,
+		logger:              logger,
+		jwtController:       jwtController,
+		rateLimitMiddleware: rateLimitMiddleware,
+	}
+}
+
+// Setup Obtain Jwt Token Routes
+func (i JwtAuthRoutes) Setup() {
+	i.logger.Zap.Info(" Setting up jwt routes")
+	jwt := i.router.Gin.Group("/login").Use(i.rateLimitMiddleware.HandleRateLimit(constants.LoginRateLimit, constants.LoginPeriod))
+	{
+		jwt.POST("", i.jwtController.LoginWithJWT)
+		jwt.POST("/refresh", i.jwtController.RefreshJwtToken)
+	}
+}
