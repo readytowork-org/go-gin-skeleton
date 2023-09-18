@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"{{{{project_name}}}}/api/controllers"
-	"{{{{project_name}}}}/api/middlewares"
-	"{{{{project_name}}}}/constants"
-	"{{{{project_name}}}}/infrastructure"
+	"{{project_name}}/api/controllers"
+	"{{project_name}}/api/middlewares"
+	"{{project_name}}/constants"
+	"{{project_name}}/infrastructure"
 )
 
 // JwtAuthRoutes struct
