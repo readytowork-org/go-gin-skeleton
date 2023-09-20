@@ -24,7 +24,6 @@ create_file() {
         sed -i "s/$placeholder/$value/g" $file_to_write
 
     done
-    echo $file_to_write "created."
 }
 
 os_name=$(uname)
@@ -52,12 +51,12 @@ for entity in "${entity_path_hash[@]}"; do
     entity_name="${entity%%:*}"
     entity_path="${entity##*:}"
     file_to_write="$entity_path/${service_name}.go"
-
+    echo "Injecting ${entity_name}..."
     ## create file if not exists
     if ! test -f "$file_to_write"; then
         create_file $entity_name $file_to_write
     else
-        echo "${file_to_write} exists."
+        echo "${entity_name} exists"
     fi
 done
 
@@ -74,13 +73,28 @@ fx_init_string="var Module = fx.Options("
 for deps_value in "${fx_path_hash[@]}"; do
   deps_name="${deps_value%%:*}"
   deps_path="${deps_value##*:}"
-    echo "${deps_name} name"
-  echo "${deps_path} path"
+  echo "Injecting ${deps_name} Constructor to fx module..."
   if [[ $os_name == "Darwin" ]]; then
     sed -i "" "s/${fx_init_string}/${fx_init_string}\n\t  fx.Provide(${BASE_CONSTRUCTOR}${deps_name}),/g" $deps_path
     continue
   fi
   sed -i "s/${fx_init_string}/${fx_init_string}\n\t  fx.Provide(${BASE_CONSTRUCTOR}${deps_name}),/g" $deps_path
-  echo $deps_path "updated."
 done
+echo "Injecting Route Constructor to fx module..."
+### inject route constructor to fx module
+BASE_ROUTE_CONSTRUCTOR="NewJwtAuthRoutes"
+ROUTE_KEY="jwtAuthRoutes"
+ROUTE_Value="JwtAuthRoutes"
+fx_route_path="${ROOT}/api/routes/routes.go"
+if [[ $os_name == "Darwin" ]]; then
+  sed -i "" "s/fx.Provide(NewRoutes),/fx.Provide(NewRoutes),\n  fx.Provide(${BASE_ROUTE_CONSTRUCTOR}),/g" $fx_route_path
+  sed -i "" "s/func NewRoutes(/func NewRoutes(\n\t ${ROUTE_KEY} ${ROUTE_Value},/g" $fx_route_path
+  sed -i "" "s/return Routes{/return Routes{\n\t ${ROUTE_KEY},/g" $fx_route_path
+else
+  sed -i "s/fx.Provide(NewRoutes),/fx.Provide(NewRoutes),\n  fx.Provide(New${BASE_ROUTE_CONSTRUCTOR}),/g" $fx_route_path
+  sed -i "s/func NewRoutes(/func NewRoutes(\n\t ${ROUTE_KEY}Routes ${ROUTE_Value},/g" $fx_route_path
+  sed -i "s/return Routes{/return Routes{\n\t ${ROUTE_KEY},/g" $fx_route_path
+fi
 
+printf "\n\n*** Scaffolding Completely Successfully ***\n"
+printf "\n* Jwt Authtication Service Injected*\n\n"
