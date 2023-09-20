@@ -47,17 +47,40 @@ entity_path_hash=(
 
 )
 
-# creating file
+# #### creating file
 for entity in "${entity_path_hash[@]}"; do
     entity_name="${entity%%:*}"
     entity_path="${entity##*:}"
     file_to_write="$entity_path/${service_name}.go"
 
-    # create file if not exists
+    ## create file if not exists
     if ! test -f "$file_to_write"; then
         create_file $entity_name $file_to_write
     else
         echo "${file_to_write} exists."
     fi
+done
+
+### inject constructor to fx module
+BASE_CONSTRUCTOR="NewJwtAuth"
+
+fx_path_hash=(
+  "Controller:${ROOT}/api/controllers/controllers.go"
+  "Service:${ROOT}/api/services/services.go"
+  "MiddleWare:${ROOT}/api/middlewares/middlewares.go"
+)
+
+fx_init_string="var Module = fx.Options("
+for deps_value in "${fx_path_hash[@]}"; do
+  deps_name="${deps_value%%:*}"
+  deps_path="${deps_value##*:}"
+    echo "${deps_name} name"
+  echo "${deps_path} path"
+  if [[ $os_name == "Darwin" ]]; then
+    sed -i "" "s/${fx_init_string}/${fx_init_string}\n\t  fx.Provide(${BASE_CONSTRUCTOR}${deps_name}),/g" $deps_path
+    continue
+  fi
+  sed -i "s/${fx_init_string}/${fx_init_string}\n\t  fx.Provide(${BASE_CONSTRUCTOR}${deps_name}),/g" $deps_path
+  echo $deps_path "updated."
 done
 
