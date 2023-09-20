@@ -18,7 +18,7 @@ type JWTAuthMiddleWare struct {
 	db         infrastructure.Database
 }
 
-func NewJWTAuthMiddleWare(
+func NewJwtAuthMiddleWare(
 	jwtService services.JWTAuthService,
 	logger infrastructure.Logger,
 	env infrastructure.Env,

@@ -14,7 +14,7 @@ type JWTAuthService struct {
 	env    infrastructure.Env
 }
 
-func NewJWTAuthService(
+func NewJwtAuthService(
 	logger infrastructure.Logger,
 	env infrastructure.Env,
 ) JWTAuthService {
