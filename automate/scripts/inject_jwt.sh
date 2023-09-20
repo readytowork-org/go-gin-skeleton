@@ -96,5 +96,6 @@ else
   sed -i "s/return Routes{/return Routes{\n\t ${ROUTE_KEY},/g" $fx_route_path
 fi
 
+go mod tidy
 printf "\n\n*** Scaffolding Completely Successfully ***\n"
 printf "\n* Jwt Authtication Service Injected*\n\n"
