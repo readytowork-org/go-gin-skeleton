@@ -16,6 +16,7 @@ type UserRoutes struct {
 	jwtMiddleware       middlewares.JWTAuthMiddleWare
 	trxMiddleware       middlewares.DBTransactionMiddleware
 	rateLimitMiddleware middlewares.RateLimitMiddleware
+	redisMiddleware     middlewares.RedisMiddleware
 }
 
 // NewUserRoutes creates new user controller
@@ -27,6 +28,7 @@ func NewUserRoutes(
 	jwtMiddleware middlewares.JWTAuthMiddleWare,
 	trxMiddleware middlewares.DBTransactionMiddleware,
 	rateLimitMiddleware middlewares.RateLimitMiddleware,
+	redisMiddleware middlewares.RedisMiddleware,
 ) UserRoutes {
 	return UserRoutes{
 		router:              router,
@@ -36,6 +38,7 @@ func NewUserRoutes(
 		jwtMiddleware:       jwtMiddleware,
 		trxMiddleware:       trxMiddleware,
 		rateLimitMiddleware: rateLimitMiddleware,
+		redisMiddleware:     redisMiddleware,
 	}
 }
 
@@ -44,8 +47,8 @@ func (i UserRoutes) Setup() {
 	i.logger.Zap.Info(" Setting up user routes")
 	users := i.router.Gin.Group("/users").Use(i.rateLimitMiddleware.HandleRateLimit(constants.BasicRateLimit, constants.BasicPeriod))
 	{
-		users.GET("", i.userController.GetAllUsers)
+		users.GET("", i.redisMiddleware.VerifyRedisCache(), i.userController.GetAllUsers)
 		users.POST("", i.trxMiddleware.DBTransactionHandle(), i.userController.CreateUser)
 	}
-	i.router.Gin.GET("/profile", i.jwtMiddleware.Handle(), i.userController.GetUserProfile)
+	i.router.Gin.GET("/profile", i.jwtMiddleware.Handle(), i.redisMiddleware.VerifyRedisCache(), i.userController.GetUserProfile)
 }

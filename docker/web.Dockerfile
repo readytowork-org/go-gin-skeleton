@@ -17,6 +17,8 @@ RUN go install github.com/go-delve/delve/cmd/dlv@latest
 
 COPY . /clean_web
 
+RUN go get github.com/go-redis/redis
+
 ARG VERSION="4.13.0"
 
 RUN set -x \
