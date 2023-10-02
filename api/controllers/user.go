@@ -9,7 +9,9 @@ import (
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/paginations"
 	"boilerplate-api/responses"
+	"boilerplate-api/utils"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,10 +19,11 @@ import (
 )
 
 type UserController struct {
-	logger      infrastructure.Logger
-	userService services.UserService
-	env         infrastructure.Env
-	validator   validators.UserValidator
+	logger       infrastructure.Logger
+	userService  services.UserService
+	env          infrastructure.Env
+	validator    validators.UserValidator
+	oAuthService services.OAuthService
 }
 
 // NewUserController Creates New user controller
@@ -29,12 +32,14 @@ func NewUserController(
 	userService services.UserService,
 	env infrastructure.Env,
 	validator validators.UserValidator,
+	oAuthService services.OAuthService,
 ) UserController {
 	return UserController{
-		logger:      logger,
-		userService: userService,
-		env:         env,
-		validator:   validator,
+		logger:       logger,
+		userService:  userService,
+		env:          env,
+		validator:    validator,
+		oAuthService: oAuthService,
 	}
 }
 
@@ -146,4 +151,39 @@ func (cc UserController) GetUserProfile(c *gin.Context) {
 	}
 
 	responses.JSON(c, http.StatusOK, user)
+}
+
+func (cc UserController) OAuthSignIn(c *gin.Context) {
+	randomString := utils.GenerateRandomCode(8)
+	url := cc.oAuthService.GetURL(randomString)
+	fmt.Println(url)
+	c.Redirect(http.StatusTemporaryRedirect, url)
+
+}
+
+func (cc UserController) OAuthCallback(c *gin.Context) {
+	// state := c.Request.FormValue("state")
+	code := c.Request.FormValue("code")
+
+	// TODO: check random string in session and add user to database if user doesnt exists
+
+	token, err := cc.oAuthService.GetToken(code)
+
+	if err != nil {
+		cc.logger.Zap.Error("error getting oauth token")
+	}
+
+	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
+
+	if err != nil {
+		cc.logger.Zap.Error("error getting oauth response")
+	}
+	defer response.Body.Close()
+	data, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		cc.logger.Zap.Error("error reading oauth response body")
+	}
+
+	responses.JSON(c, http.StatusOK, data)
+
 }

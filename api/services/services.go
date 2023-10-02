@@ -12,4 +12,5 @@ var Module = fx.Options(
 	fx.Provide(NewS3BucketService),
 	fx.Provide(NewJWTAuthService),
 	fx.Provide(NewGCPBillingService),
+	fx.Provide(NewOAuthService),
 )
