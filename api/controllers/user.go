@@ -18,7 +18,7 @@ import (
 
 type UserController struct {
 	logger      infrastructure.Logger
-	userService services.UserService
+	userService services.UserServiceInterface
 	env         infrastructure.Env
 	validator   validators.UserValidator
 }
@@ -26,7 +26,7 @@ type UserController struct {
 // NewUserController Creates New user controller
 func NewUserController(
 	logger infrastructure.Logger,
-	userService services.UserService,
+	userService services.UserServiceInterface,
 	env infrastructure.Env,
 	validator validators.UserValidator,
 ) UserController {
