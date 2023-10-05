@@ -13,19 +13,24 @@ Boilerplate API template includes all the common packages and setup used for API
 - Run `docker-compose exec web sh`
 - After running type `./__debug_bin cli` you will start cli application.
 - Choose the commands to run afterwards.
+- To run `docker-compose up` ( with default configuration will run at 5000 and adminer runs at 5001)
+- To run with setting up pre-commit hook `make start` ( with default configuration will run at 5000 and adminer runs at 5001`)
 
 #### Migration Commands 🛳
 
-| Command             | Desc                                           |
-| ------------------- | ---------------------------------------------- |
-| `make migrate-up`   | runs migration up command                      |
-| `make migrate-down` | runs migration down command                    |
-| `make force`        | Set particular version but don't run migration |
-| `make goto`         | Migrate to particular version                  |
-| `make drop`         | Drop everything inside database                |
-| `make create`       | Create new migration file(up & down)           |
-| `make crud`         | Create crud template                           |
-| `swag-generate`     | Run this command to generate swag docs         |
+| Command             | Desc                                                 |
+| ------------------- | ---------------------------------------------------- |
+| `make install`      | installs goalngci-lint and change the hooks config   |
+| `make start`        | setup pre-commit hook and runs the project           |
+| `make run`          | runs the project                                     |
+| `make migrate-up`   | runs migration up command                            |
+| `make migrate-down` | runs migration down command                          |
+| `make force`        | Set particular version but don't run migration       |
+| `make goto`         | Migrate to particular version                        |
+| `make drop`         | Drop everything inside database                      |
+| `make create`       | Create new migration file(up & down)                 |
+| `make crud`         | Create crud template                                 |
+| `swag-generate`     | Run this command to generate swag docs               |
 
 ### Implemented Feature
 
