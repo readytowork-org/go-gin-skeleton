@@ -32,6 +32,9 @@ swag-generate:
 crud:
 	bash automate/scripts/crud.sh
 
+create-app:
+	bash automate/scripts/new_app.sh
+
 install:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.54.2
 	git config core.hooksPath hooks
