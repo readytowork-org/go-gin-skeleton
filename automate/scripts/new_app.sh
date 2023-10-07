@@ -2,9 +2,7 @@
 
 set -e
 
-printf "======================\n"
-printf "Creating new app\n"
-printf "======================\n"
+
 
 os_name=$(uname)
 ROOT=$(pwd)
@@ -12,9 +10,16 @@ read -r _ project_name _ <go.mod
 project_name=$(echo $project_name | tr -d '\r')
 app_directory="${ROOT}/apps"
 
-printf "*App name should be in snake case eg: my_app *\n"
-echo "Enter app name:"
+
+printf " App name should be in snake_case eg: my_app *\n"
+echo "*Enter app name:"
 read app_name
+
+# check if app name is empty or not
+if [ -z "$app_name" ]; then
+    echo "App name is empty. Please enter a non-empty name."
+    exit
+fi
 
 # Check if the app exists
 if [ -d "$app_directory/${app_name}" ]; then
@@ -24,6 +29,7 @@ else
   mkdir ${app_directory}/${app_name}
 fi
 
+# convert string to pascal case
 make_pascal_case_str() {
   pascal_case=""
   # Split the string into an array using '_' as the delimiter
@@ -38,11 +44,7 @@ make_pascal_case_str() {
   echo "$pascal_case"
 }
 
-create_package_name(){
-    output=$(echo "$1" | tr -d '_')
-    echo "$output"
-}
-
+#create file
 create_file() {
     #pass first parameter as entity name
     #pass second parameter as file to write
@@ -63,13 +65,10 @@ create_file() {
     done
 }
 
-
-package_name=$(create_package_name $app_name)
+printf "* Creating new app: ${app_name} *\n"
 method_name=$(make_pascal_case_str $app_name)
 
-
 placeholder_value_hash=(
-  "{{package_name}}:$package_name"
   "{{app_name}}:$app_name"
   "{{project_name}}:$project_name"
   "{{app_uppercase}}:$method_name"
@@ -86,6 +85,8 @@ entity_path_hash=(
   "services:${ROOT}/apps/${app_name}"
 )
 
+
+
 for entity in "${entity_path_hash[@]}"; do
     entity_name="${entity%%:*}"
     entity_path="${entity##*:}"
@@ -94,5 +95,37 @@ for entity in "${entity_path_hash[@]}"; do
 
 done
 
+# setting up constructors and routes
+config_path="${ROOT}/config/conf.go"
+router_path="${ROOT}/config/router.go"
+import_name="${project_name}/apps/${app_name}"
 
+fx_init_string="var InstalledApps = fx.Options("
 
+if [[ $os_name == "Darwin" ]]; then
+
+  sed -i '' -e "/^import (/a\\
+  \"$import_name\"
+  " $config_path
+ 
+  sed -i "" "s/${fx_init_string}/${fx_init_string}\n\t  ${app_name}.Module,/g" $config_path
+else
+sed -i "s/${fx_init_string}/${fx_init_string}\n\t  ${app_name}.Module,/g" $config_path
+fi
+
+# router
+
+if [[ $os_name == "Darwin" ]]; then
+  sed -i '' -e "/^import (/a\\
+  \"$import_name\"
+  " $router_path
+
+  sed -i "" "s/func RoutersConstructor(/func RoutersConstructor(\n\t ${app_name} ${app_name}.Route,/g" $router_path
+  sed -i "" "s/return Routes{/return Routes{\n\t ${app_name},/g" $router_path
+
+else
+  sed -i "s/func NewRoutes(/func NewRoutes(\n\t ${app_name}Routes ${app_name}.Route,/g" $router_path
+  sed -i "s/return Routes{/return Routes{\n\t ${app_name},/g" $router_path
+fi
+
+printf "* ${app_name} app created successfully. *\n"
