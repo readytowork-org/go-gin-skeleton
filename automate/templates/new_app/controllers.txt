@@ -1,0 +1,36 @@
+package {{app_name}}
+
+import (
+	"{{project_name}}/errors"
+	"{{project_name}}/infrastructure"
+	"{{project_name}}/responses"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+type Controller struct {
+	logger  infrastructure.Logger
+	service Service
+}
+
+func ControllerConstuctor(
+	logger infrastructure.Logger,
+	service Service,
+) Controller {
+	return Controller{
+		logger:  logger,
+		service: service,
+	}
+}
+
+func (cc Controller) {{app_uppercase}}Api(c *gin.Context) {
+	data, err := cc.service.{{app_uppercase}}Api()
+	if err != nil {
+		cc.logger.Zap.Error("Error [{{app_uppercase}}Api] (ShouldBindJson) : ", err)
+		err := errors.BadRequest.Wrap(err, "Something went wrong")
+		responses.HandleError(c, err)
+		return
+	}
+	responses.JSON(c, http.StatusOK, data)
+}

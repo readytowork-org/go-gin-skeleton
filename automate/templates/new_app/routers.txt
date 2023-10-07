@@ -1,0 +1,32 @@
+package {{app_name}}
+
+import (
+	"{{project_name}}/infrastructure"
+)
+
+type Route struct {
+	logger     infrastructure.Logger
+	router     infrastructure.Router
+	controller Controller
+}
+
+func RouteConstructor(
+	logger infrastructure.Logger,
+	router infrastructure.Router,
+	controller Controller,
+) Route {
+	return Route{
+		router:     router,
+		logger:     logger,
+		controller: controller,
+	}
+}
+
+func (i Route) Setup() {
+	i.logger.Zap.Info("->Setting up {{app_name}} routes<-")
+	{{app_name}} := i.router.Gin.Group("{{app_name}}")
+	{
+		{{app_name}}.GET("", i.controller.{{app_uppercase}}Api)
+
+	}
+}
