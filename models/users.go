@@ -9,10 +9,18 @@ import (
 type User struct {
 	Base
 	Email    string `gorm:"email" json:"email" validate:"required,email"`
-	FullName string `gorm:"full_name" json:"full_name" validate:"required"`
-	Phone    string `gorm:"phone" json:"phone"  validate:"required,phone"`
-	Gender   string `gorm:"gender" json:"gender" validate:"required,gender"`
+	FullName string `gorm:"full_name" json:"full_name"`
+	Phone    string `gorm:"phone" json:"phone"  validate:"phone"`
+	Gender   string `gorm:"gender" json:"gender" validate:"gender"`
 	Password string `gorm:"password" json:"password" validate:"required"`
+}
+
+type OAuthUser struct {
+	Base
+	OAuthId       string `json:"id"`
+	Name          string `json:"name"`
+	Email         string `gorm:"email" json:"email" validate:"required,email"`
+	VerifiedEmail bool   `gorm:"-" json:"verified_email" validate:"required"`
 }
 
 // TableName gives table name of model

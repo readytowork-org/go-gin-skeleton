@@ -7,9 +7,11 @@ import (
 	"boilerplate-api/dtos"
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
+	"boilerplate-api/models"
 	"boilerplate-api/paginations"
 	"boilerplate-api/responses"
 	"boilerplate-api/utils"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -153,6 +155,14 @@ func (cc UserController) GetUserProfile(c *gin.Context) {
 	responses.JSON(c, http.StatusOK, user)
 }
 
+// OAuthSignIn Redirects to sign in page
+// @Summary				redirect to sign in page
+// @Description			redirect to sign in page
+// @Produce				text/html
+// @Tags				User
+// @Success 			200 {array} text/html
+// @Failure      		500 {object} responses.Error
+// @Router				/oauth/sign-in [post]
 func (cc UserController) OAuthSignIn(c *gin.Context) {
 	randomString := utils.GenerateRandomCode(8)
 	url := cc.oAuthService.GetURL(randomString)
@@ -162,10 +172,10 @@ func (cc UserController) OAuthSignIn(c *gin.Context) {
 }
 
 func (cc UserController) OAuthCallback(c *gin.Context) {
-	// state := c.Request.FormValue("state")
-	code := c.Request.FormValue("code")
+	trx := c.MustGet(constants.DBTransaction).(*gorm.DB)
+	resData := models.OAuthUser{}
 
-	// TODO: check random string in session and add user to database if user doesnt exists
+	code := c.Request.FormValue("code")
 
 	token, err := cc.oAuthService.GetToken(code)
 
@@ -184,6 +194,42 @@ func (cc UserController) OAuthCallback(c *gin.Context) {
 		cc.logger.Zap.Error("error reading oauth response body")
 	}
 
-	responses.JSON(c, http.StatusOK, data)
+	if err := json.Unmarshal(data, &resData); err != nil {
+		cc.logger.Zap.Error("Error [OAuthSignUp] (ShouldBindJson) : ", err)
+		err := errors.BadRequest.Wrap(err, "Failed to bind oauth user data")
+		responses.HandleError(c, err)
+		return
+	}
+
+	// TODO:
+	// Perform the logic as per requirement. For now, we are adding the new user to database if the user doesn't exist
+	userInfo, checkUserErr := cc.userService.GetOneUserWithEmail(resData.Email)
+
+	// Add User if User not found
+	if checkUserErr == gorm.ErrRecordNotFound {
+		// Use id from oauth as Password and ask user to update it later or make changes in DB to set empty password and add a password later
+		user := models.User{}
+		user.Email = resData.Email
+		user.Password = resData.OAuthId
+		user.FullName = resData.Name
+
+		if err := cc.userService.WithTrx(trx).CreateUser(user); err != nil {
+			cc.logger.Zap.Error("Error [CreateUser] [db CreateUser]: ", err.Error())
+			err := errors.InternalError.Wrap(err, "Failed to create user")
+			responses.HandleError(c, err)
+			return
+		}
+
+		responses.SuccessJSON(c, http.StatusOK, "User Created Successfully")
+	}
+
+	if checkUserErr != nil {
+		cc.logger.Zap.Error("Error finding user profile", checkUserErr.Error())
+		err := errors.InternalError.Wrap(checkUserErr, "Failed to get users profile data")
+		responses.HandleError(c, err)
+		return
+	}
+
+	responses.JSON(c, http.StatusOK, userInfo)
 
 }

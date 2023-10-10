@@ -51,6 +51,6 @@ func (i UserRoutes) Setup() {
 	oAuth := i.router.Gin.Group("/oauth")
 	{
 		oAuth.POST("/sign-in", i.userController.OAuthSignIn)
-		oAuth.POST("/callback", i.trxMiddleware.DBTransactionHandle(), i.userController.OAuthCallback)
+		oAuth.GET("/callback", i.trxMiddleware.DBTransactionHandle(), i.userController.OAuthCallback)
 	}
 }
