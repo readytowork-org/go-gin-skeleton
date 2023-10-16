@@ -21,8 +21,8 @@ type Pagination struct {
 	Sort     string `form:"sort"`
 	Keyword  string `form:"keyword"`
 	Offset   int    `form:"page,default=1"`
-	All      bool   `form:all`
-	PageSize int    `form:page_size,default=10`
+	All      bool   `form:"all"`
+	PageSize int    `form:"page_size,default=10"`
 }
 
 // Build builds the pagination
