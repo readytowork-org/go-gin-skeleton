@@ -33,15 +33,15 @@ func (c ProjectBudgetSeed) getContext() context.Context {
 	ctx := context.Background()
 
 	// Create a context.WithCancel() to create a cancellable context
-	context.WithCancel(ctx)
+	defer context.WithCancel(ctx)
 
 	// Create a context.WithTimeout() to create a context with a timeout
 	timeout := 5 * time.Second
-	context.WithTimeout(ctx, timeout)
+	defer context.WithTimeout(ctx, timeout)
 
 	// Create a context.WithDeadline() to create a context with a deadline
 	deadline := time.Now().Add(10 * time.Second)
-	context.WithDeadline(ctx, deadline)
+	defer context.WithDeadline(ctx, deadline)
 
 	return ctx
 }
