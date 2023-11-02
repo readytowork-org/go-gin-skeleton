@@ -59,16 +59,14 @@ GREEN=$(tput setaf 2)
 if [ -n "$GO_FILES" ]; then
   # Run gofmt on each staged Go file
     for FILE in $GO_FILES; do
-        $(go env GOPATH)/bin/golangci-lint run $FILE
-        if [[ $? != 0 ]]; then
-            printf "${RED}Linting failed! ${NORMAL}Please fix errors before committing.\n"
-            exit 1
-        fi
         gofmt -w $FILE
     done
-
-  # Add the formatted files back to the staging area
-	git add $GO_FILES
-
-  	echo "Go code formatting applied successfully."
 fi
+
+$(go env GOPATH)/bin/golangci-lint run 
+if [[ $? != 0 ]]; then
+	printf "${RED}Linting failed! ${NORMAL}Please fix errors before committing.\n"
+	exit 1
+fi
+git add $GO_FILES
+echo "Go code formatting applied suåccessfully."
