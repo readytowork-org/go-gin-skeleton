@@ -5,15 +5,24 @@ import (
 	"boilerplate-api/dtos"
 	"boilerplate-api/models"
 	"boilerplate-api/paginations"
+
 	"gorm.io/gorm"
 )
 
+type UserServiceInterface interface {
+	GetAllUsers(pagination paginations.UserPagination) ([]dtos.GetUserResponse, int64, error)
+	CreateUser(user models.User) error
+	GetOneUser(Id string) (dtos.GetUserResponse, error)
+	WithTrx(trxHandle *gorm.DB) UserService
+	GetOneUserWithEmail(Email string) (models.User, error)
+	GetOneUserWithPhone(Phone string) (models.User, error)
+}
 type UserService struct {
 	repository repository.UserRepository
 }
 
 // NewUserService Creates New user service
-func NewUserService(repository repository.UserRepository) UserService {
+func NewUserService(repository repository.UserRepository) UserServiceInterface {
 	return UserService{
 		repository: repository,
 	}
@@ -28,7 +37,7 @@ func (c UserService) WithTrx(trxHandle *gorm.DB) UserService {
 // CreateUser to create the User
 func (c UserService) CreateUser(user models.User) error {
 	err := c.repository.Create(user)
-	return err
+	return err	
 }
 
 // GetAllUsers to get all the User
