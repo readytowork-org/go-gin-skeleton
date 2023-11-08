@@ -2,13 +2,14 @@ package responses
 
 import (
 	"boilerplate-api/errors"
+	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
 )
 
-type Success struct {
-	Msg string `json:"msg"`
+type Message struct {
+	Msg string `json:"message"`
 }
 
 type Error struct {
@@ -30,13 +31,13 @@ func JSON(c *gin.Context, statusCode int, data interface{}) {
 }
 
 // ErrorJSON : json error response function
-func ErrorJSON(c *gin.Context, statusCode int, data interface{}) {
-	c.JSON(statusCode, Error{Error: data})
+func ErrorJSON(c *gin.Context, statusCode int, errData interface{}) {
+	c.JSON(statusCode, Error{Error: errData})
 }
 
 // SuccessJSON : json error response function
-func SuccessJSON(c *gin.Context, statusCode int, data string) {
-	c.JSON(statusCode, Success{Msg: data})
+func SuccessJSON(c *gin.Context, data string) {
+	c.JSON(http.StatusOK, Message{Msg: data})
 }
 
 // JSONCount : json response function
@@ -46,6 +47,18 @@ func JSONCount(c *gin.Context, statusCode int, data interface{}, count int64) {
 
 func InterfaceJson(c *gin.Context, statusCode int, data interface{}) {
 	c.JSON(statusCode, data)
+}
+
+func UnauthorizedError(ctx *gin.Context) {
+	ctx.JSON(http.StatusUnauthorized, Message{Msg: "Unauthorized user"})
+}
+
+func CredentialsError(ctx *gin.Context) {
+	ctx.JSON(http.StatusUnauthorized, Message{Msg: "Please provide valid credentials"})
+}
+
+func InternalServerError(ctx *gin.Context) {
+	ctx.JSON(http.StatusInternalServerError, Message{Msg: "An error has occurred. Please try again later."})
 }
 
 type errResponse struct {
@@ -67,9 +80,6 @@ func HandleError(c *gin.Context, err error) {
 	response.Message = customMessage
 
 	if customMessage == "" {
-		response.Message = "An error has occurred. Please try again later."
-	}
-	if status == 500 {
 		response.Message = "An error has occurred. Please try again later."
 	}
 	if errorContext != nil {

@@ -57,7 +57,7 @@ func (cc {{uc_resource}}Controller) Create{{uc_resource}}(c *gin.Context) {
 		return
 	}
 
-	responses.SuccessJSON(c, http.StatusOK, "{{uc_resource}} Created Successfully")
+	responses.SuccessJSON(c, "{{uc_resource}} Created Successfully")
 }
 
 // GetAll{{uc_resource}} Get All {{uc_resource}}
@@ -140,7 +140,7 @@ func (cc {{uc_resource}}Controller) UpdateOne{{uc_resource}}(c *gin.Context) {
 		return
 	}
 
-	responses.SuccessJSON(c, http.StatusOK, "{{uc_resource}} Updated Successfully")
+	responses.SuccessJSON(c, "{{uc_resource}} Updated Successfully")
 }
 
 // DeleteOne{{uc_resource}} Delete One {{uc_resource}} By Id
@@ -163,5 +163,5 @@ func (cc {{uc_resource}}Controller) DeleteOne{{uc_resource}}(c *gin.Context) {
 		return
 	}
 
-	responses.SuccessJSON(c, http.StatusOK, "{{uc_resource}} Deleted Successfully")
+	responses.SuccessJSON(c, "{{uc_resource}} Deleted Successfully")
 }
