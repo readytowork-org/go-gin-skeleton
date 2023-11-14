@@ -7,17 +7,20 @@ import (
 type Route struct {
 	logger     infrastructure.Logger
 	router     infrastructure.Router
+	trx middlewares.DBTransaction 
 	controller Controller
 }
 
 func RouteConstructor(
 	logger infrastructure.Logger,
 	router infrastructure.Router,
+	trx middlewares.DBTransaction,
 	controller Controller,
 ) Route {
 	return Route{
-		router:     router,
 		logger:     logger,
+		router:     router,
+		trx:     trx,
 		controller: controller,
 	}
 }
