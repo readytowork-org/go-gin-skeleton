@@ -1,4 +1,4 @@
-package userrouter
+package user_router
 
 import (
 	"boilerplate-api/apps/user"
