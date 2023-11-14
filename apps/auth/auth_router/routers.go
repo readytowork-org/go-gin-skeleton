@@ -1,4 +1,4 @@
-package authrouter
+package auth_router
 
 import (
 	"boilerplate-api/apps/auth"
