@@ -1,6 +1,9 @@
 package config
 
 import (
+	auth "boilerplate-api/apps/auth/auth_router"
+	user "boilerplate-api/apps/user/user_router"
+
 	"go.uber.org/fx"
 )
 
@@ -18,8 +21,14 @@ type Route interface {
 }
 
 // NewRoutes sets up routes
-func RoutersConstructor() Routes {
-	return Routes{}
+func RoutersConstructor(
+	user user.Route,
+	auth auth.Route,
+) Routes {
+	return Routes{
+		user,
+		auth,
+	}
 }
 
 // Setup all the route
