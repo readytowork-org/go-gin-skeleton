@@ -1,7 +1,7 @@
 package main
 
 import (
-	"boilerplate-api/bootstrap"
+	"boilerplate-api/config"
 
 	"go.uber.org/fx"
 )
@@ -11,5 +11,5 @@ import (
 // @description An API in Go using Gin framework
 // @host 		localhost:8000
 func main() {
-	fx.New(bootstrap.Module).Run()
+	fx.New(config.Module).Run()
 }
