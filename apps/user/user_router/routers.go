@@ -11,7 +11,6 @@ type Route struct {
 	router     infrastructure.Router
 	controller user.Controller
 	trx        middlewares.DBTransaction
-	jwt        middlewares.JWTAuthMiddleWare
 }
 
 func RouteConstructor(
@@ -19,14 +18,12 @@ func RouteConstructor(
 	router infrastructure.Router,
 	controller user.Controller,
 	trx middlewares.DBTransaction,
-	jwt middlewares.JWTAuthMiddleWare,
 ) Route {
 	return Route{
 		router:     router,
 		logger:     logger,
 		controller: controller,
 		trx:        trx,
-		jwt:        jwt,
 	}
 }
 
@@ -38,5 +35,5 @@ func (i Route) Setup() {
 		users.GET("", i.controller.GetAllUsers)
 		users.POST("", i.trx.DBTransactionHandle(), i.controller.CreateUser)
 	}
-	i.router.Gin.GET("/profile", i.jwt.Handle(), i.controller.GetUserProfile)
+	i.router.Gin.GET("/profile", i.controller.GetUserProfile)
 }
