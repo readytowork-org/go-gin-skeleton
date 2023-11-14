@@ -7,18 +7,18 @@ import (
 type Gender string
 
 const (
-	Male   Gender = "male"
-	Female Gender = "female"
-	Other  Gender = "other"
+	Male   Gender = "M"
+	Female Gender = "F"
+	Other  Gender = "O"
 )
 
 func (r Gender) IsValidVal(val string) error {
 	switch val {
-	case "male":
+	case "M":
 		return nil
-	case "female":
+	case "F":
 		return nil
-	case "other":
+	case "O":
 		return nil
 	default:
 		return fmt.Errorf("invalid user relation status: %q", val)
