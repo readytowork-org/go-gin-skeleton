@@ -1,19 +1,15 @@
-package bootstrap
+package config
 
 import (
-	"boilerplate-api/config"
 	"boilerplate-api/infrastructure"
-	"boilerplate-api/middlewares"
 	"boilerplate-api/utils"
 	"context"
 
 	"go.uber.org/fx"
 )
 
-// Module exported for initializing application
 var Module = fx.Options(
-	config.InstalledApps,
-	middlewares.Module,
+	InstalledApps,
 	fx.Invoke(bootstrap),
 )
 
@@ -24,7 +20,7 @@ func bootstrap(
 	logger infrastructure.Logger,
 	database infrastructure.Database,
 	migrations infrastructure.Migrations,
-	routes config.Routes,
+	routes Routes,
 ) {
 
 	appStop := func(context.Context) error {
