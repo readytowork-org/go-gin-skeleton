@@ -7,5 +7,4 @@ var Module = fx.Options(
 	fx.Provide(ControllerConstuctor),
 	fx.Provide(ServiceConstuctor),
 	fx.Provide(RepositoryConstuctor),
-	fx.Provide(RouteConstructor),
 )

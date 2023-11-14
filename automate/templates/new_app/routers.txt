@@ -1,21 +1,23 @@
-package {{app_name}}
+package {{route_package}}
 
 import (
+	"{{project_name}}/apps/{{app_name}}"
 	"{{project_name}}/infrastructure"
+	"{{project_name}}/middlewares"
 )
 
 type Route struct {
 	logger     infrastructure.Logger
 	router     infrastructure.Router
 	trx middlewares.DBTransaction 
-	controller Controller
+	controller {{app_name}}.Controller
 }
 
 func RouteConstructor(
 	logger infrastructure.Logger,
 	router infrastructure.Router,
 	trx middlewares.DBTransaction,
-	controller Controller,
+	controller {{app_name}}.Controller,
 ) Route {
 	return Route{
 		logger:     logger,
