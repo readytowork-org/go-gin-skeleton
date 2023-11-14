@@ -35,6 +35,9 @@ crud:
 create-app:
 	bash automate/scripts/new_app.sh
 
+inject-auth:
+	bash automate/scripts/inject_auth.sh
+
 install:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.54.2
 	git config core.hooksPath hooks
