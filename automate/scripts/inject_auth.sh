@@ -9,10 +9,10 @@ project_name=$(echo $project_name | tr -d '\r')
 app_directory="${ROOT}/apps"
 
 
-printf "Available authentication systems: *\n"
-printf "1. Jwt Authentication system *\n"
-printf "2. Firebase Authentication system *\n"
-echo "*Enter Service number you want to inject :"
+printf "\nAvailable authentication systems:\n"
+printf "1. Jwt Authentication system \n"
+printf "2. Firebase Authentication system \n"
+printf "\n*Enter Service number you want to inject: "
 read service_id
 
 app_name="auth"
@@ -34,16 +34,60 @@ jwt_entity_path_hash=(
   "jwt_auth:${ROOT}/middlewares/"
 )
 
+config_path="${ROOT}/config/conf.go"
+middleware_path="${ROOT}/middlewares/fx.go"
+router_path="${ROOT}/config/router.go"
+import_name="${project_name}/apps/${app_name}"
+import_name_router="${project_name}/apps/${app_name}/${app_name}_router"
+jwt_fx_installed_app_string="var InstalledApps = fx.Options("
+fx_installed_route_string="var InstalledRoutes = fx.Options("
+jwt_middleware_fx_module_string="var Module = fx.Options("
+
+
+jwt_inject_dependency() {
+    if [[ $os_name == "Darwin" ]]; then
+        sed -i '' -e "/^import (/a\\
+        \"$import_name\"
+        " $config_path
+
+        sed -i '' -e "/^import (/a\\
+        \"$import_name_router\"
+        " $config_path
+        # installed app
+        sed -i "" "s/${jwt_fx_installed_app_string}/${jwt_fx_installed_app_string}\n\t  ${app_name}.Module,/g" $config_path
+        # InstalledRoutes
+        sed -i "" "s/${fx_installed_route_string}/${fx_installed_route_string}\n\t  fx.Provide(${app_name}_router.RouteConstructor),/g" $config_path
+        # middleware fx
+        sed -i "" "s/${jwt_middleware_fx_module_string}/${jwt_middleware_fx_module_string}\n\t  fx.Provide(NewJWTAuthMiddleWare),/g" $middleware_path
+
+        # router
+        sed -i '' -e "/^import (/a\\
+        \"$import_name_router\"
+        " $router_path
+        sed -i "" "s/func RoutersConstructor(/func RoutersConstructor(\n\t AuthRoutes auth_router.Route,/g" $router_path
+        sed -i "" "s/return Routes{/return Routes{\n\t AuthRoutes,/g" $router_path
+    else
+        # installed app
+        sed -i "s/${jwt_fx_installed_app_string}/${jwt_fx_installed_app_string}\n\t  ${app_name}.Module,/g" $config_path
+        # InstalledRoutes
+       sed -i "s/${fx_installed_route_string}/${fx_installed_route_string}\n\t  fx.Provide(${app_name}_router.RouteConstructor),/g" $config_path
+        # middleware fx
+        sed -i "s/${jwt_middleware_fx_module_string}/${jwt_middleware_fx_module_string}\n\t  fx.Provide(NewJWTAuthMiddleWare),/g" $middleware_path
+        # router
+        sed -i "s/func RoutersConstructor(/func RoutersConstructor(\n\t AuthRoutes auth_router.Route,/g" $router_path
+        sed -i "s/return Routes{/return Routes{\n\t AuthRoutes,/g" $router_path
+
+    fi
+    echo "✅ Jwt authentication system 🔐 injected "
+    echo "You can now use middlewares.JWTAuthMiddleWare.Handle() method to enable jwt auth middleware"
+
+}
 #create file
 create_file() {
     #pass first parameter as entity name
     #pass second parameter as file to write
     #pass third parameter as service name -> jwt / firebase
 
-    # Check if the app directory exists
-    if [ ! -d "$app_directory/${app_name}" ]; then
-        mkdir -p "$app_directory/${app_name}"
-    fi
     entity_name=$1
     file_to_write=$2
     service_name=$3
@@ -64,29 +108,27 @@ create_file() {
 
 inject_jwt() {
     echo "Injecting JWT authentication system"
+    # Check if the app directory exists
+    if [ ! -d "$app_directory/${app_name}" ]; then
+        mkdir -p "$app_directory/${app_name}"
+    fi
     for entity in "${jwt_entity_path_hash[@]}"; do
-   
         entity_name="${entity%%:*}"
         entity_path="${entity##*:}"
-         echo $entity_name
-        if [[ $entity_name == "routers" ]]; then
-            cd ${app_directory}/${app_name}
-            mkdir "auth_router"
-        fi
         file_to_write="$entity_path/${entity_name}.go"
             create_file $entity_name $file_to_write "jwt"
     done
+    jwt_inject_dependency
 }
 
 inject_firebase() {
     printf "Injecting Firebase authentication system"
-    printf "Yet to implement"
+    printf "Yet to implement "
 }
-
 
 # check if auth type is empty or not
 if [ -z "$service_id" ]; then
-    echo "Service Name  name is empty. Please enter a non-empty name."
+    echo "🛑 Service Name id is empty. Please enter a non-empty name."
     exit
 fi
 
@@ -98,6 +140,7 @@ else
     echo "Invalid service id"
     exit
 fi
+go mod tidy
 
 
 
