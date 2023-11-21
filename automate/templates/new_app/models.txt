@@ -1,2 +1,7 @@
-package {{app_name}}
+package models
 
+type {{app_uppercase}} struct {}
+
+func (tb {{app_uppercase}}) TableName() string {
+    return "{{app_uppercase}}"
+}
