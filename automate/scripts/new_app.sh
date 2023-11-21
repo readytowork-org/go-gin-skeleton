@@ -28,7 +28,7 @@ if [ -d "$app_directory/${app_name}" ]; then
 else
   mkdir ${app_directory}/${app_name}
   cd ${app_directory}/${app_name}
-  mkdir controllers services repository models routes
+  mkdir controllers services repository models routes init
 fi
 
 # convert string to pascal case
@@ -80,7 +80,7 @@ placeholder_value_hash=(
 entity_path_hash=(
   "controllers:${ROOT}/apps/${app_name}/controllers"
   "dtos:${ROOT}/apps/${app_name}"
-  "fx:${ROOT}/apps/${app_name}"
+  "init:${ROOT}/apps/${app_name}/init"
   "helpers:${ROOT}/apps/${app_name}"
   "models:${ROOT}/apps/${app_name}/models"
   "repository:${ROOT}/apps/${app_name}/repository"
@@ -101,7 +101,7 @@ done
 # setting up constructors and routes
 config_path="${ROOT}/config/conf.go"
 router_path="${ROOT}/config/router.go"
-import_name="${project_name}/apps/${app_name}"
+import_name="${project_name}/apps/${app_name}/init"
 import_name_router="${project_name}/apps/${app_name}/routes"
 
 fx_installed_app_string="var InstalledApps = fx.Options("
@@ -109,7 +109,7 @@ fx_installed_app_string="var InstalledApps = fx.Options("
 if [[ $os_name == "Darwin" ]]; then
 
   sed -i '' -e "/^import (/a\\
-  \"$import_name\"
+  ${app_name} \"$import_name\"
   " $config_path
 
  
@@ -122,14 +122,14 @@ fi
 
 if [[ $os_name == "Darwin" ]]; then
   sed -i '' -e "/^import (/a\\
-  \"$import_name_router\"
+  ${app_name} \"$import_name_router\"
   " $router_path
 
-  sed -i "" "s/func RoutersConstructor(/func RoutersConstructor(\n\t ${method_name}Routes routes.${method_name}Route,/g" $router_path
+  sed -i "" "s/func RoutersConstructor(/func RoutersConstructor(\n\t ${method_name}Routes ${app_name}.${method_name}Route,/g" $router_path
   sed -i "" "s/return Routes{/return Routes{\n\t ${method_name}Routes,/g" $router_path
 
 else
-  sed -i "s/func RoutersConstructor(/func RoutersConstructor(\n\t ${method_name}Routes routes.${method_name}Route,/g" $router_path
+  sed -i "s/func RoutersConstructor(/func RoutersConstructor(\n\t ${method_name}Routes ${app_name}.${method_name}Route,/g" $router_path
   sed -i "s/return Routes{/return Routes{\n\t ${method_name}Routes,/g" $router_path
 fi
 
