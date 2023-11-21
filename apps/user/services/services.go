@@ -47,11 +47,11 @@ func (c UserService) GetOneUser(Id string) (user.GetUserResponse, error) {
 }
 
 // GetOneUserWithEmail Get one user with email
-func (c UserService) GetOneUserWithEmail(Email string) (user.GetUserResponse, error) {
+func (c UserService) GetOneUserWithEmail(Email string) (models.User, error) {
 	return c.repository.GetOneUserWithEmail(Email)
 }
 
 // GetOneUserWithPhone Get one user with phone
-func (c UserService) GetOneUserWithPhone(Phone string) (user.GetUserResponse, error) {
+func (c UserService) GetOneUserWithPhone(Phone string) (models.User, error) {
 	return c.repository.GetOneUserWithPhone(Phone)
 }

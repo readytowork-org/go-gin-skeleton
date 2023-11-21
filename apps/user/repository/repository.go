@@ -64,14 +64,14 @@ func (c UserRepository) GetOneUser(Id string) (userModel user.GetUserResponse, e
 		Error
 }
 
-func (c UserRepository) GetOneUserWithEmail(Email string) (user user.GetUserResponse, err error) {
+func (c UserRepository) GetOneUserWithEmail(Email string) (user models.User, err error) {
 	return user, c.db.DB.Model(&user).
 		Where("email = ?", Email).
 		First(&user).
 		Error
 }
 
-func (c UserRepository) GetOneUserWithPhone(Phone string) (user user.GetUserResponse, err error) {
+func (c UserRepository) GetOneUserWithPhone(Phone string) (user models.User, err error) {
 	return user, c.db.DB.
 		First(&user, "phone = ?", Phone).
 		Error
