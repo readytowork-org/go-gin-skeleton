@@ -1,10 +1,18 @@
 package {{app_name}}
 
-import "go.uber.org/fx"
+import (
+	"{{project_name}}/apps/{{app_name}}/controllers"
+	"{{project_name}}/apps/{{app_name}}/repository"
+	"{{project_name}}/apps/{{app_name}}/routes"
+	"{{project_name}}/apps/{{app_name}}/services"
+
+	"go.uber.org/fx"
+)
 
 // Module exported for initializing application
 var Module = fx.Options(
-	fx.Provide(ControllerConstuctor),
-	fx.Provide(ServiceConstuctor),
-	fx.Provide(RepositoryConstuctor),
+	fx.Provide(controllers.{{app_uppercase}}ControllerConstructor),
+	fx.Provide(services.{{app_uppercase}}ServiceConstructor),
+	fx.Provide(repository.{{app_uppercase}}RepositoryConstructor),
+	fx.Provide(routes.{{app_uppercase}}RouteConstructor),
 )
