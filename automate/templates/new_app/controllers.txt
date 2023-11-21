@@ -1,7 +1,6 @@
-package controllers
+package {{app_name}}
 
 import (
-	"{{project_name}}/apps/{{app_name}}/services"
 	"{{project_name}}/errors"
 	"{{project_name}}/infrastructure"
 	"{{project_name}}/responses"
@@ -10,22 +9,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type {{app_uppercase}}Controller struct {
+type Controller struct {
 	logger  infrastructure.Logger
-	service services.{{app_uppercase}}Service
+	service Service
 }
 
-func {{app_uppercase}}ControllerConstructor(
+func ControllerConstuctor(
 	logger infrastructure.Logger,
-	service services.{{app_uppercase}}Service,
-) {{app_uppercase}}Controller {
-	return {{app_uppercase}}Controller{
+	service Service,
+) Controller {
+	return Controller{
 		logger:  logger,
 		service: service,
 	}
 }
 
-func (cc {{app_uppercase}}Controller) {{app_uppercase}}Api(c *gin.Context) {
+func (cc Controller) {{app_uppercase}}Api(c *gin.Context) {
 	data, err := cc.service.{{app_uppercase}}Api()
 	if err != nil {
 		cc.logger.Zap.Error("Error [{{app_uppercase}}Api] (ShouldBindJson) : ", err)

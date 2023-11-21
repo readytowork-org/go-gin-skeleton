@@ -1,25 +1,25 @@
-package routes
+package {{route_package}}
 
 import (
-	"{{project_name}}/apps/{{app_name}}/controllers"
+	"{{project_name}}/apps/{{app_name}}"
 	"{{project_name}}/infrastructure"
 	"{{project_name}}/middlewares"
 )
 
-type {{app_uppercase}}Route struct {
+type Route struct {
 	logger     infrastructure.Logger
 	router     infrastructure.Router
 	trx middlewares.DBTransaction 
-	controller controllers.{{app_uppercase}}Controller
+	controller {{app_name}}.Controller
 }
 
-func {{app_uppercase}}RouteConstructor(
+func RouteConstructor(
 	logger infrastructure.Logger,
 	router infrastructure.Router,
 	trx middlewares.DBTransaction,
-	controller controllers.{{app_uppercase}}Controller,
-) {{app_uppercase}}Route {
-	return {{app_uppercase}}Route{
+	controller {{app_name}}.Controller,
+) Route {
+	return Route{
 		logger:     logger,
 		router:     router,
 		trx:     trx,
@@ -27,7 +27,7 @@ func {{app_uppercase}}RouteConstructor(
 	}
 }
 
-func (i {{app_uppercase}}Route) Setup() {
+func (i Route) Setup() {
 	i.logger.Zap.Info("->Setting up {{app_name}} routes<-")
 	{{app_name}} := i.router.Gin.Group("{{app_name}}")
 	{
