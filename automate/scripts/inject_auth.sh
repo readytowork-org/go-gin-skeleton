@@ -17,64 +17,55 @@ read service_id
 
 app_name="auth"
 
-router_package_name="${app_name}_router"
 
 jwt_placeholder_value_hash=(
   "{{app_name}}:$app_name"
-  "{{route_package}}:$router_package_name" 
   "{{project_name}}:$project_name"
 )
 
 jwt_entity_path_hash=(
-  "controllers:${ROOT}/apps/${app_name}"
+  "controllers:${ROOT}/apps/${app_name}/controllers"
   "dtos:${ROOT}/apps/${app_name}"
-  "fx:${ROOT}/apps/${app_name}"
-  "routers:${ROOT}/apps/${app_name}/${app_name}_router"
-  "services:${ROOT}/apps/${app_name}"
-  "jwt_auth:${ROOT}/middlewares/"
+  "init:${ROOT}/apps/${app_name}/init"
+  "routes:${ROOT}/apps/${app_name}/routes"
+  "services:${ROOT}/apps/${app_name}/services"
+  "jwt_auth:${ROOT}/middlewares"
 )
 
 config_path="${ROOT}/config/conf.go"
-middleware_path="${ROOT}/middlewares/fx.go"
+middleware_path="${ROOT}/middlewares/init.go"
 router_path="${ROOT}/config/router.go"
-import_name="${project_name}/apps/${app_name}"
-import_name_router="${project_name}/apps/${app_name}/${app_name}_router"
+import_name="${project_name}/apps/${app_name}/init"
+import_name_router="${project_name}/apps/${app_name}/routes"
 jwt_fx_installed_app_string="var InstalledApps = fx.Options("
-fx_installed_route_string="var InstalledRoutes = fx.Options("
 jwt_middleware_fx_module_string="var Module = fx.Options("
 
 
 jwt_inject_dependency() {
     if [[ $os_name == "Darwin" ]]; then
         sed -i '' -e "/^import (/a\\
-        \"$import_name\"
+        ${app_name} \"$import_name\"
         " $config_path
 
-        sed -i '' -e "/^import (/a\\
-        \"$import_name_router\"
-        " $config_path
         # installed app
         sed -i "" "s/${jwt_fx_installed_app_string}/${jwt_fx_installed_app_string}\n\t  ${app_name}.Module,/g" $config_path
-        # InstalledRoutes
-        sed -i "" "s/${fx_installed_route_string}/${fx_installed_route_string}\n\t  fx.Provide(${app_name}_router.RouteConstructor),/g" $config_path
+
         # middleware fx
         sed -i "" "s/${jwt_middleware_fx_module_string}/${jwt_middleware_fx_module_string}\n\t  fx.Provide(NewJWTAuthMiddleWare),/g" $middleware_path
 
         # router
         sed -i '' -e "/^import (/a\\
-        \"$import_name_router\"
+        ${app_name} \"$import_name_router\"
         " $router_path
-        sed -i "" "s/func RoutersConstructor(/func RoutersConstructor(\n\t AuthRoutes auth_router.Route,/g" $router_path
+        sed -i "" "s/func RoutersConstructor(/func RoutersConstructor(\n\t AuthRoutes ${app_name}.AuthRoute,/g" $router_path
         sed -i "" "s/return Routes{/return Routes{\n\t AuthRoutes,/g" $router_path
     else
         # installed app
         sed -i "s/${jwt_fx_installed_app_string}/${jwt_fx_installed_app_string}\n\t  ${app_name}.Module,/g" $config_path
-        # InstalledRoutes
-       sed -i "s/${fx_installed_route_string}/${fx_installed_route_string}\n\t  fx.Provide(${app_name}_router.RouteConstructor),/g" $config_path
         # middleware fx
         sed -i "s/${jwt_middleware_fx_module_string}/${jwt_middleware_fx_module_string}\n\t  fx.Provide(NewJWTAuthMiddleWare),/g" $middleware_path
         # router
-        sed -i "s/func RoutersConstructor(/func RoutersConstructor(\n\t AuthRoutes auth_router.Route,/g" $router_path
+        sed -i "s/func RoutersConstructor(/func RoutersConstructor(\n\t AuthRoutes ${app_name}.AuthRoute,/g" $router_path
         sed -i "s/return Routes{/return Routes{\n\t AuthRoutes,/g" $router_path
 
     fi
@@ -111,6 +102,8 @@ inject_jwt() {
     # Check if the app directory exists
     if [ ! -d "$app_directory/${app_name}" ]; then
         mkdir -p "$app_directory/${app_name}"
+        cd ${app_directory}/${app_name}
+        mkdir controllers services routes init
     fi
     for entity in "${jwt_entity_path_hash[@]}"; do
         entity_name="${entity%%:*}"
