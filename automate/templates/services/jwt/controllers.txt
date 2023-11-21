@@ -1,7 +1,10 @@
-package {{app_name}}
+package controllers
 
 import (
+	"{{project_name}}/apps/auth"
+	_auth "{{project_name}}/apps/auth/services"
 	"{{project_name}}/apps/user"
+	"{{project_name}}/apps/user/services"
 	"{{project_name}}/errors"
 	"{{project_name}}/infrastructure"
 	"{{project_name}}/responses"
@@ -13,23 +16,23 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-type Controller struct {
+type AuthController struct {
 	logger      infrastructure.Logger
-	userService user.Service
-	service     Service
+	userService services.UserService
+	service     _auth.AuthService
 	env         infrastructure.Env
 	validator   user.UserValidator
 }
 
 // NewJwtAuthController constructor
-func ControllerConstuctor(
+func AuthControllerConstuctor(
 	logger infrastructure.Logger,
-	userService user.Service,
-	service Service,
+	userService services.UserService,
+	service _auth.AuthService,
 	env infrastructure.Env,
 	validator user.UserValidator,
-) Controller {
-	return Controller{
+) AuthController {
+	return AuthController{
 		logger:      logger,
 		userService: userService,
 		service:     service,
@@ -38,8 +41,8 @@ func ControllerConstuctor(
 	}
 }
 
-func (cc Controller) LoginUser(c *gin.Context) {
-	reqData := JWTLoginRequestData{}
+func (cc AuthController) LoginUser(c *gin.Context) {
+	reqData := auth.JWTLoginRequestData{}
 	// Bind the request payload to a reqData struct
 	if err := c.ShouldBindJSON(&reqData); err != nil {
 		cc.logger.Zap.Error("Error [ShouldBindJSON] : ", err.Error())
@@ -74,7 +77,7 @@ func (cc Controller) LoginUser(c *gin.Context) {
 		return
 	}
 	// Create a new JWT access claims object
-	accessClaims := JWTClaims{
+	accessClaims := _auth.JWTClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(cc.env.JwtAccessTokenExpiresAt))),
 			ID:        fmt.Sprintf("%v", _user.Id),
@@ -91,7 +94,7 @@ func (cc Controller) LoginUser(c *gin.Context) {
 	}
 
 	// Create a new JWT refresh claims object
-	refreshClaims := JWTClaims{
+	refreshClaims := _auth.JWTClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * time.Duration(cc.env.JwtRefreshTokenExpiresAt))),
 			ID:        fmt.Sprintf("%v", _user.Id),
@@ -114,7 +117,7 @@ func (cc Controller) LoginUser(c *gin.Context) {
 	responses.JSON(c, http.StatusOK, data)
 }
 
-func (cc Controller) RefreshToken(c *gin.Context) {
+func (cc AuthController) RefreshToken(c *gin.Context) {
 	tokenString, err := cc.service.GetTokenFromHeader(c)
 	if err != nil {
 		cc.logger.Zap.Error("Error getting token from header: ", err.Error())
@@ -140,7 +143,7 @@ func (cc Controller) RefreshToken(c *gin.Context) {
 	}
 
 	// Create a new JWT Access claims
-	accessClaims := JWTClaims{
+	accessClaims := _auth.JWTClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(cc.env.JwtAccessTokenExpiresAt))),
 			ID:        fmt.Sprintf("%v", claims.ID),

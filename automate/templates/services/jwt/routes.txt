@@ -1,24 +1,24 @@
-package {{route_package}}
+package routes
 
 import (
-	"{{project_name}}/apps/auth"
+	"{{project_name}}/apps/auth/controllers"
 	"{{project_name}}/infrastructure"
 )
 
 // JwtAuthRoutes struct
-type Route struct {
+type AuthRoute struct {
 	logger     infrastructure.Logger
 	router     infrastructure.Router
-	controller auth.Controller
+	controller controllers.AuthController
 }
 
 // NewJwtAuthRoutes creates new jwt controller
-func RouteConstructor(
+func AuthRouteConstructor(
 	logger infrastructure.Logger,
 	router infrastructure.Router,
-	controller auth.Controller,
-) Route {
-	return Route{
+	controller controllers.AuthController,
+) AuthRoute {
+	return AuthRoute{
 		router:     router,
 		logger:     logger,
 		controller: controller,
@@ -26,8 +26,8 @@ func RouteConstructor(
 }
 
 // Setup Obtain Jwt Token Routes
-func (i Route) Setup() {
-	i.logger.Zap.Info(" Setting up jwt routes")
+func (i AuthRoute) Setup() {
+	i.logger.Zap.Info("->Setting up jwt routes<-")
 	jwt := i.router.Gin.Group("/login")
 	{
 		jwt.POST("", i.controller.LoginUser)

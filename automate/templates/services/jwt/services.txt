@@ -1,4 +1,4 @@
-package {{app_name}}
+package services
 
 import (
 	"{{project_name}}/errors"
@@ -9,16 +9,16 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-type Service struct {
+type AuthService struct {
 	logger infrastructure.Logger
 	env    infrastructure.Env
 }
 
-func ServiceConstuctor(
+func AuthServiceConstuctor(
 	logger infrastructure.Logger,
 	env infrastructure.Env,
-) Service {
-	return Service{
+) AuthService {
+	return AuthService{
 		logger: logger,
 		env:    env,
 	}
@@ -29,7 +29,7 @@ type JWTClaims struct {
 	// ...other claims
 }
 
-func (m Service) GetTokenFromHeader(c *gin.Context) (string, error) {
+func (m AuthService) GetTokenFromHeader(c *gin.Context) (string, error) {
 	// Get the token from the request header
 	header := c.GetHeader("Authorization")
 	if header == "" {
@@ -49,7 +49,7 @@ func (m Service) GetTokenFromHeader(c *gin.Context) (string, error) {
 
 }
 
-func (m Service) ParseAndVerifyToken(tokenString, secret string) (*jwt.Token, error) {
+func (m AuthService) ParseAndVerifyToken(tokenString, secret string) (*jwt.Token, error) {
 	// Parse the token using the secret key
 	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil
@@ -67,7 +67,7 @@ func (m Service) ParseAndVerifyToken(tokenString, secret string) (*jwt.Token, er
 
 }
 
-func (m Service) RetrieveClaims(token *jwt.Token) (*JWTClaims, error) {
+func (m AuthService) RetrieveClaims(token *jwt.Token) (*JWTClaims, error) {
 	// Verfify token
 	claims, ok := token.Claims.(*JWTClaims)
 	if !ok || !token.Valid {
@@ -80,7 +80,7 @@ func (m Service) RetrieveClaims(token *jwt.Token) (*JWTClaims, error) {
 
 }
 
-func (m Service) GenerateToken(claims JWTClaims, secret string) (string, error) {
+func (m AuthService) GenerateToken(claims JWTClaims, secret string) (string, error) {
 	// Create a new JWT token using the claims and the secret key
 	tokenClaim := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, tokenErr := tokenClaim.SignedString([]byte(secret))

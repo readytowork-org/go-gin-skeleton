@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"{{project_name}}/apps/auth"
+	"{{project_name}}/apps/auth/services"
 	"{{project_name}}/constants"
 	"{{project_name}}/errors"
 	"{{project_name}}/infrastructure"
@@ -12,14 +12,14 @@ import (
 )
 
 type JWTAuthMiddleWare struct {
-	jwtService auth.Service
+	jwtService services.AuthService
 	logger     infrastructure.Logger
 	env        infrastructure.Env
 	db         infrastructure.Database
 }
 
 func NewJWTAuthMiddleWare(
-	jwtService auth.Service,
+	jwtService services.AuthService,
 	logger infrastructure.Logger,
 	env infrastructure.Env,
 	db infrastructure.Database,
