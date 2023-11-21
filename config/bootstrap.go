@@ -2,6 +2,7 @@ package config
 
 import (
 	"boilerplate-api/infrastructure"
+	"boilerplate-api/middlewares"
 	"boilerplate-api/utils"
 	"context"
 
@@ -20,6 +21,7 @@ func bootstrap(
 	logger infrastructure.Logger,
 	database infrastructure.Database,
 	migrations infrastructure.Migrations,
+	middlewares middlewares.Middlewares,
 	routes Routes,
 ) {
 
@@ -55,6 +57,7 @@ func bootstrap(
 					logger.Zap.Info("Migrating DB schema...")
 					migrations.Migrate()
 				}
+				middlewares.Setup()
 				routes.Setup()
 				if env.ServerPort == "" {
 					_ = handler.Gin.Run()
