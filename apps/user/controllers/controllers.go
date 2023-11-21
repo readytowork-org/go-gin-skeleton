@@ -20,7 +20,7 @@ type UserController struct {
 	validator user.UserValidator
 }
 
-func ControllerConstuctor(
+func UserControllerConstuctor(
 	logger infrastructure.Logger,
 	service services.UserService,
 	validator user.UserValidator,

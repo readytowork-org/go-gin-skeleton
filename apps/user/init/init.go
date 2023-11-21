@@ -12,7 +12,7 @@ import (
 
 // Module exported for initializing application
 var Module = fx.Options(
-	fx.Provide(controllers.ControllerConstuctor),
+	fx.Provide(controllers.UserControllerConstuctor),
 	fx.Provide(services.UserServiceConstuctor),
 	fx.Provide(repository.UserRepositoryConstuctor),
 	fx.Provide(routes.UserRouteConstructor),
