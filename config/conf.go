@@ -1,16 +1,11 @@
 package config
 
 import (
-	"boilerplate-api/apps/user"
-	"boilerplate-api/apps/user/user_router"
+	user "boilerplate-api/apps/user/init"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/middlewares"
 
 	"go.uber.org/fx"
-)
-
-var InstalledRoutes = fx.Options(
-	fx.Provide(user_router.RouteConstructor),
 )
 
 var InstalledApps = fx.Options(
@@ -18,5 +13,4 @@ var InstalledApps = fx.Options(
 	infrastructure.Module,
 	middlewares.Module,
 	RouterModule,
-	InstalledRoutes,
 )

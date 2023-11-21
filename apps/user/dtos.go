@@ -1,10 +1,13 @@
 package user
 
-import "boilerplate-api/helpers"
+import (
+	"boilerplate-api/apps/user/models"
+	"boilerplate-api/helpers"
+)
 
 // CreateUserRequestData Request body data to create user
 type CreateUserRequestData struct {
-	User
+	models.User
 	ConfirmPassword string `json:"confirm_password" validate:"required"`
 }
 
