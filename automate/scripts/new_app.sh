@@ -12,7 +12,7 @@ app_directory="${ROOT}/apps"
 
 
 printf " App name should be in snake_case eg: my_app *\n"
-echo "*Enter app name:"
+printf "\n*Enter app name: "
 read app_name
 
 # check if app name is empty or not
@@ -27,6 +27,8 @@ if [ -d "$app_directory/${app_name}" ]; then
   exit
 else
   mkdir ${app_directory}/${app_name}
+  cd ${app_directory}/${app_name}
+  mkdir controllers services repository models routes
 fi
 
 # convert string to pascal case
@@ -71,20 +73,19 @@ router_package_name="${app_name}_router"
 
 placeholder_value_hash=(
   "{{app_name}}:$app_name"
-  "{{route_package}}:$router_package_name" 
   "{{project_name}}:$project_name"
   "{{app_uppercase}}:$method_name"
 )
 
 entity_path_hash=(
-  "controllers:${ROOT}/apps/${app_name}"
+  "controllers:${ROOT}/apps/${app_name}/controllers"
   "dtos:${ROOT}/apps/${app_name}"
   "fx:${ROOT}/apps/${app_name}"
   "helpers:${ROOT}/apps/${app_name}"
-  "models:${ROOT}/apps/${app_name}"
-  "repository:${ROOT}/apps/${app_name}"
-  "routers:${ROOT}/apps/${app_name}/${app_name}_router"
-  "services:${ROOT}/apps/${app_name}"
+  "models:${ROOT}/apps/${app_name}/models"
+  "repository:${ROOT}/apps/${app_name}/repository"
+  "routes:${ROOT}/apps/${app_name}/routes"
+  "services:${ROOT}/apps/${app_name}/services"
 )
 
 
@@ -92,10 +93,6 @@ entity_path_hash=(
 for entity in "${entity_path_hash[@]}"; do
     entity_name="${entity%%:*}"
     entity_path="${entity##*:}"
-    if [[ $entity_name == "routers" ]]; then
-      cd ${app_directory}/${app_name}
-      mkdir ${app_name}_"router"
-    fi
     file_to_write="$entity_path/${entity_name}.go"
     create_file $entity_name $file_to_write
 
@@ -105,10 +102,9 @@ done
 config_path="${ROOT}/config/conf.go"
 router_path="${ROOT}/config/router.go"
 import_name="${project_name}/apps/${app_name}"
-import_name_router="${project_name}/apps/${app_name}/${app_name}_router"
+import_name_router="${project_name}/apps/${app_name}/routes"
 
 fx_installed_app_string="var InstalledApps = fx.Options("
-fx_installed_route_string="var InstalledRoutes = fx.Options("
 
 if [[ $os_name == "Darwin" ]]; then
 
@@ -116,15 +112,10 @@ if [[ $os_name == "Darwin" ]]; then
   \"$import_name\"
   " $config_path
 
-  sed -i '' -e "/^import (/a\\
-  \"$import_name_router\"
-  " $config_path
  
   sed -i "" "s/${fx_installed_app_string}/${fx_installed_app_string}\n\t  ${app_name}.Module,/g" $config_path
-  sed -i "" "s/${fx_installed_route_string}/${fx_installed_route_string}\n\t  fx.Provide(${app_name}_router.RouteConstructor),/g" $config_path
 else
 sed -i "s/${fx_installed_app_string}/${fx_installed_app_string}\n\t  ${app_name}.Module,/g" $config_path
-sed -i "s/${fx_installed_route_string}/${fx_installed_route_string}\n\t  fx.Provide(${app_name}_router.RouteConstructor),/g" $config_path
 fi
 
 # # router
@@ -134,11 +125,11 @@ if [[ $os_name == "Darwin" ]]; then
   \"$import_name_router\"
   " $router_path
 
-  sed -i "" "s/func RoutersConstructor(/func RoutersConstructor(\n\t ${method_name}Routes ${app_name}_router.Route,/g" $router_path
+  sed -i "" "s/func RoutersConstructor(/func RoutersConstructor(\n\t ${method_name}Routes routes.${method_name}Route,/g" $router_path
   sed -i "" "s/return Routes{/return Routes{\n\t ${method_name}Routes,/g" $router_path
 
 else
-  sed -i "s/func RoutersConstructor(/func RoutersConstructor(\n\t ${method_name}Routes ${app_name}_router.Route,/g" $router_path
+  sed -i "s/func RoutersConstructor(/func RoutersConstructor(\n\t ${method_name}Routes routes.${method_name}Route,/g" $router_path
   sed -i "s/return Routes{/return Routes{\n\t ${method_name}Routes,/g" $router_path
 fi
 
