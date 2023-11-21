@@ -5,6 +5,7 @@ import "go.uber.org/fx"
 var Module = fx.Options(
 	fx.Provide(NewDBTransaction),
 	fx.Provide(NewRateLimitMiddleware),
+	fx.Provide(NewMiddlewares),
 )
 
 // IMiddleware middleware interface
