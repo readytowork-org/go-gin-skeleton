@@ -31,6 +31,7 @@ require (
 require (
 	cloud.google.com/go/billing v1.13.0
 	github.com/go-playground/validator v9.31.0+incompatible
+	github.com/golang-jwt/jwt/v4 v4.1.0
 	github.com/ulule/limiter/v3 v3.11.2
 )
 
