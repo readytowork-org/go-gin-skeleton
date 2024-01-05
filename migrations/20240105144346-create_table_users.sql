@@ -1,3 +1,5 @@
+
+-- +migrate Up
 CREATE TABLE IF NOT EXISTS `users` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `full_name` VARCHAR(45) NULL,
@@ -12,3 +14,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   CONSTRAINT `UQ_user_email` UNIQUE (`email`),
   CONSTRAINT `UQ_user_phone` UNIQUE (`phone`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
+
+-- +migrate Down
+DROP TABLE IF EXISTS users;
+
