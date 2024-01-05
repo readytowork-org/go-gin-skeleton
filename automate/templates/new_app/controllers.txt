@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"{{project_name}}/apps/{{app_name}}/services"
-	"{{project_name}}/errors"
+	"{{project_name}}/common/errors"
+	"{{project_name}}/common/responses"
 	"{{project_name}}/infrastructure"
-	"{{project_name}}/responses"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
