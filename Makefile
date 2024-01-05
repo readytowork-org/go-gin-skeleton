@@ -1,29 +1,35 @@
 include .env
-MIGRATE=docker-compose exec web migrate -path=migration -database "mysql://${DB_USERNAME}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}" -verbose
+export
+RUNNER=docker-compose exec web sql-migrate
+
+ifeq ($(p),host)
+ 	RUNNER=sql-migrate
+endif
+
+MIGRATE=$(RUNNER)
 
 dev:
 		bash automate/scripts/gin-watch.sh ${SERVER_PORT}
+
+create:
+	@read -p  "What is the name of migration?" NAME; \
+	$(MIGRATE) new $$NAME
+
+migrate-status:
+		$(MIGRATE) status
 
 migrate-up:
 		$(MIGRATE) up
 
 migrate-down:
-		$(MIGRATE) down
+		$(MIGRATE) down 
 
-force:
-		@read -p  "Which version do you want to force?" VERSION; \
-		$(MIGRATE) force $$VERSION
-
-goto:
-		@read -p  "Which version do you want to migrate?" VERSION; \
-		$(MIGRATE) goto $$VERSION
-
-drop:
-		$(MIGRATE) drop
-
-create:
-		@read -p  "What is the name of migration?" NAME; \
-		${MIGRATE} create -ext sql -seq -dir migration  $$NAME
+redo:
+	@read -p  "Are you sure to reapply the last migration? [y/n]" -n 1 -r; \
+	if [[ $$REPLY =~ ^[Yy] ]]; \
+	then \
+		$(MIGRATE) redo; \
+	fi
 
 swag-generate:
 		swag fmt
@@ -49,4 +55,4 @@ run:
 	docker-compose up
 
 
-.PHONY: migrate-up migrate-down force goto drop create auto-create 
+.PHONY: create migrate-status migrate-up migrate-down redo 
