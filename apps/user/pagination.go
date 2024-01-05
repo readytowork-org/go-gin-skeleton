@@ -1,6 +1,6 @@
 package user
 
-import "boilerplate-api/helpers"
+import "boilerplate-api/common/helpers"
 
 type UserPagination struct {
 	helpers.Pagination

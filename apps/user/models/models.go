@@ -1,7 +1,7 @@
 package models
 
 import (
-	"boilerplate-api/helpers"
+	"boilerplate-api/common/helpers"
 
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"

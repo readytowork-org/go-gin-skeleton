@@ -1,7 +1,7 @@
 package responses
 
 import (
-	"boilerplate-api/errors"
+	"boilerplate-api/common/errors"
 	"net/http"
 	"os"
 

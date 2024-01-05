@@ -1,9 +1,9 @@
 package config
 
 import (
+	"boilerplate-api/common/utils"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/middlewares"
-	"boilerplate-api/utils"
 	"context"
 
 	"go.uber.org/fx"

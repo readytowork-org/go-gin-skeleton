@@ -2,7 +2,7 @@ package user
 
 import (
 	"boilerplate-api/apps/user/models"
-	"boilerplate-api/helpers"
+	"boilerplate-api/common/helpers"
 )
 
 // CreateUserRequestData Request body data to create user

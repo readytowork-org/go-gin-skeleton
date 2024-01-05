@@ -3,11 +3,11 @@ package controllers
 import (
 	"boilerplate-api/apps/user"
 	"boilerplate-api/apps/user/services"
-	"boilerplate-api/constants"
-	"boilerplate-api/errors"
-	"boilerplate-api/helpers"
+	"boilerplate-api/common/constants"
+	"boilerplate-api/common/errors"
+	"boilerplate-api/common/helpers"
+	"boilerplate-api/common/responses"
 	"boilerplate-api/infrastructure"
-	"boilerplate-api/responses"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

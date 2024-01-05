@@ -1,8 +1,8 @@
 package user
 
 import (
-	"boilerplate-api/constants"
-	"boilerplate-api/errors"
+	"boilerplate-api/common/constants"
+	"boilerplate-api/common/errors"
 	"fmt"
 	"regexp"
 

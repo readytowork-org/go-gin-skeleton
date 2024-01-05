@@ -1,9 +1,9 @@
 package middlewares
 
 import (
-	"boilerplate-api/constants"
+	"boilerplate-api/common/constants"
+	"boilerplate-api/common/utils"
 	"boilerplate-api/infrastructure"
-	"boilerplate-api/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

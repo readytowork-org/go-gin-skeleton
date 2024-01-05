@@ -1,10 +1,10 @@
 package middlewares
 
 import (
-	"boilerplate-api/constants"
-	"boilerplate-api/errors"
+	"boilerplate-api/common/constants"
+	"boilerplate-api/common/errors"
+	"boilerplate-api/common/responses"
 	"boilerplate-api/infrastructure"
-	"boilerplate-api/responses"
 	"strconv"
 	"time"
 
