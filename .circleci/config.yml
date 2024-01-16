@@ -8,7 +8,7 @@ jobs:
       - image: cimg/mysql:8.0
         environment:
           MYSQL_DATABASE: boilerplate
-          MYSQL_USER: root
+          MYSQL_USER: user1
           MYSQL_PASSWORD: secret
 
     parallelism: 1
