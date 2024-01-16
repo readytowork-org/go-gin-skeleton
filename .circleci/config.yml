@@ -28,7 +28,7 @@ jobs:
             echo "
             ServerPort=8080
             ENVIRONMENT=local
-            DB_HOST=$DB_HOST
+            DB_HOST=$DB_LOCALHOST
             DB_PORT=$DB_PORT
             DB_NAME=$DB_NAME 
             DB_USERNAME=$DB_USERNAME
