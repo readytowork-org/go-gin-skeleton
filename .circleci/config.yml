@@ -135,17 +135,17 @@ workflows:
   workflow:
     jobs:
       - build:
-          context: boilerplate_dev
+          context: backend-rnd
           filters:
             branches:
               only:
-                - deploy-backend
+                - main
 
       - deploy_to_develop:
-          context: boilerplate_dev
+          context: backend-rnd
           filters:
             branches:
               only:
-                - deploy-backend
+                - main
           requires:
             - build
