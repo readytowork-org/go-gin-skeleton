@@ -18,6 +18,11 @@ jobs:
       - checkout
 
       - run:
+          name: Append GAR beta settings app yml
+          command: |
+            echo -e "beta_settings:\n  cloud_sql_instances: $DB_HOST" >> app.yml
+
+      - run:
           name: Initialize the environment variable file
           command: |
             echo "
