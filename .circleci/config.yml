@@ -5,7 +5,6 @@ jobs:
   build:
     docker:
       - image: cimg/go:1.18
-      - image: circleci/redis:4.0.9-alpine
       - image: cimg/mysql:8.0
         environment:
           MYSQL_DATABASE: backend_db
@@ -51,10 +50,6 @@ jobs:
               sleep 1
             done
             echo Failed waiting for MySQL && exit 1
-
-      - run:
-          name: Waiting for Redis primary to be ready
-          command: dockerize -wait tcp://localhost:6379 -timeout 1m
 
       - run:
           name: Build repo
@@ -140,14 +135,14 @@ workflows:
   workflow:
     jobs:
       - build:
-          context: backend-rnd
+          context: boilerplate_dev
           filters:
             branches:
               only:
                 - deploy-backend
 
       - deploy_to_develop:
-          context: backend-rnd
+          context: boilerplate_dev
           filters:
             branches:
               only:
