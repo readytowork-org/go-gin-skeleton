@@ -36,6 +36,22 @@ jobs:
             StorageBucketName=$StorageBucketName
             SENTRY_DSN=$SENTRY_DSN " > .env
 
+      - run:
+          name: Initialize firebase service account key file
+          command: |
+            echo "{
+              \"type\": \"$TYPE_SERVICE_ACCOUNT_KEY\", 
+              \"project_id\": \"$PROJECT_ID_SERVICE_ACCOUNT_KEY\", 
+              \"private_key_id\": \"$PRIVATE_KEY_ID_SERVICE_ACCOUNT_KEY\",
+              \"private_key\": \"$PRIVATE_KEY_SERVICE_ACCOUNT_KEY\",
+              \"client_email\": \"$CLIENT_EMAIL_SERVICE_ACCOUNT_KEY\",
+              \"client_id\": \"$CLIENT_ID_SERVICE_ACCOUNT_KEY\",
+              \"auth_uri\": \"$AUTH_URL_SERVICE_ACCOUNT_KEY\",
+              \"token_uri\": \"$TOKEN_URI_SERVICE_ACCOUNT_KEY\",
+              \"auth_provider_x509_cert_url\": \"$AUTH_PROVIDER_X509_CERT_URL_SERVICE_ACCOUNT_KEY\",
+              \"client_x509_cert_url\": \"$CLIENT_X509_CERT_URL_SERVICE_ACCOUNT_KEY\"
+            }" > serviceAccountKey.json
+
       - restore_cache:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
@@ -106,6 +122,22 @@ jobs:
             SENTRY_DSN=$SENTRY_DSN " > .env
 
       - run:
+          name: Initialize firebase service account key file
+          command: |
+            echo "{
+              \"type\": \"$TYPE_SERVICE_ACCOUNT_KEY\", 
+              \"project_id\": \"$PROJECT_ID_SERVICE_ACCOUNT_KEY\", 
+              \"private_key_id\": \"$PRIVATE_KEY_ID_SERVICE_ACCOUNT_KEY\",
+              \"private_key\": \"$PRIVATE_KEY_SERVICE_ACCOUNT_KEY\",
+              \"client_email\": \"$CLIENT_EMAIL_SERVICE_ACCOUNT_KEY\",
+              \"client_id\": \"$CLIENT_ID_SERVICE_ACCOUNT_KEY\",
+              \"auth_uri\": \"$AUTH_URL_SERVICE_ACCOUNT_KEY\",
+              \"token_uri\": \"$TOKEN_URI_SERVICE_ACCOUNT_KEY\",
+              \"auth_provider_x509_cert_url\": \"$AUTH_PROVIDER_X509_CERT_URL_SERVICE_ACCOUNT_KEY\",
+              \"client_x509_cert_url\": \"$CLIENT_X509_CERT_URL_SERVICE_ACCOUNT_KEY\"
+            }" > serviceAccountKey.json
+
+      - run:
           name: Authenticating and configuring the Google Cloud Platform
           command: |
             echo $GCLOUD_SERVICE_KEY | base64 --decode | gcloud auth activate-service-account --key-file=-
@@ -139,13 +171,13 @@ workflows:
           filters:
             branches:
               only:
-                - main
+                - deploy-backend
 
       - deploy_to_develop:
           context: backend-rnd
           filters:
             branches:
               only:
-                - main
+                - deploy-backend
           requires:
             - build
