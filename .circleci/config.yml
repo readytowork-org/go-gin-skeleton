@@ -7,9 +7,9 @@ jobs:
       - image: cimg/go:1.18
       - image: cimg/mysql:8.0
         environment:
-          MYSQL_DATABASE: backend_db
-          MYSQL_USER: backend_user
-          MYSQL_PASSWORD: p@ssw0rd
+          MYSQL_DATABASE: boilerplate
+          MYSQL_USER: root
+          MYSQL_PASSWORD: secret
 
     parallelism: 1
     resource_class: small
