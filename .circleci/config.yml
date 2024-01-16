@@ -5,15 +5,15 @@ jobs:
   build:
     docker:
       - image: cimg/go:1.18
-
+      - image: circleci/redis:4.0.9-alpine
       - image: cimg/mysql:8.0
         environment:
-          MYSQL_DATABASE: test_db
-          MYSQL_USER: test_user
+          MYSQL_DATABASE: backend_db
+          MYSQL_USER: backend_user
           MYSQL_PASSWORD: p@ssw0rd
 
     parallelism: 1
-    working_directory: ~/go/src/github.com/readytowork-org/boilerplate-api
+    resource_class: small
 
     steps:
       - checkout
@@ -21,17 +21,20 @@ jobs:
       - run:
           name: Initialize the environment variable file
           command: |
-            echo "ENVIRONMENT=local
-            HOST=$HOST
-            DB_HOST=localhost
-            DB_PORT=3306
-            DB_NAME=test_db
-            DB_USERNAME=test_user
-            DB_PASSWORD=p@ssw0rd
-            MAIL_CLIENT_ID=$MAIL_CLIENT_ID
-            MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
-            MAIL_REFRESH_TOKEN=$MAIL_REFRESH_TOKEN
-            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
+            echo "
+            ServerPort=8080
+            ENVIRONMENT=$ENVIRONMENT
+            DB_HOST=$DB_LocalHost
+            DB_PORT=$DB_Port
+            DBName=$DB_Name 
+            DBUsername=$DB_User
+            DBPassword=$DB_Pass
+            MailClientID=$MailClientID
+            MailClientSecret=$MailClientSecret
+            MailTokenType=$MailTokenType
+            MailAccesstoken=$MailAccesstoken
+            MailRefreshToken=$MailRefreshToken
+            StorageBucketName=$StorageBucketName
             SENTRY_DSN=$SENTRY_DSN " > .env
 
       - restore_cache:
@@ -50,9 +53,8 @@ jobs:
             echo Failed waiting for MySQL && exit 1
 
       - run:
-          name: Initialize firebase service account key file
-          command: |
-            echo "$FIREBASE_SERVICE_ACCOUNT_KEY" > serviceAccountKey.json
+          name: Waiting for Redis primary to be ready
+          command: dockerize -wait tcp://localhost:6379 -timeout 1m
 
       - run:
           name: Build repo
@@ -75,17 +77,11 @@ jobs:
             sleep 5
             curl http://localhost:8080/health-check
 
-      - slack/status:
-          channel: ${SLACK_CHANNEL}
-          webhook: ${SLACK_WEBHOOK}
-          failure_message: ":red_circle: A $CIRCLE_JOB job has failed!"
-
-      - slack/notify-on-failure:
-          only_for_branches: main
-
   deploy_to_develop:
     docker:
       - image: google/cloud-sdk
+    
+    resource_class: small
 
     steps:
       - checkout
@@ -98,23 +94,21 @@ jobs:
       - run:
           name: Initialize the environment variable file
           command: |
-            echo "ENVIRONMENT=$ENVIRONMENT
-            HOST=$HOST
-            DB_HOST=$DB_HOST
-            DB_PORT=$DB_PORT
-            DB_NAME=$DB_NAME
-            DB_USERNAME=$DB_USERNAME
-            DB_PASSWORD=$DB_PASSWORD
-            MAIL_CLIENT_ID=$MAIL_CLIENT_ID
-            MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
-            MAIL_REFRESH_TOKEN=$MAIL_REFRESH_TOKEN
-            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
+            echo "
+            ServerPort=8080
+            ENVIRONMENT=$ENVIRONMENT
+            DB_HOST=$DB_LocalHost
+            DB_PORT=$DB_Port
+            DBName=$DB_Name 
+            DBUsername=$DB_User
+            DBPassword=$DB_Pass
+            MailClientID=$MailClientID
+            MailClientSecret=$MailClientSecret
+            MailTokenType=$MailTokenType
+            MailAccesstoken=$MailAccesstoken
+            MailRefreshToken=$MailRefreshToken
+            StorageBucketName=$StorageBucketName
             SENTRY_DSN=$SENTRY_DSN " > .env
-
-      - run:
-          name: Initialize firebase service account key file
-          command: |
-            echo "$FIREBASE_SERVICE_ACCOUNT_KEY" > serviceAccountKey.json
 
       - run:
           name: Authenticating and configuring the Google Cloud Platform
@@ -127,11 +121,6 @@ jobs:
           name: Deploy to Google App Engine
           command: |
             gcloud app deploy app.yaml --project $GCLOUD_PROJECT_ID  --quiet
-
-      - deploy:
-          name: Deploy CRON to Google App Engine Cloud Scheduler
-          command: |
-            gcloud app deploy cron.yaml --quiet
 
       - run:
           name: Delete Old versions of App Engine
@@ -146,103 +135,22 @@ jobs:
                 --quiet
             done
 
-      - slack/status:
-          channel: ${SLACK_CHANNEL}
-          webhook: ${SLACK_WEBHOOK}
-          failure_message: ":red_circle: A $CIRCLE_JOB job has failed!"
-
-      - slack/notify-on-failure:
-          only_for_branches: main
-
-  deploy_to_production:
-    docker:
-      - image: google/cloud-sdk
-
-    steps:
-      - checkout
-
-      - run:
-          name: Append GAR beta settings app yml
-          command: |
-            echo -e "beta_settings:\n  cloud_sql_instances: $DB_HOST" >> app.yml
-
-      - run:
-          name: Initialize the environment variable file
-          command: |
-            echo "ENVIRONMENT=$ENVIRONMENT
-            HOST=$HOST
-            DB_HOST=$DB_HOST
-            DB_PORT=$DB_PORT
-            DB_NAME=$DB_NAME
-            DB_USERNAME=$DB_USERNAME
-            DB_PASSWORD=$DB_PASSWORD
-            MAIL_CLIENT_ID=$MAIL_CLIENT_ID
-            MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
-            MAIL_REFRESH_TOKEN=$MAIL_REFRESH_TOKEN
-            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
-            SENTRY_DSN=$SENTRY_DSN " > .env
-
-      - run:
-          name: Initialize firebase service account key file
-          command: |
-            echo "$FIREBASE_SERVICE_ACCOUNT_KEY" > serviceAccountKey.json
-
-      - run:
-          name: Authenticating and configuring the Google Cloud Platform
-          command: |
-            echo $GCLOUD_SERVICE_KEY | base64 --decode | gcloud auth activate-service-account --key-file=-
-            gcloud --quiet config set project ${GCLOUD_PROJECT_ID}
-            gcloud --quiet config set compute/zone ${GCLOUD_ZONE}
-
-      - deploy:
-          name: Deploy to Google App Engine
-          command: |
-            gcloud app deploy app.yaml --project $GCLOUD_PROJECT_ID --quiet
-
-      - deploy:
-          name: Deploy CRON to Google App Engine Cloud Scheduler
-          command: |
-            gcloud app deploy cron.yaml --quiet
-
-      - slack/status:
-          channel: ${SLACK_CHANNEL}
-          webhook: ${SLACK_WEBHOOK}
-          failure_message: ":red_circle: A $CIRCLE_JOB job has failed!"
-
-      - slack/notify-on-failure:
-          only_for_branches: main
-
-orbs:
-  slack: circleci/slack@3.4.2
-
 workflows:
   version: 2
   workflow:
     jobs:
       - build:
-          context: boilerplate_dev
+          context: backend-rnd
           filters:
             branches:
               only:
-                - develop
-                - main
-                - /HT-.*/
+                - deploy-backend
 
       - deploy_to_develop:
-          context: boilerplate_dev
+          context: backend-rnd
           filters:
             branches:
               only:
-                - develop
+                - deploy-backend
           requires:
             - build
-
-      - deploy_to_production:
-          context: boilerplate_production
-          filters:
-            tags:
-              only:
-                - /v[0-9].*/
-            branches:
-              ignore:
-                - /.*/
