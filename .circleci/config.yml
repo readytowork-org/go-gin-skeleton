@@ -27,7 +27,7 @@ jobs:
           command: |
             echo "
             ServerPort=8080
-            ENVIRONMENT=$ENVIRONMENT
+            ENVIRONMENT=local
             DB_HOST=$DB_HOST
             DB_PORT=$DB_PORT
             DB_NAME=$DB_NAME 
@@ -111,17 +111,15 @@ jobs:
             echo "
             ServerPort=8080
             ENVIRONMENT=$ENVIRONMENT
-            DB_HOST=$DB_LocalHost
-            DB_PORT=$DB_Port
-            DBName=$DB_Name 
-            DBUsername=$DB_User
-            DBPassword=$DB_Pass
-            MailClientID=$MailClientID
-            MailClientSecret=$MailClientSecret
-            MailTokenType=$MailTokenType
-            MailAccesstoken=$MailAccesstoken
-            MailRefreshToken=$MailRefreshToken
-            StorageBucketName=$StorageBucketName
+            DB_HOST=$DB_HOST
+            DB_PORT=$DB_PORT
+            DB_NAME=$DB_NAME 
+            DB_USERNAME=$DB_USERNAME
+            DB_PASSWORD=$DB_PASSWORD
+            MAIL_CLIENT_ID=$MAIL_CLIENT_ID
+            MAIL_CLIENT_SECRET=$MAIL_CLIENT_SECRET
+            MAIL_TOKEN_TYPE=$MAIL_TOKEN_TYPE
+            STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME
             SENTRY_DSN=$SENTRY_DSN " > .env
 
       - run:
