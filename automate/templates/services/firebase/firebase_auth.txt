@@ -3,9 +3,9 @@ package middlewares
 import (
 	fbService "{{project_name}}/apps/auth/services"
 	userService "{{project_name}}/apps/user/services"
-	"{{project_name}}/constants"
+	"{{project_name}}/common/constants"
+	"{{project_name}}/common/responses"
 	"{{project_name}}/infrastructure"
-	"{{project_name}}/responses"
 	"net/http"
 	"strings"
 
