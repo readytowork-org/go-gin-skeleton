@@ -44,6 +44,7 @@ if [ "$service_id" == "2" ]; then
     "init:${ROOT}/apps/${app_name}/init"
     "services:${ROOT}/apps/${app_name}/services"
     "firebase_auth:${ROOT}/middlewares"
+    "firebase:${ROOT}/infrastructure"
     )
 
 fi
@@ -57,7 +58,8 @@ router_path="${ROOT}/config/router.go"
 import_name="${project_name}/apps/${app_name}/init"
 import_name_router="${project_name}/apps/${app_name}/routes"
 fx_installed_app_string="var InstalledApps = fx.Options("
-middleware_fx_module_string="var Module = fx.Options("
+common_fx_module_string="var Module = fx.Options("
+infrastructure_path="${ROOT}/infrastructure/init.go"
 
 
 jwt_inject_dependency() {
@@ -70,7 +72,7 @@ jwt_inject_dependency() {
         sed -i "" "s/${fx_installed_app_string}/${fx_installed_app_string}\n\t  ${app_name}.Module,/g" $config_path
 
         # middleware fx
-        sed -i "" "s/${middleware_fx_module_string}/${middleware_fx_module_string}\n\t  fx.Provide(NewJWTAuthMiddleWare),/g" $middleware_path
+        sed -i "" "s/${common_fx_module_string}/${common_fx_module_string}\n\t  fx.Provide(NewJWTAuthMiddleWare),/g" $middleware_path
 
         # router
         sed -i '' -e "/^import (/a\\
@@ -78,11 +80,12 @@ jwt_inject_dependency() {
         " $router_path
         sed -i "" "s/func RoutersConstructor(/func RoutersConstructor(\n\t AuthRoutes ${app_name}.AuthRoute,/g" $router_path
         sed -i "" "s/return Routes{/return Routes{\n\t AuthRoutes,/g" $router_path
+
     else
         # installed app
         sed -i "s/${fx_installed_app_string}/${fx_installed_app_string}\n\t  ${app_name}.Module,/g" $config_path
         # middleware fx
-        sed -i "s/${middleware_fx_module_string}/${middleware_fx_module_string}\n\t  fx.Provide(NewJWTAuthMiddleWare),/g" $middleware_path
+        sed -i "s/${common_fx_module_string}/${common_fx_module_string}\n\t  fx.Provide(NewJWTAuthMiddleWare),/g" $middleware_path
         # router
         sed -i "s/func RoutersConstructor(/func RoutersConstructor(\n\t AuthRoutes ${app_name}.AuthRoute,/g" $router_path
         sed -i "s/return Routes{/return Routes{\n\t AuthRoutes,/g" $router_path
@@ -103,14 +106,25 @@ fb_inject_dependency() {
         sed -i "" "s/${fx_installed_app_string}/${fx_installed_app_string}\n\t  ${app_name}.Module,/g" $config_path
 
         # middleware fx
-        sed -i "" "s/${middleware_fx_module_string}/${middleware_fx_module_string}\n\t  fx.Provide(NewFirebaseAuthMiddleware),/g" $middleware_path
+        sed -i "" "s/${common_fx_module_string}/${common_fx_module_string}\n\t  fx.Provide(NewFirebaseAuthMiddleware),/g" $middleware_path
+
+        #infrastructure
+         sed -i "" "s/${common_fx_module_string}/${common_fx_module_string}\n\t  fx.Provide(NewFBApp),/g" $infrastructure_path
+         sed -i "" "s/${common_fx_module_string}/${common_fx_module_string}\n\t  fx.Provide(NewFBAuth),/g" $infrastructure_path
+         sed -i "" "s/${common_fx_module_string}/${common_fx_module_string}\n\t  fx.Provide(NewFirestoreClient),/g" $infrastructure_path
+         sed -i "" "s/${common_fx_module_string}/${common_fx_module_string}\n\t  fx.Provide(NewFCMClient),/g" $infrastructure_path
 
     else
         # installed app
         sed -i "s/${fx_installed_app_string}/${fx_installed_app_string}\n\t  ${app_name}.Module,/g" $config_path
         # middleware fx
-        sed -i "s/${middleware_fx_module_string}/${middleware_fx_module_string}\n\t  fx.Provide(NewFirebaseAuthMiddleware),/g" $middleware_path
+        sed -i "s/${common_fx_module_string}/${common_fx_module_string}\n\t  fx.Provide(NewFirebaseAuthMiddleware),/g" $middleware_path
 
+        # infrastructure
+         sed -i "s/${common_fx_module_string}/${common_fx_module_string}\n\t  fx.Provide(NewFBApp),/g" $infrastructure_path
+         sed -i "s/${common_fx_module_string}/${common_fx_module_string}\n\t  fx.Provide(NewFBAuth),/g" $infrastructure_path
+         sed -i "s/${common_fx_module_string}/${common_fx_module_string}\n\t  fx.Provide(NewFirestoreClient),/g" $infrastructure_path
+         sed -i "s/${common_fx_module_string}/${common_fx_module_string}\n\t  fx.Provide(NewFCMClient),/g" $infrastructure_path
     fi
     echo "✅ Firebase authentication system 🔐 injected "
     echo "You can now use middlewares.FirebaseAuthMiddleware.Handle() method to enable firebase auth"
