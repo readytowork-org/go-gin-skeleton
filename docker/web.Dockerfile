@@ -15,6 +15,8 @@ RUN echo $GOPATH
 
 RUN go install github.com/go-delve/delve/cmd/dlv@latest
 
+RUN go install github.com/rubenv/sql-migrate/...@latest
+
 COPY . /clean_web
 
 ARG VERSION="4.13.0"

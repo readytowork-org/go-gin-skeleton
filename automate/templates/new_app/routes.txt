@@ -1,0 +1,37 @@
+package routes
+
+import (
+	"{{project_name}}/apps/{{app_name}}/controllers"
+	"{{project_name}}/infrastructure"
+	"{{project_name}}/middlewares"
+)
+
+type {{app_uppercase}}Route struct {
+	logger     infrastructure.Logger
+	router     infrastructure.Router
+	trx middlewares.DBTransaction 
+	controller controllers.{{app_uppercase}}Controller
+}
+
+func {{app_uppercase}}RouteConstructor(
+	logger infrastructure.Logger,
+	router infrastructure.Router,
+	trx middlewares.DBTransaction,
+	controller controllers.{{app_uppercase}}Controller,
+) {{app_uppercase}}Route {
+	return {{app_uppercase}}Route{
+		logger:     logger,
+		router:     router,
+		trx:     trx,
+		controller: controller,
+	}
+}
+
+func (i {{app_uppercase}}Route) Setup() {
+	i.logger.Zap.Info("->Setting up {{app_name}} routes<-")
+	{{app_name}} := i.router.Gin.Group("{{app_name}}")
+	{
+		{{app_name}}.GET("", i.controller.{{app_uppercase}}Api)
+
+	}
+}

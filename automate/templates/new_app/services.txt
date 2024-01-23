@@ -1,0 +1,25 @@
+package services
+
+import (
+	"{{project_name}}/apps/{{app_name}}/repository"
+	"{{project_name}}/infrastructure"
+	)
+
+type {{app_uppercase}}Service struct {
+	logger     infrastructure.Logger
+	repository repository.{{app_uppercase}}Repository
+}
+
+func {{app_uppercase}}ServiceConstuctor(
+	logger infrastructure.Logger,
+	repository repository.{{app_uppercase}}Repository,
+) {{app_uppercase}}Service {
+	return {{app_uppercase}}Service{
+		logger:     logger,
+		repository: repository,
+	}
+}
+
+func (sv {{app_uppercase}}Service) {{app_uppercase}}Api() (string, error) {
+	return sv.repository.{{app_uppercase}}Api()
+}

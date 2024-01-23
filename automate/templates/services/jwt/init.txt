@@ -1,0 +1,16 @@
+package auth
+
+import (
+	"{{project_name}}/apps/auth/controllers"
+	"{{project_name}}/apps/auth/routes"
+	"{{project_name}}/apps/auth/services"
+
+	"go.uber.org/fx"
+)
+
+// Module exported for initializing application
+var Module = fx.Options(
+	fx.Provide(controllers.AuthControllerConstuctor),
+	fx.Provide(services.AuthServiceConstuctor),
+	fx.Provide(routes.AuthRouteConstructor),
+)

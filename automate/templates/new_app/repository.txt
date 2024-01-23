@@ -1,0 +1,22 @@
+package repository
+
+import "{{project_name}}/infrastructure"
+
+type {{app_uppercase}}Repository struct {
+	logger infrastructure.Logger
+	db     infrastructure.Database
+}
+
+func {{app_uppercase}}RepositoryConstuctor(
+	logger infrastructure.Logger,
+	db infrastructure.Database,
+) {{app_uppercase}}Repository {
+	return {{app_uppercase}}Repository{
+		logger: logger,
+		db:     db,
+	}
+}
+
+func (rp {{app_uppercase}}Repository) {{app_uppercase}}Api() (string, error) {
+	return "{{app_uppercase}} api working!!", nil
+}
