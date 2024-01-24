@@ -7,12 +7,12 @@ import (
 	"boilerplate-api/dtos"
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
-	"boilerplate-api/paginations"
 	"boilerplate-api/responses"
+	"boilerplate-api/url_query"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
@@ -112,7 +112,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 // @Failure      		500 {object} responses.Error
 // @Router				/users [get]
 func (cc UserController) GetAllUsers(c *gin.Context) {
-	pagination := paginations.BuildPagination[*paginations.UserPagination](c)
+	pagination := url_query.BuildPagination[*url_query.UserPagination](c)
 
 	users, count, err := cc.userService.GetAllUsers(*pagination)
 	if err != nil {

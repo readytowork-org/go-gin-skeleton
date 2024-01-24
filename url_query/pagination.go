@@ -1,8 +1,6 @@
-package paginations
+package url_query
 
-import (
-	"github.com/gin-gonic/gin"
-)
+import "github.com/gin-gonic/gin"
 
 type IPagination interface {
 	Build(c *gin.Context)

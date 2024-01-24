@@ -1,4 +1,4 @@
-package paginations
+package url_query
 
 type UserPagination struct {
 	Pagination
