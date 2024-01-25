@@ -49,6 +49,10 @@ func NewRouter(env Env) Router {
 		c.JSON(http.StatusOK, gin.H{"data": "Boilerplate 📺 API Up and Running"})
 	})
 
+	httpRouter.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"data": "BoilerPlate 📺 API ran"})
+	})
+
 	return Router{
 		Gin: httpRouter,
 	}
