@@ -25,7 +25,8 @@ create:
 		@read -p  "What is the name of migration?" NAME; \
 		${MIGRATE} create -ext sql -seq -dir migration  $$NAME
 
-swag-generate:
+swag-gen:
+		@command -v swag >/dev/null 2>&1 || (echo "Installing swag..." && go install github.com/swaggo/swag/cmd/swag@latest)
 		swag fmt
 		swag init --parseDependency --parseInternal
 
@@ -43,4 +44,4 @@ run:
 	docker-compose up
 
 
-.PHONY: migrate-up migrate-down force goto drop create auto-create 
+.PHONY: migrate-up migrate-down force goto drop create auto-create
