@@ -1,1 +1,10 @@
 runtime: go118
+service: api
+readiness_check:
+  path: "/health-check"
+  check_interval_sec: 120
+  timeout_sec: 60
+  failure_threshold: 3
+  success_threshold: 3
+  app_start_timeout_sec: 1800
+
