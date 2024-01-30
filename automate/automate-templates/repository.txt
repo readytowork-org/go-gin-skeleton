@@ -3,7 +3,7 @@ package repository
 import (
 	"{{project_name}}/infrastructure"
 	"{{project_name}}/models"
-	"{{project_name}}/utils"
+	"{{project_name}}/url_query"
 )
 
 // {{uc_resource}}Repository database structure
@@ -27,9 +27,7 @@ func (c {{uc_resource}}Repository) Create({{uc_resource}} models.{{uc_resource}}
 }
 
 // GetAll{{uc_resource}} Get All {{plc_resource}}
-func (c {{uc_resource}}Repository) GetAll{{uc_resource}}(pagination utils.Pagination) ([]models.{{uc_resource}}, int64, error) {
-	var {{plc_resource}} []models.{{uc_resource}}
-	var totalRows int64 = 0
+func (c {{uc_resource}}Repository) GetAll{{uc_resource}}(pagination url_query.Pagination) ({{plc_resource}} []models.{{uc_resource}}, count int64, err error) {
 	queryBuilder := c.db.DB.Model(&models.{{uc_resource}}{}).Offset(pagination.Offset).Order(pagination.Sort)
 
 	if !pagination.All{
@@ -41,19 +39,17 @@ func (c {{uc_resource}}Repository) GetAll{{uc_resource}}(pagination utils.Pagina
 		queryBuilder.Where(c.db.DB.Where("`{{resource_table}}`.`title` LIKE ?", searchQuery))
 	}
 
-	err := queryBuilder.
-		Find(&{{plc_resource}}).
-		Offset(-1).
-		Limit(-1).
-		Count(&totalRows).Error
-	return {{plc_resource}}, totalRows, err
+	return {{plc_resource}}, count, queryBuilder.
+        Find(&{{plc_resource}}).
+        Offset(-1).
+        Limit(-1).
+        Count(&count).Error
 }
 
 // GetOne{{uc_resource}} Get One {{uc_resource}} By Id
-func (c {{uc_resource}}Repository) GetOne{{uc_resource}}(ID int64) (models.{{uc_resource}}, error) {
-	{{uc_resource}} := models.{{uc_resource}}{}
-	return {{uc_resource}}, c.db.DB.
-		Where("id = ?", ID).First(&{{uc_resource}}).Error
+func (c {{uc_resource}}Repository) GetOne{{uc_resource}}(ID int64) ({{plc_resource}} models.{{uc_resource}}, err error) {
+	return {{plc_resource}}, c.db.DB.
+		Where("id = ?", ID).First(&{{plc_resource}}).Error
 }
 
 // UpdateOne{{uc_resource}} Update One {{uc_resource}} By Id

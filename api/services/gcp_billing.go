@@ -59,7 +59,7 @@ func (s GCPBillingService) GetExistingBudgetList(
 			break
 		}
 		if err != nil {
-			fmt.Errorf("failed to retrieve budget: %v", err)
+			s.logger.Zap.Errorf("failed to retrieve budget: %v", err)
 		}
 		budgetList = append(budgetList, budget)
 	}
@@ -121,7 +121,7 @@ func (s GCPBillingService) CreateBudget(ctx context.Context) (*budgetspb.Budget,
 
 	billingInfo, err := s.gcpBilling.BudgetClient.CreateBudget(ctx, &createRequest)
 	if err != nil {
-		fmt.Errorf("failed to create budget: %v", err)
+		s.logger.Zap.Errorf("failed to create budget: %v", err)
 	}
 
 	return billingInfo, err
@@ -150,7 +150,7 @@ func (s GCPBillingService) EditBudget(ctx context.Context, budget *budgetspb.Bud
 
 	billingInfo, err := s.gcpBilling.BudgetClient.UpdateBudget(ctx, &editRequest)
 	if err != nil {
-		fmt.Errorf("failed to retrieve budget: %v", err)
+		s.logger.Zap.Errorf("failed to retrieve budget: %v", err)
 	}
 
 	return billingInfo, err

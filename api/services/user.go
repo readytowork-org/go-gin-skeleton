@@ -4,7 +4,7 @@ import (
 	"boilerplate-api/api/repository"
 	"boilerplate-api/dtos"
 	"boilerplate-api/models"
-	"boilerplate-api/paginations"
+	"boilerplate-api/url_query"
 	"gorm.io/gorm"
 )
 
@@ -32,7 +32,7 @@ func (c UserService) CreateUser(user models.User) error {
 }
 
 // GetAllUsers to get all the User
-func (c UserService) GetAllUsers(pagination paginations.UserPagination) ([]dtos.GetUserResponse, int64, error) {
+func (c UserService) GetAllUsers(pagination url_query.UserPagination) ([]dtos.GetUserResponse, int64, error) {
 	return c.repository.GetAllUsers(pagination)
 }
 

@@ -25,11 +25,23 @@ create:
 		@read -p  "What is the name of migration?" NAME; \
 		${MIGRATE} create -ext sql -seq -dir migration  $$NAME
 
-swag-generate:
+swag-gen:
+		@command -v swag >/dev/null 2>&1 || (echo "Installing swag..." && go install github.com/swaggo/swag/cmd/swag@latest)
 		swag fmt
 		swag init --parseDependency --parseInternal
 
 crud:
 	bash automate/scripts/crud.sh
 
-.PHONY: dev migrate-up migrate-down force goto drop create swag-generate crud
+install:
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.54.2
+	git config core.hooksPath hooks
+
+start: install
+	docker-compose up
+
+run:
+	docker-compose up
+
+
+.PHONY: migrate-up migrate-down force goto drop create auto-create
