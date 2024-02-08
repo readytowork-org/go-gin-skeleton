@@ -52,6 +52,9 @@ type Env struct {
 	BudgetDisplayName string `mapstructure:"BUDGET_DISPLAY_NAME"`
 	BudgetAmount      int64  `mapstructure:"BUDGET_AMOUNT"`
 	SetBudget         int    `mapstructure:"SET_BUDGET"`
+
+	RedisPassword  string        `mapstructure:"REDIS_PASSWORD"`
+	RedisCacheTime time.Duration `mapstructure:"REDIS_CACHE_TIME"`
 }
 
 // NewEnv creates a new environment

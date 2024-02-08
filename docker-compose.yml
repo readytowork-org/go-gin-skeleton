@@ -1,6 +1,17 @@
 version: "3.3"
 
 services:
+  redis:
+    container_name: "redis"
+    image: redis:alpine
+    # Specify the redis.conf file to use and add a password.
+    command: redis-server /usr/local/etc/redis/redis.conf --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    # map the volumes to that redis has the custom conf file from this project.
+    volumes:
+      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+
   web:
     build:
       context: .
@@ -28,7 +39,7 @@ services:
       [
         "--character-set-server=utf8mb4",
         "--collation-server=utf8mb4_unicode_ci",
-        "--default-authentication-plugin=mysql_native_password",
+        "--default-authentication-plugin=mysql_native_password"
       ]
     ports:
       - 33066:3306

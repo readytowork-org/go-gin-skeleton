@@ -9,9 +9,12 @@ import (
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/responses"
 	"boilerplate-api/url_query"
+	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
 
 	"gorm.io/gorm"
 )
@@ -20,6 +23,7 @@ type UserController struct {
 	logger      infrastructure.Logger
 	userService services.UserService
 	env         infrastructure.Env
+	redisClient infrastructure.Redis
 	validator   validators.UserValidator
 }
 
@@ -29,12 +33,14 @@ func NewUserController(
 	userService services.UserService,
 	env infrastructure.Env,
 	validator validators.UserValidator,
+	redisClient infrastructure.Redis,
 ) UserController {
 	return UserController{
 		logger:      logger,
 		userService: userService,
 		env:         env,
 		validator:   validator,
+		redisClient: redisClient,
 	}
 }
 
@@ -122,6 +128,24 @@ func (cc UserController) GetAllUsers(c *gin.Context) {
 		return
 	}
 
+	// Redis Cache
+	endpoint := c.Request.URL
+
+	cachedKey := endpoint.String()
+
+	response := map[string]interface{}{
+		"data":  users,
+		"count": count,
+	}
+
+	mr, _ := json.Marshal(&response)
+
+	cacheErr := cc.redisClient.RedisClient.Set(cachedKey, mr, cc.env.RedisCacheTime).Err()
+	if cacheErr != nil {
+		responses.HandleError(c, cacheErr)
+		return
+	}
+
 	responses.JSONCount(c, http.StatusOK, users, count)
 }
 
@@ -145,5 +169,22 @@ func (cc UserController) GetUserProfile(c *gin.Context) {
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, user)
+	// Redis Cache
+	endpoint := c.Request.URL
+
+	cachedKey := endpoint.String()
+
+	response := map[string]interface{}{
+		"data": user,
+	}
+
+	mr, _ := json.Marshal(&response)
+
+	cacheErr := cc.redisClient.RedisClient.Set(cachedKey, mr, 10*time.Second).Err()
+	if cacheErr != nil {
+		responses.HandleError(c, cacheErr)
+		return
+	}
+
+	responses.JSON(c, http.StatusOK, response)
 }
