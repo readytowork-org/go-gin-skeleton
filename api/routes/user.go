@@ -47,7 +47,8 @@ func (i UserRoutes) Setup() {
 	i.logger.Zap.Info(" Setting up user routes")
 	users := i.router.Gin.Group("/users").Use(i.rateLimitMiddleware.HandleRateLimit(constants.BasicRateLimit, constants.BasicPeriod))
 	{
-		users.GET("", i.redisMiddleware.VerifyRedisCache(), i.userController.GetAllUsers)
+		// i.redisMiddleware.VerifyRedisCache()
+		users.GET("", i.userController.GetAllUsers)
 		users.POST("", i.trxMiddleware.DBTransactionHandle(), i.userController.CreateUser)
 	}
 	i.router.Gin.GET("/profile", i.jwtMiddleware.Handle(), i.redisMiddleware.VerifyRedisCache(), i.userController.GetUserProfile)

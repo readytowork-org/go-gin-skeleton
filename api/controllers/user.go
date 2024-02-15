@@ -7,8 +7,10 @@ import (
 	"boilerplate-api/dtos"
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
+	"boilerplate-api/redisPubSub"
 	"boilerplate-api/responses"
 	"boilerplate-api/url_query"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -138,9 +140,25 @@ func (cc UserController) GetAllUsers(c *gin.Context) {
 		"count": count,
 	}
 
-	mr, _ := json.Marshal(&response)
+	marshalledRes, _ := json.Marshal(&response)
 
-	cacheErr := cc.redisClient.RedisClient.Set(cachedKey, mr, cc.env.RedisCacheTime).Err()
+	// Publish the data to Redis channel for caching
+	go func() {
+		// Assuming cc.env.RedisCacheTime is the interval to publish data to Redis
+		publisher := redisPubSub.NewMessagePublisher(cc.redisClient)
+
+		// Create a new context for the goroutine
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		// Use a separate goroutine to wait for the completion of the publishing operation
+		// defer wg.Done()
+
+		// Publish the message
+		publisher.PublishMessages(ctx, pagination.Keyword2, "Test")
+	}()
+
+	cacheErr := cc.redisClient.RedisClient.Set(cachedKey, marshalledRes, cc.env.RedisCacheTime).Err()
 	if cacheErr != nil {
 		responses.HandleError(c, cacheErr)
 		return

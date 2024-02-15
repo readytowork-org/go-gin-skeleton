@@ -13,8 +13,8 @@ func NewRedis(logger Logger, env Env) Redis {
 
 	var client = redis.NewClient(&redis.Options{
 		// Container name + port since we are using docker
-		Addr:     "redis:6379",
-		Password: env.RedisPassword,
+		Addr: env.RedisAddress,
+		// Password: env.RedisPassword,
 	})
 
 	if client == nil {

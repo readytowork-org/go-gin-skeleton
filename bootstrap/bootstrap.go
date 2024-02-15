@@ -10,6 +10,7 @@ import (
 	"boilerplate-api/cli"
 	"boilerplate-api/docs"
 	"boilerplate-api/infrastructure"
+	"boilerplate-api/redisPubSub"
 	"boilerplate-api/seeds"
 	"boilerplate-api/utils"
 	"context"
@@ -28,6 +29,7 @@ var Module = fx.Options(
 	infrastructure.Module,
 	cli.Module,
 	seeds.Module,
+	redisPubSub.Module,
 	fx.Invoke(bootstrap),
 )
 
@@ -42,6 +44,8 @@ func bootstrap(
 	cliApp cli.Application,
 	migrations infrastructure.Migrations,
 	seeds seeds.Seeds,
+	consumer *redisPubSub.MessageConsumer,
+
 ) {
 
 	appStop := func(context.Context) error {
@@ -66,7 +70,7 @@ func bootstrap(
 	}
 
 	lifecycle.Append(fx.Hook{
-		OnStart: func(context.Context) error {
+		OnStart: func(ctx context.Context) error {
 			logger.Zap.Info("Starting Application")
 			logger.Zap.Info("------------------------")
 			logger.Zap.Info("------ Boilerplate 📺 ------")
@@ -86,12 +90,17 @@ func bootstrap(
 				routes.Setup()
 				logger.Zap.Info("🌱 seeding data...")
 				seeds.Run()
+
+				// Add your queues here
+				consumer.ConsumerMessages(ctx, []string{"Test"})
+
 				if env.ServerPort == "" {
 					_ = handler.Gin.Run()
 				} else {
 					_ = handler.Gin.Run(":" + env.ServerPort)
 				}
 			}()
+
 			return nil
 		},
 		OnStop: appStop,
