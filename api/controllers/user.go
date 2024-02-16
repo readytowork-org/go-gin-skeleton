@@ -22,11 +22,12 @@ import (
 )
 
 type UserController struct {
-	logger      infrastructure.Logger
-	userService services.UserService
-	env         infrastructure.Env
-	redisClient infrastructure.Redis
-	validator   validators.UserValidator
+	logger         infrastructure.Logger
+	userService    services.UserService
+	env            infrastructure.Env
+	redisClient    infrastructure.Redis
+	validator      validators.UserValidator
+	redisPublisher *redisPubSub.MessagePublisher
 }
 
 // NewUserController Creates New user controller
@@ -36,13 +37,15 @@ func NewUserController(
 	env infrastructure.Env,
 	validator validators.UserValidator,
 	redisClient infrastructure.Redis,
+	redisPublisher *redisPubSub.MessagePublisher,
 ) UserController {
 	return UserController{
-		logger:      logger,
-		userService: userService,
-		env:         env,
-		validator:   validator,
-		redisClient: redisClient,
+		logger:         logger,
+		userService:    userService,
+		env:            env,
+		validator:      validator,
+		redisClient:    redisClient,
+		redisPublisher: redisPublisher,
 	}
 }
 
@@ -142,21 +145,12 @@ func (cc UserController) GetAllUsers(c *gin.Context) {
 
 	marshalledRes, _ := json.Marshal(&response)
 
-	// Publish the data to Redis channel for caching
-	go func() {
-		// Assuming cc.env.RedisCacheTime is the interval to publish data to Redis
-		publisher := redisPubSub.NewMessagePublisher(cc.redisClient)
+	// Create a new context for the redis publisher
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-		// Create a new context for the goroutine
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
-
-		// Use a separate goroutine to wait for the completion of the publishing operation
-		// defer wg.Done()
-
-		// Publish the message
-		publisher.PublishMessages(ctx, pagination.Keyword2, "Test")
-	}()
+	// Publish the message
+	cc.redisPublisher.PublishMessages(ctx, pagination.Keyword2, "Test")
 
 	cacheErr := cc.redisClient.RedisClient.Set(cachedKey, marshalledRes, cc.env.RedisCacheTime).Err()
 	if cacheErr != nil {
