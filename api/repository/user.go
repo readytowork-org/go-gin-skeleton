@@ -5,6 +5,7 @@ import (
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
 	"boilerplate-api/paginations"
+
 	"gorm.io/gorm"
 )
 
@@ -70,9 +71,24 @@ func (c UserRepository) GetOneUserWithEmail(Email string) (user models.User, err
 		Error
 }
 
-func (c UserRepository) GetOneUserWithPhone(Phone string) (user models.User, err error) {
+func (c UserRepository) GetOneUserWithPhone(Phone *string) (user models.User, err error) {
 	return user, c.db.DB.
-		First(&user, "phone = ?", Phone).
+		First(&user, "phone = ?", &Phone).
+		Error
+
+}
+
+func (c UserRepository) GetOneUserWithToken(token string) (user *models.User, err error) {
+	return user, c.db.DB.Model(&user).Where("token = ?", token).
+		First(&user).
+		Error
+
+}
+
+func (c UserRepository) Update(user models.User) (err error) {
+	return c.db.DB.
+		First(&models.User{}).
+		Updates(user).
 		Error
 
 }

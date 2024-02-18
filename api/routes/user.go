@@ -14,6 +14,7 @@ type UserRoutes struct {
 	userController      controllers.UserController
 	middleware          middlewares.FirebaseAuthMiddleware
 	jwtMiddleware       middlewares.JWTAuthMiddleWare
+	oauthMiddleware     middlewares.OAuthMiddleWare
 	trxMiddleware       middlewares.DBTransactionMiddleware
 	rateLimitMiddleware middlewares.RateLimitMiddleware
 }
@@ -25,6 +26,7 @@ func NewUserRoutes(
 	userController controllers.UserController,
 	middleware middlewares.FirebaseAuthMiddleware,
 	jwtMiddleware middlewares.JWTAuthMiddleWare,
+	oauthMiddleware middlewares.OAuthMiddleWare,
 	trxMiddleware middlewares.DBTransactionMiddleware,
 	rateLimitMiddleware middlewares.RateLimitMiddleware,
 ) UserRoutes {
@@ -34,6 +36,7 @@ func NewUserRoutes(
 		userController:      userController,
 		middleware:          middleware,
 		jwtMiddleware:       jwtMiddleware,
+		oauthMiddleware:     oauthMiddleware,
 		trxMiddleware:       trxMiddleware,
 		rateLimitMiddleware: rateLimitMiddleware,
 	}
@@ -48,6 +51,8 @@ func (i UserRoutes) Setup() {
 		users.POST("", i.trxMiddleware.DBTransactionHandle(), i.userController.CreateUser)
 	}
 	i.router.Gin.GET("/profile", i.jwtMiddleware.Handle(), i.userController.GetUserProfile)
+	// OAuth middleware implemented
+	i.router.Gin.GET("/profile/check-oAuth-middleware", i.oauthMiddleware.Handle(), i.userController.GetUserProfile)
 	oAuth := i.router.Gin.Group("/oauth")
 	{
 		oAuth.POST("/sign-in", i.userController.OAuthSignIn)

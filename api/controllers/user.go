@@ -171,6 +171,10 @@ func (cc UserController) OAuthSignIn(c *gin.Context) {
 
 }
 
+/*
+This call back route should be added to CallbackURL in G-cloud OAuthClient Services
+This will enable SSO, call this API from any Application, Or you can setup similar functions in another application using same G-Client-key and certificates.
+*/
 func (cc UserController) OAuthCallback(c *gin.Context) {
 	trx := c.MustGet(constants.DBTransaction).(*gorm.DB)
 	resData := models.OAuthUser{}
@@ -212,6 +216,9 @@ func (cc UserController) OAuthCallback(c *gin.Context) {
 		user.Email = resData.Email
 		user.Password = resData.OAuthId
 		user.FullName = resData.Name
+		// Use this expiry time in middleware and redirect to sign in page again if expired.
+		user.Token = &token.AccessToken
+		user.TokenExpiryTime = &token.Expiry
 
 		if err := cc.userService.WithTrx(trx).CreateUser(user); err != nil {
 			cc.logger.Zap.Error("Error [CreateUser] [db CreateUser]: ", err.Error())
@@ -220,7 +227,8 @@ func (cc UserController) OAuthCallback(c *gin.Context) {
 			return
 		}
 
-		responses.SuccessJSON(c, http.StatusOK, "User Created Successfully")
+		responses.JSON(c, http.StatusOK, user.Token)
+		return
 	}
 
 	if checkUserErr != nil {
@@ -230,6 +238,16 @@ func (cc UserController) OAuthCallback(c *gin.Context) {
 		return
 	}
 
-	responses.JSON(c, http.StatusOK, userInfo)
+	// Update the token exipry time on re signin
+	userInfo.TokenExpiryTime = &token.Expiry
+
+	if err := cc.userService.WithTrx(trx).Update(userInfo); err != nil {
+		cc.logger.Zap.Error("Error [UpdateUser] [db UpdateUser]: ", err.Error())
+		err := errors.InternalError.Wrap(err, "Failed to update user")
+		responses.HandleError(c, err)
+		return
+	}
+
+	responses.JSON(c, http.StatusOK, userInfo.Token)
 
 }

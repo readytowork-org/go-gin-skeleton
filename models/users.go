@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -8,11 +10,13 @@ import (
 
 type User struct {
 	Base
-	Email    string `gorm:"email" json:"email" validate:"required,email"`
-	FullName string `gorm:"full_name" json:"full_name"`
-	Phone    string `gorm:"phone" json:"phone"  validate:"phone"`
-	Gender   string `gorm:"gender" json:"gender" validate:"gender"`
-	Password string `gorm:"password" json:"password" validate:"required"`
+	Email           string     `gorm:"email" json:"email" validate:"required,email"`
+	FullName        string     `gorm:"full_name" json:"full_name"`
+	Phone           *string    `gorm:"phone" json:"phone"  validate:"phone"`
+	Gender          string     `gorm:"gender" json:"gender" validate:"gender"`
+	Password        string     `gorm:"password" json:"password" validate:"required"`
+	Token           *string    `gorm:"token" json:"token"`
+	TokenExpiryTime *time.Time `gorm:"token_expiry_time" json:"token_expiry_time"`
 }
 
 type OAuthUser struct {
