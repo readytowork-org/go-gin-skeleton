@@ -4,7 +4,8 @@ import (
 	"boilerplate-api/dtos"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
-	"boilerplate-api/paginations"
+
+	"boilerplate-api/url_query"
 
 	"gorm.io/gorm"
 )
@@ -39,7 +40,7 @@ func (c UserRepository) Create(User models.User) error {
 }
 
 // GetAllUsers Get All users
-func (c UserRepository) GetAllUsers(pagination paginations.UserPagination) (users []dtos.GetUserResponse, count int64, err error) {
+func (c UserRepository) GetAllUsers(pagination url_query.UserPagination) (users []dtos.GetUserResponse, count int64, err error) {
 	queryBuilder := c.db.DB.Limit(pagination.PageSize).Offset(pagination.Offset).Order("created_at desc")
 	queryBuilder = queryBuilder.Model(&models.User{})
 

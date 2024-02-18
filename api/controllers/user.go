@@ -8,8 +8,8 @@ import (
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/models"
-	"boilerplate-api/paginations"
 	"boilerplate-api/responses"
+	"boilerplate-api/url_query"
 	"boilerplate-api/utils"
 	"encoding/json"
 	"fmt"
@@ -17,6 +17,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
 	"gorm.io/gorm"
 )
 
@@ -102,7 +103,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		return
 	}
 
-	responses.SuccessJSON(c, http.StatusOK, "User Created Successfully")
+	responses.SuccessJSON(c, "User Created Successfully")
 }
 
 // GetAllUsers Get All User
@@ -119,7 +120,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 // @Failure      		500 {object} responses.Error
 // @Router				/users [get]
 func (cc UserController) GetAllUsers(c *gin.Context) {
-	pagination := paginations.BuildPagination[*paginations.UserPagination](c)
+	pagination := url_query.BuildPagination[*url_query.UserPagination](c)
 
 	users, count, err := cc.userService.GetAllUsers(*pagination)
 	if err != nil {

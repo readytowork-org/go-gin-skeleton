@@ -3,11 +3,11 @@ package controllers
 import (
 	"net/http"
 	"strconv"
-	"{{project_name}}/api/responses"
+	"{{project_name}}/responses"
 	"{{project_name}}/api/services"
 	"{{project_name}}/infrastructure"
 	"{{project_name}}/models"
-	"{{project_name}}/utils"
+	"{{project_name}}/url_query"
 	"{{project_name}}/errors"
 
 	"github.com/gin-gonic/gin"
@@ -30,16 +30,16 @@ func New{{uc_resource}}Controller(
 	}
 }
 
-// Create{{uc_resource}} Create {{uc_resource}}
-// @Summary				Create {{uc_resource}}
-// @Description			Create {{uc_resource}}
-// @Param				JSON body models.{{uc_resource}}{} true "Enter JSON"
-// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
-// @Produce				application/json
-// @Tags				{{uc_resource}}
-// @Success				200 {object} responses.Success "OK"
-// @Failure      		400 {object} responses.Error
-// @Router				/{{plural_resource_table}} [post]
+//  @Summary		Create {{uc_resource}}
+//  @Description	Create {{uc_resource}}
+//  @Param			JSON body models.{{uc_resource}}{} true "Enter JSON"
+//	@Security		firebase || Bearer
+//  @Produce		application/json
+//  @Tags			{{uc_resource}}
+//  @Success		200 {object} responses.Message "OK"
+//  @Failure      	400 {object} responses.Error
+//  @Router			/{{plural_resource_table}} [post]
+//  Create{{uc_resource}} Create {{uc_resource}}
 func (cc {{uc_resource}}Controller) Create{{uc_resource}}(c *gin.Context) {
 	{{lc_resource}} := models.{{uc_resource}}{}
 
@@ -57,23 +57,23 @@ func (cc {{uc_resource}}Controller) Create{{uc_resource}}(c *gin.Context) {
 		return
 	}
 
-	responses.SuccessJSON(c, http.StatusOK, "{{uc_resource}} Created Successfully")
+	responses.SuccessJSON(c, "{{uc_resource}} Created Successfully")
 }
 
-// GetAll{{uc_resource}} Get All {{uc_resource}}
-// @Summary				Get all {{uc_resource}}.
-// @Param				page_size query string false "10"
-// @Param				page query string false "Page no" "1"
-// @Param				keyword query string false "search by name"
-// @Description			Return all the {{uc_resource}}
-// @Produce				application/json
-// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
-// @Tags				{{uc_resource}}
-// @Success 			200 {array} responses.DataCount{data=[]models.{{uc_resource}}}
-// @Failure      		500 {object} responses.Error
-// @Router				/{{plural_resource_table}} [get]
+//  @Summary		Get all {{uc_resource}}.
+//  @Param			page_size query string false "10"
+//  @Param			page query string false "Page no" "1"
+//  @Param			keyword query string false "search by name"
+//  @Description	Return all the {{uc_resource}}
+//  @Produce		application/json
+//	@Security		firebase || Bearer
+//  @Tags			{{uc_resource}}
+//  @Success 		200 {array} responses.DataCount{data=[]models.{{uc_resource}}}
+//  @Failure      	500 {object} responses.Error
+//  @Router			/{{plural_resource_table}} [get]
+//  GetAll{{uc_resource}} Get All {{uc_resource}}
 func (cc {{uc_resource}}Controller) GetAll{{uc_resource}}(c *gin.Context) {
-	pagination := utils.BuildPagination(c)
+	pagination := url_query.BuildPagination[*url_query.Pagination](c)
 	pagination.Sort = "created_at desc"
 
 	{{plc_resource}}, count, err := cc.{{uc_resource}}Service.GetAll{{uc_resource}}(pagination)
@@ -87,15 +87,15 @@ func (cc {{uc_resource}}Controller) GetAll{{uc_resource}}(c *gin.Context) {
 	responses.JSONCount(c, http.StatusOK, {{plc_resource}}, count)
 }
 
-// GetOne{{uc_resource}} Get One {{uc_resource}}
-// @Summary				Get one {{uc_resource}} by id
-// @Description			Get one {{uc_resource}} by id
-// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
-// @Produce				application/json
-// @Tags				{{uc_resource}}
-// @Success 			200 {object} responses.Data{data=models.{{uc_resource}}}
-// @Failure      		500 {object} responses.Error
-// @Router				/{{plural_resource_table}}/{id} [get]
+//  @Summary		Get one {{uc_resource}} by id
+//  @Description	Get one {{uc_resource}} by id
+//	@Security		firebase || Bearer
+//  @Produce		application/json
+//  @Tags			{{uc_resource}}
+//  @Success 		200 {object} responses.Data{data=models.{{uc_resource}}}
+//  @Failure      	500 {object} responses.Error
+//  @Router			/{{plural_resource_table}}/{id} [get]
+//  GetOne{{uc_resource}} Get One {{uc_resource}}
 func (cc {{uc_resource}}Controller) GetOne{{uc_resource}}(c *gin.Context) {
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
@@ -110,17 +110,17 @@ func (cc {{uc_resource}}Controller) GetOne{{uc_resource}}(c *gin.Context) {
 	responses.JSON(c, http.StatusOK, {{lc_resource}})
 }
 
-// UpdateOne{{uc_resource}} Update One {{uc_resource}} By Id
-// @Summary				Update One {{uc_resource}} By Id
-// @Description			Update One {{uc_resource}} By Id
-// @Param               Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
-// @Param				data body models.{{uc_resource}} true "Enter JSON"
-// @Produce				application/json
-// @Tags				{{uc_resource}}
-// @Success 			200 {object} responses.Success
-// @Failure      		400 {object} responses.Error
-// @Failure      		500 {object} responses.Error
-// @Router				/{{plural_resource_table}}/{id} [put]
+//  @Summary		Update One {{uc_resource}} By Id
+//  @Description	Update One {{uc_resource}} By Id
+//	@Security		firebase || Bearer
+//  @Param			data body models.{{uc_resource}} true "Enter JSON"
+//  @Produce		application/json
+//  @Tags			{{uc_resource}}
+//  @Success 		200 {object} responses.Message "OK"
+//  @Failure      	400 {object} responses.Error
+//  @Failure      	500 {object} responses.Error
+//  @Router			/{{plural_resource_table}}/{id} [put]
+//  UpdateOne{{uc_resource}} Update One {{uc_resource}} By Id
 func (cc {{uc_resource}}Controller) UpdateOne{{uc_resource}}(c *gin.Context) {
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 	{{lc_resource}} := models.{{uc_resource}}{}
@@ -140,18 +140,18 @@ func (cc {{uc_resource}}Controller) UpdateOne{{uc_resource}}(c *gin.Context) {
 		return
 	}
 
-	responses.SuccessJSON(c, http.StatusOK, "{{uc_resource}} Updated Successfully")
+	responses.SuccessJSON(c, "{{uc_resource}} Updated Successfully")
 }
 
-// DeleteOne{{uc_resource}} Delete One {{uc_resource}} By Id
-// @Summary				Delete One {{uc_resource}} By Id
-// @Description			Delete One {{uc_resource}} By Id
-// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
-// @Produce				application/json
-// @Tags				{{uc_resource}}
-// @Success 			200 {object} responses.Success
-// @Failure      		500 {object} responses.Error
-// @Router				/{{plural_resource_table}}/{id} [delete]
+//  @Summary		Delete One {{uc_resource}} By Id
+//  @Description	Delete One {{uc_resource}} By Id
+//	@Security		firebase || Bearer
+//  @Produce		application/json
+//  @Tags			{{uc_resource}}
+//  @Success 		200 {object} responses.Message
+//  @Failure      	500 {object} responses.Error
+//  @Router			/{{plural_resource_table}}/{id} [delete]
+//  DeleteOne{{uc_resource}} Delete One {{uc_resource}} By Id
 func (cc {{uc_resource}}Controller) DeleteOne{{uc_resource}}(c *gin.Context) {
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
@@ -163,5 +163,5 @@ func (cc {{uc_resource}}Controller) DeleteOne{{uc_resource}}(c *gin.Context) {
 		return
 	}
 
-	responses.SuccessJSON(c, http.StatusOK, "{{uc_resource}} Deleted Successfully")
+	responses.SuccessJSON(c, "{{uc_resource}} Deleted Successfully")
 }
