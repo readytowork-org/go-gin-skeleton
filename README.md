@@ -31,6 +31,7 @@ Boilerplate API template includes all the common packages and setup used for API
 | `make create`       | Create new migration file(up & down)                 |
 | `make crud`         | Create crud template                                 |
 | `swag-generate`     | Run this command to generate swag docs               |
+| `make inject-jwt`   | Inject Jwt authentication service                    |
 
 ### Implemented Feature
 

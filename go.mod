@@ -15,7 +15,6 @@ require (
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-playground/validator/v10 v10.11.2
-	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/manifoldco/promptui v0.9.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646

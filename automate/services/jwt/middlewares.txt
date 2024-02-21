@@ -1,11 +1,11 @@
 package middlewares
 
 import (
-	"boilerplate-api/api/services"
-	"boilerplate-api/constants"
-	"boilerplate-api/errors"
-	"boilerplate-api/infrastructure"
-	"boilerplate-api/responses"
+	"{{project_name}}/api/services"
+	"{{project_name}}/constants"
+	"{{project_name}}/errors"
+	"{{project_name}}/infrastructure"
+	"{{project_name}}/responses"
 
 	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
@@ -18,7 +18,7 @@ type JWTAuthMiddleWare struct {
 	db         infrastructure.Database
 }
 
-func NewJWTAuthMiddleWare(
+func NewJwtAuthMiddleWare(
 	jwtService services.JWTAuthService,
 	logger infrastructure.Logger,
 	env infrastructure.Env,

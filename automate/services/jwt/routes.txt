@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"boilerplate-api/api/controllers"
-	"boilerplate-api/api/middlewares"
-	"boilerplate-api/constants"
-	"boilerplate-api/infrastructure"
+	"{{project_name}}/api/controllers"
+	"{{project_name}}/api/middlewares"
+	"{{project_name}}/constants"
+	"{{project_name}}/infrastructure"
 )
 
 // JwtAuthRoutes struct
@@ -35,7 +35,7 @@ func (i JwtAuthRoutes) Setup() {
 	i.logger.Zap.Info(" Setting up jwt routes")
 	jwt := i.router.Gin.Group("/login").Use(i.rateLimitMiddleware.HandleRateLimit(constants.LoginRateLimit, constants.LoginPeriod))
 	{
-		jwt.POST("", i.jwtController.LoginUserWithJWT)
+		jwt.POST("", i.jwtController.LoginWithJWT)
 		jwt.POST("/refresh", i.jwtController.RefreshJwtToken)
 	}
 }
