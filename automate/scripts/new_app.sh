@@ -11,7 +11,38 @@ project_name=$(echo $project_name | tr -d '\r')
 app_directory="${ROOT}/apps"
 
 
-printf " App name should be in snake_case eg: my_app *\n"
+get_current_version() {
+
+# Check if the directory exists
+if [ -d "$app_directory" ]; then
+    # Get list of folders into a string
+    folders_string=$(ls -d "$app_directory"/v*/ 2>/dev/null)
+
+    # Extract version numbers
+    versions=()
+    for folder in $folders_string; do
+        version=$(basename "$folder" | sed 's/v//')
+        versions+=("$version")
+    done
+
+    # Find the greatest version number
+    current_version=$(printf "%s\n" "${versions[@]}" | sort -n | tail -n 1)
+    # Print the greatest version
+    echo "v${current_version}"
+    
+else
+    echo "v1"
+fi
+}
+
+default_version=$(get_current_version)
+
+printf "Choose version *\n"
+printf "\n*Enter version [e.g.:1 for v1, 2 for v2]: \n"
+echo "Enter nothing for default version: $default_version" 
+read choosen_version
+
+printf "App name should be in snake_case eg: my_app *\n"
 printf "\n*Enter app name: "
 read app_name
 
@@ -21,6 +52,19 @@ if [ -z "$app_name" ]; then
     exit
 fi
 
+# check if version is empty
+if [ -z "$choosen_version" ]; then
+choosen_version=$default_version
+else 
+  choosen_version="v$choosen_version"
+fi
+
+# Check if choosen version exists or not
+if [ ! -d "$app_directory/${choosen_version}" ]; then
+  exit 
+fi
+
+app_directory="$app_directory/$choosen_version"
 # Check if the app exists
 if [ -d "$app_directory/${app_name}" ]; then
   echo "$app_name already exists try with different app name."
@@ -75,17 +119,18 @@ placeholder_value_hash=(
   "{{app_name}}:$app_name"
   "{{project_name}}:$project_name"
   "{{app_uppercase}}:$method_name"
+  "{{version}}:$choosen_version"
 )
 
 entity_path_hash=(
-  "controllers:${ROOT}/apps/${app_name}/controllers"
-  "dtos:${ROOT}/apps/${app_name}"
-  "init:${ROOT}/apps/${app_name}/init"
-  "helpers:${ROOT}/apps/${app_name}"
-  "models:${ROOT}/apps/${app_name}/models"
-  "repository:${ROOT}/apps/${app_name}/repository"
-  "routes:${ROOT}/apps/${app_name}/routes"
-  "services:${ROOT}/apps/${app_name}/services"
+  "controllers:${ROOT}/apps/${choosen_version}/${app_name}/controllers"
+  "dtos:${ROOT}/apps/${choosen_version}/${app_name}"
+  "init:${ROOT}/apps/${choosen_version}/${app_name}/init"
+  "helpers:${ROOT}/apps/${choosen_version}/${app_name}"
+  "models:${ROOT}/apps/${choosen_version}/${app_name}/models"
+  "repository:${ROOT}/apps/${choosen_version}/${app_name}/repository"
+  "routes:${ROOT}/apps/${choosen_version}/${app_name}/routes"
+  "services:${ROOT}/apps/${choosen_version}/${app_name}/services"
 )
 
 
@@ -99,10 +144,10 @@ for entity in "${entity_path_hash[@]}"; do
 done
 
 # setting up constructors and routes
-config_path="${ROOT}/config/conf.go"
-router_path="${ROOT}/config/router.go"
-import_name="${project_name}/apps/${app_name}/init"
-import_name_router="${project_name}/apps/${app_name}/routes"
+config_path="${ROOT}/config/${choosen_version}/conf.go"
+router_path="${ROOT}/config/${choosen_version}/router.go"
+import_name="${project_name}/apps/${choosen_version}/${app_name}/init"
+import_name_router="${project_name}/apps/${choosen_version}/${app_name}/routes"
 
 fx_installed_app_string="var InstalledApps = fx.Options("
 
