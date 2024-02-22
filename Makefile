@@ -41,6 +41,9 @@ crud:
 create-app:
 	bash automate/scripts/new_app.sh
 
+create-version:
+	bash automate/scripts/new_version.sh
+
 inject-auth:
 	bash automate/scripts/inject_auth.sh
 
