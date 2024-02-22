@@ -45,7 +45,7 @@ func NewRouter(env Env) Router {
 		Repanic: true,
 	}))
 
-	httpRouter.GET("/health-check", func(c *gin.Context) {
+	httpRouter.GET("api/health-check", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"data": "Boilerplate 📺 API Up and Running"})
 	})
 
