@@ -1,6 +1,12 @@
 package models
 
-type {{app_uppercase}} struct {}
+import (
+	"{{project_name}}/common/helpers"
+)
+
+type {{app_uppercase}} struct {
+    helpers.Base
+}
 
 func (tb {{app_uppercase}}) TableName() string {
     return "{{app_uppercase}}"

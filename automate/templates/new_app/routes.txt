@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"{{project_name}}/apps/{{app_name}}/controllers"
+	"{{project_name}}/apps/{{version}}/{{app_name}}/controllers"
 	"{{project_name}}/infrastructure"
 	"{{project_name}}/middlewares"
 )
@@ -29,7 +29,7 @@ func {{app_uppercase}}RouteConstructor(
 
 func (i {{app_uppercase}}Route) Setup() {
 	i.logger.Zap.Info("->Setting up {{app_name}} routes<-")
-	{{app_name}} := i.router.Gin.Group("{{app_name}}")
+	{{app_name}} := i.router.Gin.Group("api/{{version}}/{{app_name}}")
 	{
 		{{app_name}}.GET("", i.controller.{{app_uppercase}}Api)
 

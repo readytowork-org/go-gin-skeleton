@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"{{project_name}}/apps/{{app_name}}/services"
+	"{{project_name}}/apps/{{version}}/{{app_name}}/services"
 	"{{project_name}}/common/errors"
 	"{{project_name}}/common/responses"
 	"{{project_name}}/infrastructure"

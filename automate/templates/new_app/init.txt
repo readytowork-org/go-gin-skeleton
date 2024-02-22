@@ -1,10 +1,10 @@
 package init
 
 import (
-	"{{project_name}}/apps/{{app_name}}/controllers"
-	"{{project_name}}/apps/{{app_name}}/repository"
-	"{{project_name}}/apps/{{app_name}}/routes"
-	"{{project_name}}/apps/{{app_name}}/services"
+	"{{project_name}}/apps/{{version}}/{{app_name}}/controllers"
+	"{{project_name}}/apps/{{version}}/{{app_name}}/repository"
+	"{{project_name}}/apps/{{version}}/{{app_name}}/routes"
+	"{{project_name}}/apps/{{version}}/{{app_name}}/services"
 
 	"go.uber.org/fx"
 )
