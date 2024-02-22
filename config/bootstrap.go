@@ -2,6 +2,7 @@ package config
 
 import (
 	"boilerplate-api/common/utils"
+	v1 "boilerplate-api/config/v1"
 	"boilerplate-api/infrastructure"
 	"boilerplate-api/middlewares"
 	"context"
@@ -10,7 +11,9 @@ import (
 )
 
 var Module = fx.Options(
-	InstalledApps,
+	v1.InstalledApps,
+	infrastructure.Module,
+	middlewares.Module,
 	fx.Invoke(bootstrap),
 )
 
@@ -22,7 +25,7 @@ func bootstrap(
 	database infrastructure.Database,
 	migrations infrastructure.Migrations,
 	middlewares middlewares.Middlewares,
-	routes Routes,
+	v1_routes v1.Routes,
 ) {
 
 	appStop := func(context.Context) error {
@@ -57,8 +60,9 @@ func bootstrap(
 					logger.Zap.Info("Migrating DB schema...")
 					migrations.Migrate()
 				}
+
 				middlewares.Setup()
-				routes.Setup()
+				v1_routes.Setup()
 				if env.ServerPort == "" {
 					_ = handler.Gin.Run()
 				} else {
