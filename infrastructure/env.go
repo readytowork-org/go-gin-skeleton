@@ -53,6 +53,7 @@ type Env struct {
 	BudgetAmount      int64  `mapstructure:"BUDGET_AMOUNT"`
 	SetBudget         int    `mapstructure:"SET_BUDGET"`
 
+	RedisAddress   string        `mapstructure:"REDIS_ADDRESS"`
 	RedisPassword  string        `mapstructure:"REDIS_PASSWORD"`
 	RedisCacheTime time.Duration `mapstructure:"REDIS_CACHE_TIME"`
 }

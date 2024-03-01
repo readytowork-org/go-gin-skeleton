@@ -64,3 +64,8 @@ Boilerplate API template includes all the common packages and setup used for API
 - plural-resource-table-name: plural name for the table going to be created. example: foods, puppies, product_categories.
 
 - plural-resource-name: plural name of CRUD in Upper camelCase. examples:Foods,Puppies,ProductCategories etc.
+
+### REDIS, REDIS CACHE AND MESSAGE BROKERS
+- [Implementing Redis Caching in Go with Docker](https://medium.com/readytowork-org/implementing-redis-caching-in-go-with-docker-6d86ea9b5606)
+- [Redis and Golang: Making Message Brokers Easy and Powerful!](https://medium.com/@abighimire07/redis-and-golang-making-messages-brokers-easy-and-powerful-57debf9235ac)
+

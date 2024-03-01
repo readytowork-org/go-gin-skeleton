@@ -5,7 +5,7 @@ services:
     container_name: "redis"
     image: redis:alpine
     # Specify the redis.conf file to use and add a password.
-    command: redis-server /usr/local/etc/redis/redis.conf --requirepass ${REDIS_PASSWORD}
+    command: redis-server /usr/local/etc/redis/redis.conf
     ports:
       - "6379:6379"
     # map the volumes to that redis has the custom conf file from this project.
