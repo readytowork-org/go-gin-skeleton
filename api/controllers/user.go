@@ -7,20 +7,26 @@ import (
 	"boilerplate-api/dtos"
 	"boilerplate-api/errors"
 	"boilerplate-api/infrastructure"
+	"boilerplate-api/models"
 	"boilerplate-api/responses"
 	"boilerplate-api/url_query"
+	"boilerplate-api/utils"
+	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 
 	"gorm.io/gorm"
 )
 
 type UserController struct {
-	logger      infrastructure.Logger
-	userService services.UserService
-	env         infrastructure.Env
-	validator   validators.UserValidator
+	logger       infrastructure.Logger
+	userService  services.UserService
+	env          infrastructure.Env
+	validator    validators.UserValidator
+	oAuthService services.OAuthService
 }
 
 // NewUserController Creates New user controller
@@ -29,12 +35,14 @@ func NewUserController(
 	userService services.UserService,
 	env infrastructure.Env,
 	validator validators.UserValidator,
+	oAuthService services.OAuthService,
 ) UserController {
 	return UserController{
-		logger:      logger,
-		userService: userService,
-		env:         env,
-		validator:   validator,
+		logger:       logger,
+		userService:  userService,
+		env:          env,
+		validator:    validator,
+		oAuthService: oAuthService,
 	}
 }
 
@@ -146,4 +154,123 @@ func (cc UserController) GetUserProfile(c *gin.Context) {
 	}
 
 	responses.JSON(c, http.StatusOK, user)
+}
+
+// VerifyOAuthToken     Use this to verify oauth Token from any application
+// @Summary				Verifies oauth tokens sent from other applications
+// @Description			Verifies oauth tokens sent from other applications
+// @Produce				json
+// @Tags				User
+// @Success 			200 {object} text/html
+// @Failure      		500 {object} responses.Error
+// @Router				/oauth/verify-token [post]
+func (cc UserController) VerifyOAuthToken(c *gin.Context) {
+	//Getting token from header
+	user, err := cc.oAuthService.GetHeaderTokenAndAuthorize(c)
+	if err != nil {
+		cc.logger.Zap.Error("Access token header err: ", err.Error())
+
+		// In Client side/FE, redirect user to OAuth Sign In page again.
+		cc.OAuthSignIn(c)
+		return
+	}
+
+	responses.JSON(c, http.StatusOK, user)
+}
+
+// OAuthSignIn Redirects to sign in page
+// @Summary				redirect to sign in page
+// @Description			redirect to sign in page
+// @Produce				text/html
+// @Tags				User
+// @Success 			200 {array} text/html
+// @Failure      		500 {object} responses.Error
+// @Router				/oauth/sign-in [post]
+func (cc UserController) OAuthSignIn(c *gin.Context) {
+	randomString := utils.GenerateRandomCode(8)
+	url := cc.oAuthService.GetURL(randomString)
+	fmt.Println(url)
+	c.Redirect(http.StatusTemporaryRedirect, url)
+}
+
+/*
+This call back route should be added to CallbackURL in G-cloud OAuthClient Services
+This will enable SSO, call this API from any Application, Or you can setup similar functions in another application using same G-Client-key and certificates.
+*/
+func (cc UserController) OAuthCallback(c *gin.Context) {
+	trx := c.MustGet(constants.DBTransaction).(*gorm.DB)
+	resData := models.OAuthUser{}
+
+	code := c.Request.FormValue("code")
+
+	token, err := cc.oAuthService.GetToken(code)
+
+	if err != nil {
+		cc.logger.Zap.Error("error getting oauth token")
+	}
+
+	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
+
+	if err != nil {
+		cc.logger.Zap.Error("error getting oauth response")
+	}
+	defer response.Body.Close()
+	data, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		cc.logger.Zap.Error("error reading oauth response body")
+	}
+
+	if err := json.Unmarshal(data, &resData); err != nil {
+		cc.logger.Zap.Error("Error [OAuthSignUp] (ShouldBindJson) : ", err)
+		err := errors.BadRequest.Wrap(err, "Failed to bind oauth user data")
+		responses.HandleError(c, err)
+		return
+	}
+
+	// TODO:
+	// Perform the logic as per requirement. For now, we are adding the new user to database if the user doesn't exist
+	userInfo, checkUserErr := cc.userService.GetOneUserWithEmail(resData.Email)
+
+	// Add User if User not found
+	if checkUserErr == gorm.ErrRecordNotFound {
+		// Use id from oauth as Password and ask user to update it later or make changes in DB to set empty password and add a password later
+		user := models.User{}
+		user.Email = resData.Email
+		user.Password = resData.OAuthId
+		user.FullName = resData.Name
+		// Use this expiry time in middleware and redirect to sign in page again if expired.
+		user.Token = &token.AccessToken
+		user.TokenExpiryTime = &token.Expiry
+
+		if err := cc.userService.WithTrx(trx).CreateUser(user); err != nil {
+			cc.logger.Zap.Error("Error [CreateUser] [db CreateUser]: ", err.Error())
+			err := errors.InternalError.Wrap(err, "Failed to create user")
+			responses.HandleError(c, err)
+			return
+		}
+
+		responses.JSON(c, http.StatusOK, user.Token)
+		return
+	}
+
+	if checkUserErr != nil {
+		cc.logger.Zap.Error("Error finding user profile", checkUserErr.Error())
+		err := errors.InternalError.Wrap(checkUserErr, "Failed to get users profile data")
+		responses.HandleError(c, err)
+		return
+	}
+
+	// Update the token exipry time on re signin
+	userInfo.Token = &token.AccessToken
+	userInfo.TokenExpiryTime = &token.Expiry
+
+	if err := cc.userService.WithTrx(trx).Update(userInfo); err != nil {
+		cc.logger.Zap.Error("Error [UpdateUser] [db UpdateUser]: ", err.Error())
+		err := errors.InternalError.Wrap(err, "Failed to update user")
+		responses.HandleError(c, err)
+		return
+	}
+
+	responses.JSON(c, http.StatusOK, userInfo.Token)
+
 }

@@ -5,6 +5,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `gender` VARCHAR(15) NULL,
   `email` VARCHAR(100) NOT NULL,
   `password` VARCHAR(100) NOT NULL,
+  `token` VARCHAR(255) NULL,
+  `token_expiry_time` DATETIME NULL,
   `created_at` DATETIME NOT NULL,
   `updated_at` DATETIME NULL,
   `deleted_at` DATETIME NULL,

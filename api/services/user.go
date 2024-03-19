@@ -4,7 +4,9 @@ import (
 	"boilerplate-api/api/repository"
 	"boilerplate-api/dtos"
 	"boilerplate-api/models"
+
 	"boilerplate-api/url_query"
+
 	"gorm.io/gorm"
 )
 
@@ -47,6 +49,16 @@ func (c UserService) GetOneUserWithEmail(Email string) (models.User, error) {
 }
 
 // GetOneUserWithPhone Get one user with phone
-func (c UserService) GetOneUserWithPhone(Phone string) (models.User, error) {
+func (c UserService) GetOneUserWithPhone(Phone *string) (models.User, error) {
 	return c.repository.GetOneUserWithPhone(Phone)
+}
+
+// GetOneWithToken Get one user with token
+func (c UserService) GetOneUserWithToken(token string) (*models.User, error) {
+	return c.repository.GetOneUserWithToken(token)
+}
+
+// Update One User
+func (c UserService) Update(user models.User) error {
+	return c.repository.Update(user)
 }
