@@ -261,6 +261,7 @@ func (cc UserController) OAuthCallback(c *gin.Context) {
 	}
 
 	// Update the token exipry time on re signin
+	userInfo.Token = &token.AccessToken
 	userInfo.TokenExpiryTime = &token.Expiry
 
 	if err := cc.userService.WithTrx(trx).Update(userInfo); err != nil {
