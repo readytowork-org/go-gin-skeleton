@@ -39,6 +39,7 @@ func (c OAuthService) GetURL(randomString string) string {
 
 func (c OAuthService) GetToken(code string) (*oauth2.Token, error) {
 	token, err := c.oAuthService.Exchange(context.Background(), code)
+
 	if err != nil {
 		return nil, err
 	}
@@ -65,8 +66,14 @@ func (c OAuthService) GetHeaderTokenAndAuthorize(ctx *gin.Context) (*models.User
 	// Check with database
 	getUser, err := c.userRepository.GetOneUserWithToken(tokenString)
 
-	if err != nil || getUser == nil || getUser.TokenExpiryTime.Before(time.Now()) {
+	if err != nil || getUser == nil {
 		return nil, err
 	}
+
+	if getUser.TokenExpiryTime.Before(time.Now()) {
+		err := errors.BadRequest.New("Token has already expired")
+		return nil, err
+	}
+
 	return getUser, nil
 }

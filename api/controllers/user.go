@@ -156,6 +156,28 @@ func (cc UserController) GetUserProfile(c *gin.Context) {
 	responses.JSON(c, http.StatusOK, user)
 }
 
+// VerifyOAuthToken     Use this to verify oauth Token from any application
+// @Summary				Verifies oauth tokens sent from other applications
+// @Description			Verifies oauth tokens sent from other applications
+// @Produce				json
+// @Tags				User
+// @Success 			200 {object} text/html
+// @Failure      		500 {object} responses.Error
+// @Router				/oauth/verify-token [post]
+func (cc UserController) VerifyOAuthToken(c *gin.Context) {
+	//Getting token from header
+	user, err := cc.oAuthService.GetHeaderTokenAndAuthorize(c)
+	if err != nil {
+		cc.logger.Zap.Error("Access token header err: ", err.Error())
+
+		// In Client side/FE, redirect user to OAuth Sign In page again.
+		cc.OAuthSignIn(c)
+		return
+	}
+
+	responses.JSON(c, http.StatusOK, user)
+}
+
 // OAuthSignIn Redirects to sign in page
 // @Summary				redirect to sign in page
 // @Description			redirect to sign in page
@@ -169,7 +191,6 @@ func (cc UserController) OAuthSignIn(c *gin.Context) {
 	url := cc.oAuthService.GetURL(randomString)
 	fmt.Println(url)
 	c.Redirect(http.StatusTemporaryRedirect, url)
-
 }
 
 /*

@@ -55,6 +55,7 @@ func (i UserRoutes) Setup() {
 	i.router.Gin.GET("/profile/check-oAuth-middleware", i.oauthMiddleware.Handle(), i.userController.GetUserProfile)
 	oAuth := i.router.Gin.Group("/oauth")
 	{
+		oAuth.POST("/verify-token", i.userController.VerifyOAuthToken)
 		oAuth.POST("/sign-in", i.userController.OAuthSignIn)
 		oAuth.GET("/callback", i.trxMiddleware.DBTransactionHandle(), i.userController.OAuthCallback)
 	}

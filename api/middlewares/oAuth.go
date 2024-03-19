@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"boilerplate-api/api/controllers"
 	"boilerplate-api/api/services"
 	"boilerplate-api/constants"
 	"boilerplate-api/errors"
@@ -11,13 +12,15 @@ import (
 )
 
 type OAuthMiddleWare struct {
-	oAuthService services.OAuthService
-	logger       infrastructure.Logger
-	env          infrastructure.Env
-	db           infrastructure.Database
+	oAuthService    services.OAuthService
+	oAuthController controllers.UserController
+	logger          infrastructure.Logger
+	env             infrastructure.Env
+	db              infrastructure.Database
 }
 
 func NewOAuthMiddleWare(
+	oAuthController controllers.UserController,
 	oAuthService services.OAuthService,
 	logger infrastructure.Logger,
 	env infrastructure.Env,
@@ -25,10 +28,11 @@ func NewOAuthMiddleWare(
 
 ) OAuthMiddleWare {
 	return OAuthMiddleWare{
-		oAuthService: oAuthService,
-		logger:       logger,
-		env:          env,
-		db:           db,
+		oAuthController: oAuthController,
+		oAuthService:    oAuthService,
+		logger:          logger,
+		env:             env,
+		db:              db,
 	}
 }
 
@@ -42,8 +46,10 @@ func (m OAuthMiddleWare) Handle() gin.HandlerFunc {
 			m.logger.Zap.Error("Access token header err: ", err.Error())
 			err = errors.Unauthorized.Wrap(err, "Error getting token from header")
 			responses.HandleError(c, err)
-			c.Abort()
-			// In Client side/FE, redirect user to OAuth Sign In page again.
+
+			// Redirect user to OAuth Sign In page again.
+			m.oAuthController.OAuthSignIn(c)
+
 			return
 		}
 
