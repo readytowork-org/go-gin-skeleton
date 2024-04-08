@@ -3,8 +3,10 @@ package gcp
 import (
 	"boilerplate-api/internal/config"
 	"boilerplate-api/internal/utils"
+	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"image"
 	"image/jpeg"
 	"image/png"
@@ -12,13 +14,14 @@ import (
 	"mime/multipart"
 	"net/url"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/storage"
 )
 
 // StorageBucketService the file upload/download functions
 type StorageBucketService struct {
-	*storage.Client
+	client BucketClient
 	logger config.Logger
 	env    config.Env
 }
@@ -27,42 +30,10 @@ type StorageBucketService struct {
 func NewStorageBucketService(
 	logger config.Logger,
 	env config.Env,
-	options config.GCPClientOption,
+	client BucketClient,
 ) StorageBucketService {
-	bucketName := env.StorageBucketName
-	ctx := context.Background()
-	if bucketName == "" {
-		logger.Error("Please check your env file for STORAGE_BUCKET_NAME")
-	}
-	client, err := storage.NewClient(ctx, options)
-	if err != nil {
-		logger.Fatal(err.Error())
-	}
-
-	bucket := client.Bucket(bucketName)
-	_, err = bucket.Attrs(ctx)
-	if errors.Is(err, storage.ErrBucketNotExist) {
-		logger.Fatalf("Provided bucket %v doesn't exists", bucketName)
-	}
-
-	if err != nil {
-		logger.Fatalf("Cloud bucket error: %v", err.Error())
-	}
-
-	bucketAttrsToUpdate := storage.BucketAttrsToUpdate{
-		CORS: []storage.CORS{
-			{
-				MaxAge:          600,
-				Methods:         []string{"PUT", "PATCH", "GET", "POST", "OPTIONS", "DELETE"},
-				Origins:         []string{"*"},
-				ResponseHeaders: []string{"Content-Type"},
-			}},
-	}
-	if _, err := bucket.Update(ctx, bucketAttrsToUpdate); err != nil {
-		logger.Fatalf("Cloud bucket update error: %v", err.Error())
-	}
 	return StorageBucketService{
-		Client: client,
+		client: client,
 		logger: logger,
 		env:    env,
 	}
@@ -92,7 +63,7 @@ func (service StorageBucketService) UploadFile(
 		service.logger.Fatal("Please check your env file for StorageBucketName")
 	}
 
-	_, err := service.Bucket(bucketName).Attrs(ctx)
+	_, err := service.client.Bucket(bucketName).Attrs(ctx)
 
 	if errors.Is(err, storage.ErrBucketNotExist) {
 		service.logger.Fatalf("provided bucket %v doesn't exists", bucketName)
@@ -102,7 +73,7 @@ func (service StorageBucketService) UploadFile(
 		service.logger.Fatalf("cloud bucket error: %v", err.Error())
 	}
 
-	wc := service.Bucket(bucketName).Object(fileName).NewWriter(ctx)
+	wc := service.client.Bucket(bucketName).Object(fileName).NewWriter(ctx)
 	wc.ContentType = "application/octet-stream"
 
 	if _, err := io.Copy(wc, file); err != nil {
@@ -116,82 +87,82 @@ func (service StorageBucketService) UploadFile(
 	return fileName, nil
 }
 
-// // UploadBinary the binary to the cloud storage
-// func (s StorageBucketService) UploadBinary(
-// 	ctx context.Context,
-// 	file []byte,
-// 	fileName string,
-// ) (string, error) {
+// UploadBinary the binary to the cloud storage
+func (service StorageBucketService) UploadBinary(
+	ctx context.Context,
+	file []byte,
+	fileName string,
+) (string, error) {
 
-// 	var bucketName = s.env.StorageBucketName
+	var bucketName = service.env.StorageBucketName
 
-// 	if bucketName == "" {
-// 		s.logger.Fatal("Please check your env file for StorageBucketName")
-// 	}
+	if bucketName == "" {
+		service.logger.Fatal("Please check your env file for StorageBucketName")
+	}
 
-// 	_, err := s.client.Bucket(bucketName).Attrs(ctx)
+	_, err := service.client.Bucket(bucketName).Attrs(ctx)
 
-// 	if err == storage.ErrBucketNotExist {
-// 		s.logger.Fatalf("provided bucket %v doesn't exists", bucketName)
-// 	}
+	if err == storage.ErrBucketNotExist {
+		service.logger.Fatalf("provided bucket %v doesn't exists", bucketName)
+	}
 
-// 	if err != nil {
-// 		s.logger.Fatalf("cloud bucket error: %v", err.Error())
-// 	}
+	if err != nil {
+		service.logger.Fatalf("cloud bucket error: %v", err.Error())
+	}
 
-// 	wc := s.client.Bucket(bucketName).Object(fileName).NewWriter(ctx)
-// 	wc.ContentType = "application/octet-stream"
+	wc := service.client.Bucket(bucketName).Object(fileName).NewWriter(ctx)
+	wc.ContentType = "application/octet-stream"
 
-// 	if _, err := io.Copy(wc, bytes.NewReader(file)); err != nil {
-// 		return "", err
-// 	}
+	if _, err := io.Copy(wc, bytes.NewReader(file)); err != nil {
+		return "", err
+	}
 
-// 	if err := wc.Close(); err != nil {
-// 		return "", err
-// 	}
+	if err := wc.Close(); err != nil {
+		return "", err
+	}
 
-// 	u, err := url.ParseRequestURI("/" + bucketName + "/" + wc.Attrs().Name)
+	u, err := url.ParseRequestURI("/" + bucketName + "/" + wc.Attrs().Name)
 
-// 	if err != nil {
-// 		return "", err
-// 	}
+	if err != nil {
+		return "", err
+	}
 
-// 	path := u.EscapedPath()
-// 	path = strings.Replace(path, "/"+bucketName, "", 1)
-// 	path = strings.Replace(path, "/", "", 1)
+	path := u.EscapedPath()
+	path = strings.Replace(path, "/"+bucketName, "", 1)
+	path = strings.Replace(path, "/", "", 1)
 
-// 	return path, nil
+	return path, nil
 
-// }
+}
 
-// // RemoveObject removes the file from the storage bucket
-// func (s StorageBucketService) RemoveObject(objectName string) error {
+// RemoveObject removes the file from the storage bucket
+func (service StorageBucketService) RemoveObject(objectName string) error {
 
-// 	bucketName := s.env.StorageBucketName
-// 	if bucketName == "" {
-// 		s.logger.Fatal("Please check your env file for StorageBucketName")
-// 	}
-// 	ctx := context.Background()
+	bucketName := service.env.StorageBucketName
+	if bucketName == "" {
+		service.logger.Fatal("Please check your env file for StorageBucketName")
+	}
+	ctx := context.Background()
 
-// 	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
-// 	defer cancel()
+	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
 
-// 	objectToDelete := s.client.Bucket(bucketName).Object(objectName)
-// 	attrs, err := objectToDelete.Attrs(ctx)
-// 	if err != nil {
-// 		return fmt.Errorf("Object(%v).Attrs: %v", objectToDelete, err)
-// 	}
-// 	if err != nil {
-// 		return fmt.Errorf("object.Attrs: %v", err)
-// 	}
-// 	objectToDelete = objectToDelete.If(storage.Conditions{GenerationMatch: attrs.Generation})
+	objectToDelete := service.client.Bucket(bucketName).Object(objectName)
+	attrs, err := objectToDelete.Attrs(ctx)
+	if err != nil {
+		return fmt.Errorf("Object(%v).Attrs: %v", objectToDelete, err)
+	}
+	if err != nil {
+		return fmt.Errorf("object.Attrs: %v", err)
+	}
+	objectToDelete = objectToDelete.If(storage.Conditions{GenerationMatch: attrs.Generation})
 
-// 	err = objectToDelete.Delete(ctx)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
+	err = objectToDelete.Delete(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func (service StorageBucketService) UploadThumbnailFile(ctx context.Context,
 	file image.Image,
@@ -202,7 +173,7 @@ func (service StorageBucketService) UploadThumbnailFile(ctx context.Context,
 		service.logger.Fatal("Please check your env file for StorageBucketName")
 	}
 
-	_, err := service.Bucket(bucketName).Attrs(ctx)
+	_, err := service.client.Bucket(bucketName).Attrs(ctx)
 	if errors.Is(err, storage.ErrBucketNotExist) {
 		service.logger.Fatalf("provided bucket %v doesn't exists", bucketName)
 	}
@@ -210,7 +181,7 @@ func (service StorageBucketService) UploadThumbnailFile(ctx context.Context,
 		service.logger.Fatalf("cloud bucket error: %v", err.Error())
 	}
 
-	wc := service.Bucket(bucketName).Object(fileName).NewWriter(ctx)
+	wc := service.client.Bucket(bucketName).Object(fileName).NewWriter(ctx)
 	wc.ContentType = "application/octet-stream"
 
 	if extension == "jpg" || extension == "jpeg" {

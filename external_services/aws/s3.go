@@ -7,15 +7,13 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"mime/multipart"
-)
 
-import (
 	"context"
 )
 
 // S3BucketService handles the file upload functions
 type S3BucketService struct {
-	*s3.Client
+	client *s3.Client
 	logger config.Logger
 	env    config.Env
 }
@@ -29,7 +27,7 @@ func NewS3BucketService(
 	client := s3.New(s3.Options{Credentials: config.Credentials, Region: env.AwsS3Region})
 	logger.Info("✅  AWS S3 service created")
 	return S3BucketService{
-		Client: client,
+		client: client,
 		logger: logger,
 		env:    env,
 	}
@@ -41,7 +39,7 @@ func (s S3BucketService) UploadToS3(
 	fileHeader *multipart.FileHeader,
 	fileName string,
 ) (string, error) {
-	uploader := manager.NewUploader(s)
+	uploader := manager.NewUploader(s.client)
 	result, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
 		Bucket:      aws.String(s.env.AwsS3Bucket),
 		Key:         aws.String(fileName),
