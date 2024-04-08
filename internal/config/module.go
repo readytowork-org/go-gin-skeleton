@@ -23,6 +23,7 @@ var BaseModule = fx.Options(
 var Module = fx.Options(
 	ENVModule,
 	BaseModule,
+	fx.Provide(NewGCPClientOption),
 )
 
 // TestENVModule required for test env

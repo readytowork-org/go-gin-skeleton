@@ -1,11 +1,10 @@
-package external_services
+package gcp
 
 import (
 	"boilerplate-api/internal/config"
 	"boilerplate-api/internal/utils"
 	"context"
 	"errors"
-	"google.golang.org/api/option"
 	"image"
 	"image/jpeg"
 	"image/png"
@@ -28,13 +27,14 @@ type StorageBucketService struct {
 func NewStorageBucketService(
 	logger config.Logger,
 	env config.Env,
+	options config.GCPClientOption,
 ) StorageBucketService {
 	bucketName := env.StorageBucketName
 	ctx := context.Background()
 	if bucketName == "" {
 		logger.Error("Please check your env file for STORAGE_BUCKET_NAME")
 	}
-	client, err := storage.NewClient(ctx, option.WithCredentialsFile("serviceAccountKey.json"))
+	client, err := storage.NewClient(ctx, options)
 	if err != nil {
 		logger.Fatal(err.Error())
 	}

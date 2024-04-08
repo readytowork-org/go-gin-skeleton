@@ -2,8 +2,8 @@ package controllers_test
 
 import (
 	"boilerplate-api/internal/config"
-	"boilerplate-api/internal/request_validator"
 	"boilerplate-api/internal/router"
+	"boilerplate-api/tests"
 	"go.uber.org/fx"
 	"os"
 	"reflect"
@@ -32,7 +32,6 @@ func NewControllerTests() ControllerTests {
 }
 
 var ControllerIntegrationTestModules = fx.Options(
-	request_validator.Module,
 	fx.Supply(config.EnvPath("../../.test.env")),
 	fx.Provide(config.NewEnv),
 	fx.Provide(config.GetLogger),

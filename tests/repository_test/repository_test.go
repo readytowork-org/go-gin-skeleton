@@ -26,18 +26,8 @@ func (repoTest RepoTests) InternalTestSetup() (tests []testing.InternalTest) {
 	return tests
 }
 
-func NewRepoTests(
-	planRepoTest TestPlanRepository,
-	storeRepoTest TestStoreRepository,
-	aminRepoTest TestAdminRepository,
-	userRepoTest TestUserRepository,
-) RepoTests {
-	return RepoTests{
-		planRepoTest,
-		storeRepoTest,
-		aminRepoTest,
-		userRepoTest,
-	}
+func NewRepoTests() RepoTests {
+	return RepoTests{}
 }
 
 var RepoTestModules = fx.Options(
@@ -45,10 +35,6 @@ var RepoTestModules = fx.Options(
 	config.BaseModule,
 	repository.Module,
 	fx.Supply(config.EnvPath("../../.test.env")),
-	fx.Provide(NewTestPlanRepository),
-	fx.Provide(NewTestStoreRepository),
-	fx.Provide(NewTestAdminRepository),
-	fx.Provide(NewTestUserRepository),
 	fx.Provide(NewRepoTests),
 	fx.Invoke(bootstrapRepoTest),
 )

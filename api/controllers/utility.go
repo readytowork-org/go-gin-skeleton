@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"boilerplate-api/external_services"
+	"boilerplate-api/external_services/gcp"
 	"boilerplate-api/internal/api_errors"
 	"boilerplate-api/internal/api_response"
 	"boilerplate-api/internal/config"
@@ -15,13 +16,13 @@ import (
 type UtilityController struct {
 	logger   config.Logger
 	env      config.Env
-	bucket   external_services.StorageBucketService
+	bucket   gcp.StorageBucketService
 	s3Bucket external_services.S3BucketService
 }
 
 func NewUtilityController(logger config.Logger,
 	env config.Env,
-	bucket external_services.StorageBucketService,
+	bucket gcp.StorageBucketService,
 	s3Bucket external_services.S3BucketService,
 ) UtilityController {
 	return UtilityController{
