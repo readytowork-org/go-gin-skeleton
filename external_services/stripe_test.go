@@ -1,14 +1,12 @@
 package external_services
 
 import (
-	"boilerplate-api/dtos"
 	"boilerplate-api/internal/config"
 	"bytes"
 	"testing"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stripe/stripe-go/v76"
-	"github.com/stripe/stripe-go/v76/client"
 	"github.com/stripe/stripe-go/v76/form"
 )
 
@@ -79,22 +77,20 @@ func (s *stripeBackendMock) SetMaxNetworkRetries(maxNetworkRetries int64) {
 
 func TestCreateCustomer(t *testing.T) {
 	stripeBackendMock := new(stripeBackendMock)
-	stripeTestBackends := &stripe.Backends{
-		API:     stripeBackendMock,
-		Connect: stripeBackendMock,
-		Uploads: stripeBackendMock,
-	}
+	//stripeTestBackends := &stripe.Backends{
+	//	API:     stripeBackendMock,
+	//	Connect: stripeBackendMock,
+	//	Uploads: stripeBackendMock,
+	//}
 
-	stripeClient := client.New("sk_test", stripeTestBackends)
+	//stripeClient := client.New("sk_test", stripeTestBackends)
 
+	env := config.NewEnv(
+		".env",
+	)
 	stripeService := NewStripeService(
-		StripeClient{
-			API: stripeClient,
-		},
-		config.NewEnv(
-			".env",
-		),
-
+		env,
+		config.GetLogger(env),
 	)
 	stripeBackendMock.On("Call",
 		mock.Anything,
@@ -130,21 +126,20 @@ func TestCreateCustomer(t *testing.T) {
 
 func TestCreateSubscription(t *testing.T) {
 	stripeBackendMock := new(stripeBackendMock)
-	stripeTestBackends := &stripe.Backends{
-		API:     stripeBackendMock,
-		Connect: stripeBackendMock,
-		Uploads: stripeBackendMock,
-	}
+	//stripeTestBackends := &stripe.Backends{
+	//	API:     stripeBackendMock,
+	//	Connect: stripeBackendMock,
+	//	Uploads: stripeBackendMock,
+	//}
 
-	stripeClient := client.New("sk_test", stripeTestBackends)
+	//stripeClient := client.New("sk_test", stripeTestBackends)
 
+	env := config.NewEnv(
+		".env",
+	)
 	stripeService := NewStripeService(
-		StripeClient{
-			API: stripeClient,
-		},
-		config.NewEnv(
-			".env",
-		),
+		env,
+		config.GetLogger(env),
 	)
 	stripeBackendMock.On("Call",
 		mock.Anything,
@@ -160,7 +155,7 @@ func TestCreateSubscription(t *testing.T) {
 		}
 	}).Return(nil).Once()
 
-	stripeService.CreateSubscription(dtos.CustomerSubscription{
+	stripeService.CreateSubscription(CustomerSubscription{
 		StripeCustomerID: "test@gmail.com",
 		StripePriceID:    "test@gmail.com",
 	}, nil)
@@ -168,21 +163,19 @@ func TestCreateSubscription(t *testing.T) {
 
 func TestCreatePrices(t *testing.T) {
 	stripeBackendMock := new(stripeBackendMock)
-	stripeTestBackends := &stripe.Backends{
-		API:     stripeBackendMock,
-		Connect: stripeBackendMock,
-		Uploads: stripeBackendMock,
-	}
+	//stripeTestBackends := &stripe.Backends{
+	//	API:     stripeBackendMock,
+	//	Connect: stripeBackendMock,
+	//	Uploads: stripeBackendMock,
+	//}
 
-	stripeClient := client.New("sk_test", stripeTestBackends)
-
+	//stripeClient := client.New("sk_test", stripeTestBackends)
+	env := config.NewEnv(
+		".env",
+	)
 	stripeService := NewStripeService(
-		StripeClient{
-			API: stripeClient,
-		},
-		config.NewEnv(
-			".env",
-		),
+		env,
+		config.GetLogger(env),
 	)
 
 	stripeBackendMock.On("Call",
@@ -204,21 +197,20 @@ func TestCreatePrices(t *testing.T) {
 
 func TestPaymentIntent(t *testing.T) {
 	stripeBackendMock := new(stripeBackendMock)
-	stripeTestBackends := &stripe.Backends{
-		API:     stripeBackendMock,
-		Connect: stripeBackendMock,
-		Uploads: stripeBackendMock,
-	}
+	//stripeTestBackends := &stripe.Backends{
+	//	API:     stripeBackendMock,
+	//	Connect: stripeBackendMock,
+	//	Uploads: stripeBackendMock,
+	//}
 
-	stripeClient := client.New("sk_test", stripeTestBackends)
+	//stripeClient := client.New("sk_test", stripeTestBackends)
 
+	env := config.NewEnv(
+		".env",
+	)
 	stripeService := NewStripeService(
-		StripeClient{
-			API: stripeClient,
-		},
-		config.NewEnv(
-			".env",
-		),
+		env,
+		config.GetLogger(env),
 	)
 
 	stripeBackendMock.On("Call",

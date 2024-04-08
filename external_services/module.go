@@ -9,4 +9,5 @@ var Module = fx.Options(
 	firebase.Module,
 	fx.Provide(NewStorageBucketService),
 	fx.Provide(NewStripeService),
+	fx.Provide(NewGmailService),
 )
