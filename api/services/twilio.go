@@ -1,7 +1,7 @@
 package services
 
 import (
-	"boilerplate-api/infrastructure"
+	"boilerplate-api/internal/config"
 	"boilerplate-api/models"
 	"bytes"
 	"encoding/base64"
@@ -52,13 +52,13 @@ type TwilioService struct {
 	smsFrom   string
 	sid       string
 	authToken string
-	logger    infrastructure.Logger
+	logger    config.Logger
 }
 
 // NewTwilioService creates new twilio service
 func NewTwilioService(
-	env infrastructure.Env,
-	logger infrastructure.Logger,
+	env config.Env,
+	logger config.Logger,
 ) TwilioService {
 	return TwilioService{
 		baseURL:   env.TwilioBaseURL,
@@ -79,7 +79,7 @@ type SMSInput struct {
 func (t TwilioService) SendSMS(input SMSInput) (*SuccessResponse, *ErrorResponse, error) {
 	url := fmt.Sprintf("%s/Accounts/%s/Messages.json", t.baseURL, t.sid)
 
-	t.logger.Zap.Info(url)
+	t.logger.Info(url)
 
 	method := "POST"
 
@@ -102,7 +102,7 @@ func (t TwilioService) SendSMS(input SMSInput) (*SuccessResponse, *ErrorResponse
 	}
 
 	token := fmt.Sprintf("Basic %s", t.getBasicToken())
-	t.logger.Zap.Info(token)
+	t.logger.Info(token)
 
 	req.Header.Add("Authorization", token)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -147,11 +147,11 @@ func (t TwilioService) MessageSuccess(payload models.PhoneMessage) error {
 		Body: payload.Message,
 	})
 	if err != nil {
-		t.logger.Zap.Error("user message send error: ", err.Error())
+		t.logger.Error("user message send error: ", err.Error())
 		return err
 	}
 	if twilioErr != nil {
-		t.logger.Zap.Errorf("twilio message send error: %+v \n", twilioErr)
+		t.logger.Errorf("twilio message send error: %+v \n", twilioErr)
 		return err
 	}
 	return nil

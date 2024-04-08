@@ -2,7 +2,7 @@ package repository
 
 import (
 	"boilerplate-api/dtos"
-	"boilerplate-api/infrastructure"
+	"boilerplate-api/internal/config"
 	"boilerplate-api/models"
 	"boilerplate-api/url_query"
 	"gorm.io/gorm"
@@ -10,12 +10,12 @@ import (
 
 // UserRepository database structure
 type UserRepository struct {
-	db     infrastructure.Database
-	logger infrastructure.Logger
+	db     config.Database
+	logger config.Logger
 }
 
 // NewUserRepository creates a new User repository
-func NewUserRepository(db infrastructure.Database, logger infrastructure.Logger) UserRepository {
+func NewUserRepository(db config.Database, logger config.Logger) UserRepository {
 	return UserRepository{
 		db:     db,
 		logger: logger,
@@ -25,7 +25,7 @@ func NewUserRepository(db infrastructure.Database, logger infrastructure.Logger)
 // WithTrx enables repository with transaction
 func (c UserRepository) WithTrx(trxHandle *gorm.DB) UserRepository {
 	if trxHandle == nil {
-		c.logger.Zap.Error("Transaction Database not found in gin context. ")
+		c.logger.Error("Transaction Database not found in gin context. ")
 		return c
 	}
 	c.db.DB = trxHandle

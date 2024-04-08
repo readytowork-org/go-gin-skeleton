@@ -1,6 +1,7 @@
 package url_query
 
+import "boilerplate-api/internal/utils"
+
 type UserPagination struct {
-	Pagination
-	Keyword2 string `form:"keyword2"`
+	utils.Pagination
 }

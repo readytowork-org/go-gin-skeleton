@@ -1,22 +1,22 @@
 package routes
 
 import (
-	"boilerplate-api/infrastructure"
-
+	"boilerplate-api/internal/config"
+	"boilerplate-api/internal/router"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type DocsRoutes struct {
-	logger infrastructure.Logger
-	router infrastructure.Router
-	env    infrastructure.Env
+	logger config.Logger
+	router router.Router
+	env    config.Env
 }
 
 func NewDocsRoutes(
-	logger infrastructure.Logger,
-	router infrastructure.Router,
-	env infrastructure.Env,
+	logger config.Logger,
+	router router.Router,
+	env config.Env,
 ) DocsRoutes {
 	return DocsRoutes{
 		router: router,
@@ -27,9 +27,9 @@ func NewDocsRoutes(
 
 func (c DocsRoutes) Setup() {
 	if c.env.Environment != "production" {
-		c.logger.Zap.Info(" Setting up Docs routes")
+		c.logger.Info(" Setting up Docs routes")
 
-		swagger := c.router.Gin.Group("/docs")
+		swagger := c.router.Group("/docs")
 		{
 			swagger.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		}

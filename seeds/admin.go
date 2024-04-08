@@ -1,26 +1,28 @@
 package seeds
 
 import (
-	"boilerplate-api/api/services"
-	"boilerplate-api/infrastructure"
+	"boilerplate-api/external_services/firebase"
+	"boilerplate-api/internal/config"
+	"boilerplate-api/internal/constants"
+	"context"
 )
 
 // AdminSeed  Admin seeding
 type AdminSeed struct {
-	logger          infrastructure.Logger
-	firebaseSerivce services.FirebaseService
-	env             infrastructure.Env
+	logger          config.Logger
+	firebaseService firebase.AuthService
+	env             config.Env
 }
 
 // NewAdminSeed creates admin seed
 func NewAdminSeed(
-	logger infrastructure.Logger,
-	firebaseSerivce services.FirebaseService,
-	env infrastructure.Env,
+	logger config.Logger,
+	firebaseSerivce firebase.AuthService,
+	env config.Env,
 ) AdminSeed {
 	return AdminSeed{
 		logger:          logger,
-		firebaseSerivce: firebaseSerivce,
+		firebaseService: firebaseSerivce,
 		env:             env,
 	}
 }
@@ -30,21 +32,28 @@ func (c AdminSeed) Run() {
 
 	email := c.env.AdminEmail
 	password := c.env.AdminPass
+	name := c.env.AdminName
 
-	c.logger.Zap.Info("🌱 seeding  admin data...")
+	c.logger.Info("🌱 seeding  admin data...")
 
-	_, err := c.firebaseSerivce.GetUserByEmail(email)
+	_, err := c.firebaseService.GetUserByEmail(context.Background(), email)
 
 	if err != nil {
-		err := c.firebaseSerivce.CreateAdminUser(email, password)
+		firebaseAuthUser := firebase.AuthUser{
+			Password:    password,
+			Email:       email,
+			Role:        string(constants.Roles.SuperAdmin),
+			DisplayName: &name,
+		}
+
+		_, err = c.firebaseService.CreateUser(firebaseAuthUser)
 		if err != nil {
-			c.logger.Zap.Error("Firebase Admin user can't be created: ", err.Error())
+			c.logger.Error("Firebase Admin user can't be created: ", err.Error())
 			return
 		}
 
-		c.logger.Zap.Info("Firebase Admin User Created, email: ", email, " password: ", password)
+		c.logger.Info("Firebase Admin UserName Created, email: ", email, " password: ", password)
 	}
 
-	c.logger.Zap.Info("Admin already exist")
-
+	c.logger.Info("Admin already exist")
 }

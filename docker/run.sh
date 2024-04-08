@@ -10,4 +10,5 @@ while true; do
     
     kill -9 $PID
     pkill -f __debug_bin
+    rm -rf __debug_bin*
 done

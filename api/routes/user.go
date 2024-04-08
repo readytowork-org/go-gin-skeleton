@@ -2,17 +2,19 @@ package routes
 
 import (
 	"boilerplate-api/api/controllers"
-	"boilerplate-api/api/middlewares"
-	"boilerplate-api/constants"
-	"boilerplate-api/infrastructure"
+	"boilerplate-api/external_services/firebase"
+	"boilerplate-api/internal/config"
+	"boilerplate-api/internal/constants"
+	"boilerplate-api/internal/middlewares"
+	"boilerplate-api/internal/router"
 )
 
 // UserRoutes struct
 type UserRoutes struct {
-	logger              infrastructure.Logger
-	router              infrastructure.Router
+	logger              config.Logger
+	router              router.Router
 	userController      controllers.UserController
-	middleware          middlewares.FirebaseAuthMiddleware
+	middleware          firebase.AuthMiddleware
 	jwtMiddleware       middlewares.JWTAuthMiddleWare
 	trxMiddleware       middlewares.DBTransactionMiddleware
 	rateLimitMiddleware middlewares.RateLimitMiddleware
@@ -20,10 +22,10 @@ type UserRoutes struct {
 
 // NewUserRoutes creates new user controller
 func NewUserRoutes(
-	logger infrastructure.Logger,
-	router infrastructure.Router,
+	logger config.Logger,
+	router router.Router,
 	userController controllers.UserController,
-	middleware middlewares.FirebaseAuthMiddleware,
+	middleware firebase.AuthMiddleware,
 	jwtMiddleware middlewares.JWTAuthMiddleWare,
 	trxMiddleware middlewares.DBTransactionMiddleware,
 	rateLimitMiddleware middlewares.RateLimitMiddleware,
@@ -41,11 +43,11 @@ func NewUserRoutes(
 
 // Setup user routes
 func (i UserRoutes) Setup() {
-	i.logger.Zap.Info(" Setting up user routes")
-	users := i.router.Gin.Group("/users").Use(i.rateLimitMiddleware.HandleRateLimit(constants.BasicRateLimit, constants.BasicPeriod))
+	i.logger.Info(" Setting up user routes")
+	users := i.router.Group("/users").Use(i.rateLimitMiddleware.HandleRateLimit(constants.BasicRateLimit, constants.BasicPeriod))
 	{
 		users.GET("", i.userController.GetAllUsers)
 		users.POST("", i.trxMiddleware.DBTransactionHandle(), i.userController.CreateUser)
 	}
-	i.router.Gin.GET("/profile", i.jwtMiddleware.Handle(), i.userController.GetUserProfile)
+	i.router.GET("/profile", i.jwtMiddleware.Handle(), i.userController.GetUserProfile)
 }
