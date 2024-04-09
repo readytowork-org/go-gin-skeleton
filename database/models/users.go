@@ -1,13 +1,14 @@
 package models
 
 import (
+	"boilerplate-api/internal/types"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 type User struct {
-	Base
+	types.BaseModal
 	Email    string `gorm:"email" json:"email" validate:"required,email"`
 	FullName string `gorm:"full_name" json:"full_name" validate:"required"`
 	Phone    string `gorm:"phone" json:"phone"  validate:"required,phone"`

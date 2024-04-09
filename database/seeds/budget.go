@@ -1,10 +1,11 @@
 package seeds
 
 import (
-	"boilerplate-api/external_services/gcp"
-	"boilerplate-api/internal/config"
 	"context"
 	"time"
+
+	"boilerplate-api/external_services/gcp"
+	"boilerplate-api/internal/config"
 )
 
 // ProjectBudgetSeed  Budget setup seed
