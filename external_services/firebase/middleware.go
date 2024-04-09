@@ -1,12 +1,13 @@
 package firebase
 
 import (
-	"boilerplate-api/internal/api_response"
-	"boilerplate-api/internal/constants"
-	"boilerplate-api/internal/types"
 	"errors"
 	"net/http"
 	"strings"
+
+	"boilerplate-api/internal/constants"
+	"boilerplate-api/internal/json_response"
+	"boilerplate-api/internal/types"
 
 	"firebase.google.com/go/auth"
 	"github.com/getsentry/sentry-go"
@@ -35,7 +36,7 @@ func (f AuthMiddleware) HandleAuth(setClaims ...SetClaims) gin.HandlerFunc {
 		token, err := f.getTokenFromHeader(c)
 
 		if err != nil {
-			api_response.ErrorMessage(c, http.StatusUnauthorized, err.Error())
+			c.JSON(http.StatusUnauthorized, json_response.ErrorMsg{Error: err.Error()})
 			c.Abort()
 			return
 		}
@@ -47,7 +48,7 @@ func (f AuthMiddleware) HandleAuth(setClaims ...SetClaims) gin.HandlerFunc {
 		for _, setClaim := range setClaims {
 			httpCode, err := setClaim(c, token.Claims)
 			if err != nil {
-				c.JSON(httpCode, api_response.ErrorMsg{Error: err.Error()})
+				c.JSON(httpCode, json_response.ErrorMsg{Error: err.Error()})
 				c.Abort()
 				return
 			}

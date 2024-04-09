@@ -1,12 +1,13 @@
 package middlewares
 
 import (
-	"boilerplate-api/internal/api_errors"
-	"boilerplate-api/internal/api_response"
-	"boilerplate-api/internal/config"
-	"boilerplate-api/internal/constants"
 	"strconv"
 	"time"
+
+	"boilerplate-api/internal/api_errors"
+	"boilerplate-api/internal/config"
+	"boilerplate-api/internal/constants"
+	"boilerplate-api/internal/json_response"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ulule/limiter/v3"
@@ -75,7 +76,7 @@ func (rl RateLimitMiddleware) HandleRateLimit(limit int64, period time.Duration)
 			err := api_errors.TooManyRequests.New("Too many request")
 			err = api_errors.SetCustomMessage(err, "Rate limit has exceeded")
 			status, errM := api_errors.HandleError(err)
-			c.JSON(status, api_response.Error{Error: errM})
+			c.JSON(status, json_response.Error{Error: errM})
 			c.Abort()
 			return
 		}

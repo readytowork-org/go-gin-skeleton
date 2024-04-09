@@ -1,8 +1,8 @@
 package cli
 
 import (
+	"boilerplate-api/database/seeds"
 	"boilerplate-api/internal/config"
-	"boilerplate-api/seeds"
 )
 
 // CreateSeedData command

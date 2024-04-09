@@ -3,11 +3,12 @@ package config
 import (
 	"errors"
 	"fmt"
+	"regexp"
+
 	goMySql "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"regexp"
 )
 
 // Migrations Migration Struct
@@ -67,5 +68,5 @@ func (m Migrations) MigrateUp() {
 */
 func getMigrationFolder(envPath string) string {
 	m1 := regexp.MustCompile(`(\.(\w+))+`)
-	return m1.ReplaceAllString(envPath, "migration")
+	return m1.ReplaceAllString(envPath, "database/migration")
 }

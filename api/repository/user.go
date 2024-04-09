@@ -1,10 +1,10 @@
 package repository
 
 import (
+	"boilerplate-api/api/user"
+	"boilerplate-api/database/models"
 	"boilerplate-api/dtos"
 	"boilerplate-api/internal/config"
-	"boilerplate-api/models"
-	"boilerplate-api/url_query"
 	"gorm.io/gorm"
 )
 
@@ -38,7 +38,7 @@ func (c UserRepository) Create(User models.User) error {
 }
 
 // GetAllUsers Get All users
-func (c UserRepository) GetAllUsers(pagination url_query.UserPagination) (users []dtos.GetUserResponse, count int64, err error) {
+func (c UserRepository) GetAllUsers(pagination user.Pagination) (users []dtos.GetUserResponse, count int64, err error) {
 	queryBuilder := c.db.DB.Limit(pagination.PageSize).Offset(pagination.Offset).Order("created_at desc")
 	queryBuilder = queryBuilder.Model(&models.User{})
 

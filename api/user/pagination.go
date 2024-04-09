@@ -1,7 +1,7 @@
-package url_query
+package user
 
 import "boilerplate-api/internal/utils"
 
-type UserPagination struct {
+type Pagination struct {
 	utils.Pagination
 }

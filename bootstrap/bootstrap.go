@@ -1,19 +1,20 @@
 package bootstrap
 
 import (
+	"context"
+
 	"boilerplate-api/api/controllers"
 	"boilerplate-api/api/repository"
 	"boilerplate-api/api/routes"
 	"boilerplate-api/api/services"
 	"boilerplate-api/cli"
+	"boilerplate-api/database/seeds"
 	"boilerplate-api/docs"
 	"boilerplate-api/external_services"
 	"boilerplate-api/internal"
 	"boilerplate-api/internal/config"
 	"boilerplate-api/internal/router"
 	"boilerplate-api/internal/utils"
-	"boilerplate-api/seeds"
-	"context"
 	"go.uber.org/fx"
 )
 

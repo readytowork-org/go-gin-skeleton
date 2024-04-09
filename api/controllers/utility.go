@@ -1,14 +1,15 @@
 package controllers
 
 import (
+	"net/http"
+	"path/filepath"
+
 	"boilerplate-api/external_services/aws"
 	"boilerplate-api/external_services/gcp"
 	"boilerplate-api/internal/api_errors"
-	"boilerplate-api/internal/api_response"
 	"boilerplate-api/internal/config"
+	"boilerplate-api/internal/json_response"
 	"boilerplate-api/internal/utils"
-	"net/http"
-	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
@@ -51,7 +52,7 @@ func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 		uc.logger.Error("Error Get File from request :: ", err.Error())
 		err := api_errors.BadRequest.Wrap(err, "Failed to get file form request")
 		status, errM := api_errors.HandleError(err)
-		ctx.JSON(status, api_response.Error{Error: errM})
+		ctx.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
@@ -67,7 +68,7 @@ func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 		uc.logger.Error("Error File Read upload File::", err.Error())
 		err := api_errors.BadRequest.Wrap(err, "Failed to read upload  File")
 		status, errM := api_errors.HandleError(err)
-		ctx.JSON(status, api_response.Error{Error: errM})
+		ctx.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 	fileType := http.DetectContentType(fileHeader)
@@ -77,7 +78,7 @@ func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 			uc.logger.Error("Error Failed to upload File::", err.Error())
 			err := api_errors.BadRequest.Wrap(err, "Failed to upload File")
 			status, errM := api_errors.HandleError(err)
-			ctx.JSON(status, api_response.Error{Error: errM})
+			ctx.JSON(status, json_response.Error{Error: errM})
 			return
 		}
 
@@ -87,7 +88,7 @@ func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 			uc.logger.Error("Error Failed create thumbnail", err.Error())
 			err := api_errors.BadRequest.Wrap(err, "Error Failed create thumbnail")
 			status, errM := api_errors.HandleError(err)
-			ctx.JSON(status, api_response.Error{Error: errM})
+			ctx.JSON(status, json_response.Error{Error: errM})
 			return
 		}
 		uploadThumbnailUrl, err := uc.bucket.UploadThumbnailFile(ctx.Request.Context(), thumbnail, thumbnailFileName, fileExtension)
@@ -95,7 +96,7 @@ func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 			uc.logger.Error("Error Failed to upload File::", err.Error())
 			err := api_errors.BadRequest.Wrap(err, "Failed to upload thumbnail File")
 			status, errM := api_errors.HandleError(err)
-			ctx.JSON(status, api_response.Error{Error: errM})
+			ctx.JSON(status, json_response.Error{Error: errM})
 			return
 		}
 
@@ -120,7 +121,7 @@ func (uc UtilityController) FileUploadHandler(ctx *gin.Context) {
 		uc.logger.Error("Error Failed to upload File::", err.Error())
 		err := api_errors.BadRequest.Wrap(err, "Failed to upload file")
 		status, errM := api_errors.HandleError(err)
-		ctx.JSON(status, api_response.Error{Error: errM})
+		ctx.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 	response := &Response{
@@ -144,7 +145,7 @@ func (uc UtilityController) FileUploadS3Handler(ctx *gin.Context) {
 		uc.logger.Error("Error Get File from request: ", err.Error())
 		err := api_errors.BadRequest.Wrap(err, "Failed to get file form request")
 		status, errM := api_errors.HandleError(err)
-		ctx.JSON(status, api_response.Error{Error: errM})
+		ctx.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 	var input Input
@@ -153,7 +154,7 @@ func (uc UtilityController) FileUploadS3Handler(ctx *gin.Context) {
 		uc.logger.Error("Error Failed to bind input:: ", err.Error())
 		err := api_errors.BadRequest.Wrap(err, "Failed to bind")
 		status, errM := api_errors.HandleError(err)
-		ctx.JSON(status, api_response.Error{Error: errM})
+		ctx.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
@@ -166,7 +167,7 @@ func (uc UtilityController) FileUploadS3Handler(ctx *gin.Context) {
 		uc.logger.Error("Error Failed to upload File:: ", err.Error())
 		err := api_errors.BadRequest.Wrap(err, "Failed to upload file to s3 bucket")
 		status, errM := api_errors.HandleError(err)
-		ctx.JSON(status, api_response.Error{Error: errM})
+		ctx.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 

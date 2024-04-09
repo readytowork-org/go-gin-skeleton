@@ -1,18 +1,19 @@
 package controllers
 
 import (
+	"fmt"
+	"net/http"
+
 	"boilerplate-api/api/services"
+	"boilerplate-api/api/user"
 	"boilerplate-api/dtos"
 	"boilerplate-api/internal/api_errors"
-	"boilerplate-api/internal/api_response"
 	"boilerplate-api/internal/config"
 	"boilerplate-api/internal/constants"
+	"boilerplate-api/internal/json_response"
 	"boilerplate-api/internal/request_validator"
 	"boilerplate-api/internal/utils"
-	"boilerplate-api/url_query"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"net/http"
 
 	"gorm.io/gorm"
 )
@@ -46,8 +47,8 @@ func NewUserController(
 //	@Produce		application/json
 //	@Tags			User
 //	@Success		200	{object}	api_response.Success	"OK"
-//	@Failure		400	{object}	api_response.Error
-//	@Failure		500	{object}	api_response.Error
+//	@Failure		400	{object}	json_response.Error
+//	@Failure		500	{object}	json_response.Error
 //	@Router			/users [post]
 //	@Id				CreateUser
 func (cc UserController) CreateUser(c *gin.Context) {
@@ -58,7 +59,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		cc.logger.Error("Error [CreateUser] (ShouldBindJson) : ", err)
 		err := api_errors.BadRequest.Wrap(err, "Failed to bind user data")
 		status, errM := api_errors.HandleError(err)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 	if validationErr := cc.validator.Struct(reqData); validationErr != nil {
@@ -66,7 +67,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		err = api_errors.SetCustomMessage(err, "Invalid input information")
 		err = api_errors.AddErrorContextBlock(err, cc.validator.GenerateValidationResponse(validationErr))
 		status, errM := api_errors.HandleError(err)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
@@ -74,7 +75,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		cc.logger.Error("Password and confirm password not matching : ")
 		err := api_errors.BadRequest.New("Password and confirm password should be same.")
 		status, errM := api_errors.HandleError(err)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
@@ -82,7 +83,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		cc.logger.Error("Error [CreateUser] [db CreateUser]: User with this email already exists")
 		err := api_errors.BadRequest.New("User with this email already exists")
 		status, errM := api_errors.HandleError(err)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
@@ -90,7 +91,7 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		cc.logger.Error("Error [db GetOneUserWithPhone]: User with this phone already exists")
 		err := api_errors.BadRequest.New("User with this phone already exists")
 		status, errM := api_errors.HandleError(err)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
@@ -98,11 +99,11 @@ func (cc UserController) CreateUser(c *gin.Context) {
 		cc.logger.Error("Error [CreateUser] [db CreateUser]: ", err.Error())
 		err := api_errors.InternalError.Wrap(err, "Failed to create user")
 		status, errM := api_errors.HandleError(err)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
-	c.JSON(http.StatusOK, api_response.Message{
+	c.JSON(http.StatusOK, json_response.Message{
 		Msg: "User Created Successfully",
 	})
 }
@@ -116,23 +117,23 @@ func (cc UserController) CreateUser(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 //	@Tags			User
-//	@Success		200	{object}	api_response.DataCount[dtos.GetUserResponse]
-//	@Failure		500	{object}	api_response.Error
+//	@Success		200	{object}	json_response.DataCount[dtos.GetUserResponse]
+//	@Failure		500	{object}	json_response.Error
 //	@Router			/users [get]
 //	@Id				GetAllUsers
 func (cc UserController) GetAllUsers(c *gin.Context) {
-	pagination := utils.BuildPagination[*url_query.UserPagination](c)
+	pagination := utils.BuildPagination[*user.Pagination](c)
 
 	users, count, err := cc.userService.GetAllUsers(*pagination)
 	if err != nil {
 		cc.logger.Error("Error finding user records", err.Error())
 		err := api_errors.InternalError.Wrap(err, "Failed to get users data")
 		status, errM := api_errors.HandleError(err)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
-	c.JSON(http.StatusOK, api_response.DataCount[dtos.GetUserResponse]{
+	c.JSON(http.StatusOK, json_response.DataCount[dtos.GetUserResponse]{
 		Count: count,
 		Data:  users,
 	})
@@ -143,8 +144,8 @@ func (cc UserController) GetAllUsers(c *gin.Context) {
 //	@Param			Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 //	@Produce		application/json
 //	@Tags			User
-//	@Success		200	{object}	api_response.Data[dtos.GetUserResponse]
-//	@Failure		500	{object}	api_response.Error
+//	@Success		200	{object}	json_response.Data[dtos.GetUserResponse]
+//	@Failure		500	{object}	json_response.Error
 //	@Router			/profile [get]
 //	@Id				GetUserProfile
 func (cc UserController) GetUserProfile(c *gin.Context) {
@@ -155,11 +156,11 @@ func (cc UserController) GetUserProfile(c *gin.Context) {
 		cc.logger.Error("Error finding user profile", err.Error())
 		err := api_errors.InternalError.Wrap(err, "Failed to get users profile data")
 		status, errM := api_errors.HandleError(err)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
-	c.JSON(http.StatusOK, api_response.Data[dtos.GetUserResponse]{
+	c.JSON(http.StatusOK, json_response.Data[dtos.GetUserResponse]{
 		Data: user,
 	})
 }

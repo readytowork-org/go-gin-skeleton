@@ -1,6 +1,8 @@
 package dtos
 
-import "boilerplate-api/models"
+import (
+	"boilerplate-api/database/models"
+)
 
 // CreateUserRequestData Request body data to create user
 type CreateUserRequestData struct {

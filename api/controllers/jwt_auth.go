@@ -1,17 +1,19 @@
 package controllers
 
 import (
-	"boilerplate-api/api/services"
-	"boilerplate-api/dtos"
-	"boilerplate-api/internal/api_errors"
-	"boilerplate-api/internal/api_response"
-	"boilerplate-api/internal/auth"
-	"boilerplate-api/internal/config"
-	"boilerplate-api/internal/request_validator"
-	"boilerplate-api/internal/utils"
 	"fmt"
 	"net/http"
 	"time"
+
+	"boilerplate-api/api/services"
+	"boilerplate-api/dtos"
+	"boilerplate-api/internal/api_errors"
+	"boilerplate-api/internal/auth"
+	"boilerplate-api/internal/config"
+	"boilerplate-api/internal/json_response"
+	"boilerplate-api/internal/request_validator"
+	"boilerplate-api/internal/types"
+	"boilerplate-api/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
@@ -50,7 +52,7 @@ func (cc JwtAuthController) LoginUserWithJWT(c *gin.Context) {
 		cc.logger.Error("Error [ShouldBindJSON] : ", err.Error())
 		err := api_errors.BadRequest.Wrap(err, "Failed to bind request data")
 		status, errM := api_errors.HandleError(err)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
@@ -61,7 +63,7 @@ func (cc JwtAuthController) LoginUserWithJWT(c *gin.Context) {
 		err = api_errors.SetCustomMessage(err, "Invalid input information")
 		err = api_errors.AddErrorContextBlock(err, cc.validator.GenerateValidationResponse(validationErr))
 		status, errM := api_errors.HandleError(err)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
@@ -70,7 +72,7 @@ func (cc JwtAuthController) LoginUserWithJWT(c *gin.Context) {
 	if err != nil {
 		err := api_errors.BadRequest.New("Invalid user credentials")
 		status, errM := api_errors.HandleError(err)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
@@ -82,7 +84,7 @@ func (cc JwtAuthController) LoginUserWithJWT(c *gin.Context) {
 		status, errM := api_errors.HandleError(
 			api_errors.BadRequest.New("Invalid user credentials"),
 		)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
@@ -102,7 +104,7 @@ func (cc JwtAuthController) LoginUserWithJWT(c *gin.Context) {
 		status, errM := api_errors.HandleError(
 			api_errors.InternalError.New(tokenErr.Error()),
 		)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
@@ -121,16 +123,17 @@ func (cc JwtAuthController) LoginUserWithJWT(c *gin.Context) {
 		status, errM := api_errors.HandleError(
 			api_errors.InternalError.New(refreshTokenErr.Error()),
 		)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
-	data := map[string]interface{}{
+	data := types.MapString{
 		"user":          user.ToMap(),
 		"access_token":  accessToken,
 		"refresh_token": refreshToken,
 	}
-	api_response.JSON(c, http.StatusOK, data)
+
+	c.JSON(http.StatusOK, json_response.Data[types.MapString]{Data: data})
 }
 
 func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
@@ -139,7 +142,7 @@ func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
 		cc.logger.Error("Error getting token from header: ", err.Error())
 		err = api_errors.Unauthorized.Wrap(err, "Something went wrong")
 		status, errM := api_errors.HandleError(err)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
@@ -148,7 +151,7 @@ func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
 		cc.logger.Error("Error parsing token: ", parseErr.Error())
 		err = api_errors.Unauthorized.Wrap(parseErr, "Something went wrong")
 		status, errM := api_errors.HandleError(err)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
@@ -157,7 +160,7 @@ func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
 		cc.logger.Error("Error veriefying token: ", verifyErr.Error())
 		err = api_errors.Unauthorized.Wrap(verifyErr, "Something went wrong")
 		status, errM := api_errors.HandleError(err)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
@@ -177,13 +180,14 @@ func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
 		status, errM := api_errors.HandleError(
 			api_errors.InternalError.New(tokenErr.Error()),
 		)
-		c.JSON(status, api_response.Error{Error: errM})
+		c.JSON(status, json_response.Error{Error: errM})
 		return
 	}
-	data := map[string]interface{}{
+
+	data := types.MapString{
 		"access_token": accessToken,
 		"expires_at":   accessClaims.ExpiresAt,
 	}
 
-	api_response.JSON(c, http.StatusOK, data)
+	c.JSON(http.StatusOK, json_response.Data[types.MapString]{Data: data})
 }

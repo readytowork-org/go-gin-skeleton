@@ -1,19 +1,28 @@
 package external_services
 
 import (
-	"boilerplate-api/internal/config"
-	"boilerplate-api/models"
-	"boilerplate-api/utils"
 	"context"
 	"encoding/base64"
 	"errors"
+	"time"
+
+	"boilerplate-api/internal/config"
+	"boilerplate-api/utils"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
-	"time"
 
 	"google.golang.org/api/gmail/v1"
 )
+
+type EmailParams struct {
+	To              string
+	SubjectData     string
+	SubjectTemplate string
+	BodyData        interface{}
+	BodyTemplate    string
+	Lang            string
+}
 
 type GmailService struct {
 	*gmail.Service
@@ -48,7 +57,7 @@ func NewGmailService(logger config.Logger, env config.Env) GmailService {
 	}
 }
 
-func (g GmailService) SendEmail(params models.EmailParams) (bool, error) {
+func (g GmailService) SendEmail(params EmailParams) (bool, error) {
 	to := params.To
 	emailBody, err := utils.ParseTemplate(params.BodyTemplate, params.BodyData)
 	if err != nil {
