@@ -1,9 +1,10 @@
-package external_services
+package services
 
 import (
-	"boilerplate-api/internal/config"
 	"bytes"
 	"testing"
+
+	"boilerplate-api/internal/config"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stripe/stripe-go/v76"

@@ -1,4 +1,4 @@
-package dtos
+package auth
 
 // JWTLoginRequestData Request body data to authenticate user with jwt-auth
 type JWTLoginRequestData struct {

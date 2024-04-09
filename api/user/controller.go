@@ -1,12 +1,9 @@
-package controllers
+package user
 
 import (
 	"fmt"
 	"net/http"
 
-	"boilerplate-api/api/services"
-	"boilerplate-api/api/user"
-	"boilerplate-api/dtos"
 	"boilerplate-api/internal/api_errors"
 	"boilerplate-api/internal/config"
 	"boilerplate-api/internal/constants"
@@ -18,21 +15,21 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserController struct {
+type Controller struct {
 	logger      config.Logger
-	userService services.UserService
+	userService Service
 	env         config.Env
 	validator   request_validator.Validator
 }
 
-// NewUserController Creates New user controller
-func NewUserController(
+// NewController Creates New user controller
+func NewController(
 	logger config.Logger,
-	userService services.UserService,
+	userService Service,
 	env config.Env,
 	validator request_validator.Validator,
-) UserController {
-	return UserController{
+) Controller {
+	return Controller{
 		logger:      logger,
 		userService: userService,
 		env:         env,
@@ -40,19 +37,19 @@ func NewUserController(
 	}
 }
 
+//	@Tags			UserApi
 //	@Summary		Create User
-//	@Description	Create User
-//	@Param			data			body	dtos.CreateUserRequestData	true	"Enter JSON"
-//	@Param			Authorization	header	string						true	"Insert your access token"	default(Bearer <Add access token here>)
+//	@Description	Create one user
+//	@Security		Bearer
 //	@Produce		application/json
-//	@Tags			User
-//	@Success		200	{object}	api_response.Success	"OK"
-//	@Failure		400	{object}	json_response.Error
-//	@Failure		500	{object}	json_response.Error
-//	@Router			/users [post]
+//	@Param			data	body		CreateUserRequestData	true	"Enter JSON"
+//	@Success		200		{object}	json_response.Message	"OK"
+//	@Failure		400		{object}	json_response.Error
+//	@Failure		500		{object}	json_response.Error
+//	@Router			/api/v1/users [post]
 //	@Id				CreateUser
-func (cc UserController) CreateUser(c *gin.Context) {
-	reqData := dtos.CreateUserRequestData{}
+func (cc Controller) CreateUser(c *gin.Context) {
+	reqData := CreateUserRequestData{}
 	trx := c.MustGet(constants.DBTransaction).(*gorm.DB)
 
 	if err := c.ShouldBindJSON(&reqData); err != nil {
@@ -108,21 +105,18 @@ func (cc UserController) CreateUser(c *gin.Context) {
 	})
 }
 
-//	@Summary		Get all User.
-//	@Param			page_size	query	string	false	"10"
-//	@Param			page		query	string	false	"Page no"	"1"
-//	@Param			keyword		query	string	false	"search by name"
-//	@Param			Keyword2	query	string	false	"search by type"
-//	@Description	Return all the User
+//	@Tags			UserApi
+//	@Summary		All users
+//	@Description	get all users
+//	@Security		Bearer
 //	@Produce		application/json
-//	@Param			Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
-//	@Tags			User
-//	@Success		200	{object}	json_response.DataCount[dtos.GetUserResponse]
-//	@Failure		500	{object}	json_response.Error
-//	@Router			/users [get]
+//	@Param			pagination	query		Pagination	false	"query param"
+//	@Success		200			{object}	json_response.DataCount[GetUserResponse]
+//	@Failure		500			{object}	json_response.Error
+//	@Router			/api/v1/users [get]
 //	@Id				GetAllUsers
-func (cc UserController) GetAllUsers(c *gin.Context) {
-	pagination := utils.BuildPagination[*user.Pagination](c)
+func (cc Controller) GetAllUsers(c *gin.Context) {
+	pagination := utils.BuildPagination[*Pagination](c)
 
 	users, count, err := cc.userService.GetAllUsers(*pagination)
 	if err != nil {
@@ -133,22 +127,22 @@ func (cc UserController) GetAllUsers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, json_response.DataCount[dtos.GetUserResponse]{
+	c.JSON(http.StatusOK, json_response.DataCount[GetUserResponse]{
 		Count: count,
 		Data:  users,
 	})
 }
 
-//	@Summary		Get one user by id
-//	@Description	Get one user by id
-//	@Param			Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
+//	@Tags			UserApi
+//	@Summary		User Profile
+//	@Description	get user profile
+//	@Security		Bearer
 //	@Produce		application/json
-//	@Tags			User
-//	@Success		200	{object}	json_response.Data[dtos.GetUserResponse]
+//	@Success		200	{object}	json_response.Data[GetUserResponse]
 //	@Failure		500	{object}	json_response.Error
-//	@Router			/profile [get]
+//	@Router			/api/v1/profile [get]
 //	@Id				GetUserProfile
-func (cc UserController) GetUserProfile(c *gin.Context) {
+func (cc Controller) GetUserProfile(c *gin.Context) {
 	userID := fmt.Sprintf("%v", c.MustGet(constants.UserID))
 
 	user, err := cc.userService.GetOneUser(userID)
@@ -160,7 +154,7 @@ func (cc UserController) GetUserProfile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, json_response.Data[dtos.GetUserResponse]{
+	c.JSON(http.StatusOK, json_response.Data[GetUserResponse]{
 		Data: user,
 	})
 }

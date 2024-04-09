@@ -24,8 +24,9 @@ func NewMigrations(
 	envPath EnvPath,
 ) Migrations {
 	path := getMigrationFolder(envPath.ToString())
-	fmt.Printf("envPath :: %s\n", path)
 	path = fmt.Sprintf("file://%s/", path)
+
+	fmt.Printf("migration path %+v", path)
 
 	mysqlDSNConfig := goMySql.Config{
 		User:                 dsnConfig.UserName,

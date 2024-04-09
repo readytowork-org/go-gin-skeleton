@@ -23,7 +23,6 @@ func NewJWTAuthMiddleWare(
 	logger config.Logger,
 	env config.Env,
 	db config.Database,
-
 ) JWTAuthMiddleWare {
 	return JWTAuthMiddleWare{
 		jwtService: jwtService,
@@ -36,8 +35,10 @@ func NewJWTAuthMiddleWare(
 // Handle user with jwt using this middleware
 func (m JWTAuthMiddleWare) Handle() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//Getting token from header
-		tokenString, err := m.jwtService.GetTokenFromHeader(c)
+		// Get the token from the request header
+		header := c.GetHeader(constants.Headers.Authorization.ToString())
+
+		tokenString, err := m.jwtService.GetTokenFromHeader(header)
 		if err != nil {
 			m.logger.Error("Error getting token from header: ", err.Error())
 			err = api_errors.Unauthorized.Wrap(err, "Error getting token from header")
@@ -46,6 +47,7 @@ func (m JWTAuthMiddleWare) Handle() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
 		// Parsing and Verifying token
 		parsedToken, parseErr := m.jwtService.ParseAndVerifyToken(tokenString, m.env.JwtAccessSecret)
 		if parseErr != nil {
@@ -73,6 +75,5 @@ func (m JWTAuthMiddleWare) Handle() gin.HandlerFunc {
 		// Can set anything in the request context and passes the request to the next handler.
 		c.Set(constants.UserID, claims.ID)
 		c.Next()
-
 	}
 }

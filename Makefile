@@ -1,5 +1,5 @@
 include .env
-MIGRATE_LOCAL=migrate -path=migration -database "mysql://${DB_USERNAME}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}" -verbose
+MIGRATE_LOCAL=migrate -path=database/migration -database "mysql://${DB_USERNAME}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}" -verbose
 
 MIGRATE=docker-compose exec web ${MIGRATE_LOCAL}
 

@@ -4,12 +4,13 @@ import (
 	"context"
 	"time"
 
-	"boilerplate-api/external_services/gcp"
 	"boilerplate-api/internal/config"
+	"boilerplate-api/services/gcp"
 )
 
 // ProjectBudgetSeed  Budget setup seed
 type ProjectBudgetSeed struct {
+	Seed
 	logger        config.Logger
 	budgetService gcp.BillingService
 	env           config.Env

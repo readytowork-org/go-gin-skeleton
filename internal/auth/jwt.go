@@ -1,19 +1,22 @@
 package auth
 
 import (
+	"strings"
+
 	"boilerplate-api/internal/api_errors"
 	"boilerplate-api/internal/config"
 	"boilerplate-api/internal/constants"
-	"strings"
 
-	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 )
+
+// FIXME :: refactor
 
 type JWTClaims struct {
 	jwt.RegisteredClaims
 	// ...other claims
 }
+
 type JWTAuthService struct {
 	logger config.Logger
 	env    config.Env
@@ -29,9 +32,7 @@ func NewJWTAuthService(
 	}
 }
 
-func (m JWTAuthService) GetTokenFromHeader(c *gin.Context) (string, error) {
-	// Get the token from the request header
-	header := c.GetHeader(constants.Headers.Authorization.ToString())
+func (m JWTAuthService) GetTokenFromHeader(header string) (string, error) {
 	if header == "" {
 		err := api_errors.BadRequest.New("Authorization token is required in header")
 		err = api_errors.SetCustomMessage(err, "Authorization token is required in header")

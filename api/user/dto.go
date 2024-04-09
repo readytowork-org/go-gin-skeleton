@@ -1,4 +1,4 @@
-package dtos
+package user
 
 import (
 	"boilerplate-api/database/models"

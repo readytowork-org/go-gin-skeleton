@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"boilerplate-api/internal/auth"
 	"boilerplate-api/internal/config"
 	"boilerplate-api/internal/middlewares"
 	"boilerplate-api/internal/request_validator"
@@ -8,9 +9,14 @@ import (
 	"go.uber.org/fx"
 )
 
-var Module = fx.Options(
+var Module = fx.Module("internal",
 	config.Module,
 	middlewares.Module,
-	fx.Provide(router.NewRouter),
-	fx.Provide(request_validator.NewValidator),
+	fx.Options(
+		fx.Provide(
+			router.NewRouter,
+			request_validator.NewValidator,
+			auth.NewJWTAuthService,
+		),
+	),
 )

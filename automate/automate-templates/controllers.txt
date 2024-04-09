@@ -36,7 +36,7 @@ func New{{uc_resource}}Controller(
 //  @Security		Bearer
 //  @Produce		application/json
 //  @Param			JSON body models.{{uc_resource}}{} true "Enter JSON"
-//  @Success		200 {object} api_response.Message "OK"
+//  @Success		200 {object} json_response.Message "OK"
 //  @Failure      	400 {object} api_errors.Error
 //  @Router			/{{plural_resource_table}} [post]
 //  @Id				Create{{uc_resource}}
@@ -47,7 +47,7 @@ func (cc {{uc_resource}}Controller) Create{{uc_resource}}(c *gin.Context) {
 		cc.logger.Error("Error [Create{{uc_resource}}] (ShouldBindJson) : ", err)
 		err := api_errors.BadRequest.Wrap(err, "Failed to bind {{uc_resource}}")
 		status, errM := api_errors.HandleError(err)
-        ctx.JSON(status, api_response.Error{Error: errM})
+        ctx.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
@@ -55,11 +55,11 @@ func (cc {{uc_resource}}Controller) Create{{uc_resource}}(c *gin.Context) {
 		cc.logger.Error("Error [Create{{uc_resource}}] [db Create{{uc_resource}}]: ", err.Error())
 		err := api_errors.BadRequest.Wrap(err, "Failed To Create {{uc_resource}}")
 		status, errM := api_errors.HandleError(err)
-		ctx.JSON(status, api_response.Error{Error: errM})
+		ctx.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
-	api_response.SuccessJSON(c, "{{uc_resource}} Created Successfully")
+	json_response.SuccessJSON(c, "{{uc_resource}} Created Successfully")
 }
 
 //  @Tags			{{uc_resource}}
@@ -68,7 +68,7 @@ func (cc {{uc_resource}}Controller) Create{{uc_resource}}(c *gin.Context) {
 //  @Security		Bearer
 //  @Produce		application/json
 //  @Param			pagination	query		utils.Pagination	false	"query param"
-//  @Success 		200 {object} api_response.DataCount[models.{{uc_resource}}]
+//  @Success 		200 {object} json_response.DataCount[models.{{uc_resource}}]
 //  @Failure      	500 {object} api_errors.Error
 //  @Router			/{{plural_resource_table}} [get]
 //  @Id				GetAll{{uc_resource}}
@@ -81,11 +81,11 @@ func (cc {{uc_resource}}Controller) GetAll{{uc_resource}}(c *gin.Context) {
 		cc.logger.Error("Error finding {{uc_resource}} records", err.Error())
 		err := api_errors.InternalError.Wrap(err, "Failed To Find {{uc_resource}}")
 		status, errM := api_errors.HandleError(err)
-		ctx.JSON(status, api_response.Error{Error: errM})
+		ctx.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
-	api_response.JSONCount(c, http.StatusOK, {{plc_resource}}, count)
+	json_response.JSONCount(c, http.StatusOK, {{plc_resource}}, count)
 }
 
 //  @Tags			{{uc_resource}}
@@ -94,7 +94,7 @@ func (cc {{uc_resource}}Controller) GetAll{{uc_resource}}(c *gin.Context) {
 //  @Security		Bearer
 //  @Param			id		path	int					true	"{{uc_resource}} ID"
 //  @Produce		application/json
-//  @Success 		200 {object} api_response.Data[models.{{uc_resource}}]
+//  @Success 		200 {object} json_response.Data[models.{{uc_resource}}]
 //  @Failure      	500 {object} api_errors.Error
 //  @Router			/{{plural_resource_table}}/{id} [get]
 //  @Id				GetOne{{uc_resource}}
@@ -106,11 +106,11 @@ func (cc {{uc_resource}}Controller) GetOne{{uc_resource}}(c *gin.Context) {
 		cc.logger.Error("Error [GetOne{{uc_resource}}] [db GetOne{{uc_resource}}]: ", err.Error())
 		err := api_errors.InternalError.Wrap(err, "Failed To Find {{uc_resource}}")
 		status, errM := api_errors.HandleError(err)
-		ctx.JSON(status, api_response.Error{Error: errM})
+		ctx.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
-	api_response.JSON(c, http.StatusOK, {{lc_resource}})
+	json_response.JSON(c, http.StatusOK, {{lc_resource}})
 }
 
 //  @Tags			{{uc_resource}}
@@ -120,7 +120,7 @@ func (cc {{uc_resource}}Controller) GetOne{{uc_resource}}(c *gin.Context) {
 //  @Produce		application/json
 //  @Param			id		path	int					true	"{{uc_resource}} ID"
 //  @Param			data    body    models.{{uc_resource}} true "Enter JSON"
-//  @Success 		200 {object} api_response.Message "OK"
+//  @Success 		200 {object} json_response.Message "OK"
 //  @Failure      	400 {object} api_errors.Error
 //  @Failure      	500 {object} api_errors.Error
 //  @Router			/{{plural_resource_table}}/{id} [put]
@@ -133,7 +133,7 @@ func (cc {{uc_resource}}Controller) UpdateOne{{uc_resource}}(c *gin.Context) {
 		cc.logger.Error("Error [Update{{uc_resource}}] (ShouldBindJson) : ", err)
 		err := api_errors.BadRequest.Wrap(err, "failed to update {{lc_resource}}")
 		status, errM := api_errors.HandleError(err)
-		ctx.JSON(status, api_response.Error{Error: errM})
+		ctx.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 	{{lc_resource}}.ID = ID
@@ -142,11 +142,11 @@ func (cc {{uc_resource}}Controller) UpdateOne{{uc_resource}}(c *gin.Context) {
 		cc.logger.Error("Error [Update{{uc_resource}}] [db Update{{uc_resource}}]: ", err.Error())
 		err := api_errors.InternalError.Wrap(err, "failed to update {{lc_resource}}")
 		status, errM := api_errors.HandleError(err)
-		ctx.JSON(status, api_response.Error{Error: errM})
+		ctx.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
-	api_response.SuccessJSON(c, "{{uc_resource}} Updated Successfully")
+	json_response.SuccessJSON(c, "{{uc_resource}} Updated Successfully")
 }
 
 //  @Tags			{{uc_resource}}
@@ -167,9 +167,9 @@ func (cc {{uc_resource}}Controller) DeleteOne{{uc_resource}}(c *gin.Context) {
 		cc.logger.Error("Error [DeleteOne{{uc_resource}}] [db DeleteOne{{uc_resource}}]: ", err.Error())
 		err := api_errors.InternalError.Wrap(err, "Failed to Delete {{uc_resource}}")
 		status, errM := api_errors.HandleError(err)
-		ctx.JSON(status, api_response.Error{Error: errM})
+		ctx.JSON(status, json_response.Error{Error: errM})
 		return
 	}
 
-	api_response.SuccessJSON(c, "{{uc_resource}} Deleted Successfully")
+	json_response.SuccessJSON(c, "{{uc_resource}} Deleted Successfully")
 }

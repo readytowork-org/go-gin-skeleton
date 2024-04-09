@@ -1,32 +1,32 @@
-package controllers
+package gcp_billing
 
 import (
 	"net/http"
 
-	"boilerplate-api/external_services/gcp"
 	"boilerplate-api/internal/api_errors"
 	"boilerplate-api/internal/config"
 	"boilerplate-api/internal/json_response"
+	"boilerplate-api/services/gcp"
 	"cloud.google.com/go/billing/budgets/apiv1/budgetspb"
 	"google.golang.org/api/cloudbilling/v1"
 
 	"github.com/gin-gonic/gin"
 )
 
-// GCPBillingController -> struct
-type GCPBillingController struct {
+// Controller -> struct
+type Controller struct {
 	logger  config.Logger
 	env     config.Env
 	service gcp.BillingService
 }
 
-// NewGCPBillingController -> constructor
-func NewGCPBillingController(
+// NewController -> constructor
+func NewController(
 	logger config.Logger,
 	env config.Env,
 	service gcp.BillingService,
-) GCPBillingController {
-	return GCPBillingController{
+) Controller {
+	return Controller{
 		logger:  logger,
 		env:     env,
 		service: service,
@@ -34,7 +34,7 @@ func NewGCPBillingController(
 }
 
 // GetCost -> Get Cost
-func (cc GCPBillingController) GetCost(c *gin.Context) {
+func (cc Controller) GetCost(c *gin.Context) {
 	billingData, err := cc.service.GetBillingInfo()
 	if err != nil {
 		cc.logger.Error("Error fetching Billing Info records", err.Error())
@@ -49,7 +49,7 @@ func (cc GCPBillingController) GetCost(c *gin.Context) {
 }
 
 // GetBudgetInfo -> Get Cost
-func (cc GCPBillingController) GetBudgetInfo(c *gin.Context) {
+func (cc Controller) GetBudgetInfo(c *gin.Context) {
 	billingData, err := cc.service.GetExistingBudgetList(c)
 	if err != nil {
 		cc.logger.Error("Error fetching Billing Info records", err.Error())
@@ -64,7 +64,7 @@ func (cc GCPBillingController) GetBudgetInfo(c *gin.Context) {
 }
 
 // CreateUpdateBudget -> Get Cost
-func (cc GCPBillingController) CreateUpdateBudget(c *gin.Context) {
+func (cc Controller) CreateUpdateBudget(c *gin.Context) {
 	billingData, err := cc.service.CreateOrUpdateBudget(c)
 	if err != nil {
 		cc.logger.Error("Error fetching Billing Info records", err.Error())

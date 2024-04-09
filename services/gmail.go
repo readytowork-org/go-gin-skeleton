@@ -1,4 +1,4 @@
-package external_services
+package services
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"boilerplate-api/internal/config"
-	"boilerplate-api/utils"
+	"boilerplate-api/internal/utils"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"

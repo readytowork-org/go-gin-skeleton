@@ -1,4 +1,4 @@
-package external_services
+package services
 
 import (
 	"boilerplate-api/internal/api_errors"

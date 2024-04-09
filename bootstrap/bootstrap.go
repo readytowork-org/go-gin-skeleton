@@ -3,31 +3,25 @@ package bootstrap
 import (
 	"context"
 
-	"boilerplate-api/api/controllers"
-	"boilerplate-api/api/repository"
-	"boilerplate-api/api/routes"
-	"boilerplate-api/api/services"
+	"boilerplate-api/api"
 	"boilerplate-api/cli"
 	"boilerplate-api/database/seeds"
 	"boilerplate-api/docs"
-	"boilerplate-api/external_services"
 	"boilerplate-api/internal"
 	"boilerplate-api/internal/config"
 	"boilerplate-api/internal/router"
 	"boilerplate-api/internal/utils"
+	"boilerplate-api/services"
 	"go.uber.org/fx"
 )
 
 // Module exported for initializing application
 var Module = fx.Options(
-	controllers.Module,
-	routes.Module,
-	services.Module,
-	repository.Module,
 	internal.Module,
-	external_services.Module,
-	cli.Module,
 	seeds.Module,
+	cli.Module,
+	services.Module,
+	api.Module,
 	fx.Supply(config.EnvPath(".env")),
 	fx.Invoke(bootstrap),
 )
@@ -35,13 +29,11 @@ var Module = fx.Options(
 func bootstrap(
 	lifecycle fx.Lifecycle,
 	handler router.Router,
-	routes routes.Routes,
 	env config.Env,
 	logger config.Logger,
 	database config.Database,
 	cliApp cli.Application,
 	migrations config.Migrations,
-	seeds seeds.Seeds,
 ) {
 
 	appStop := func(context.Context) error {
@@ -69,7 +61,7 @@ func bootstrap(
 		OnStart: func(context.Context) error {
 			logger.Info("Starting Application")
 			logger.Info("------------------------")
-			logger.Info("------ Golf Simulation 📺 ------")
+			logger.Info("------ Gin Skeleton 📺 ------")
 			logger.Info("------------------------")
 
 			go func() {
@@ -82,9 +74,6 @@ func bootstrap(
 					logger.Info("Migrating DB schema...")
 					migrations.MigrateUp()
 				}
-				routes.Setup()
-				logger.Info("🌱 seeding data...")
-				seeds.Run()
 				if env.ServerPort == "" {
 					_ = handler.Run()
 				} else {

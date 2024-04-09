@@ -1,9 +1,9 @@
-package external_services
+package services
 
 import (
-	"boilerplate-api/external_services/aws"
-	"boilerplate-api/external_services/firebase"
-	"boilerplate-api/external_services/gcp"
+	"boilerplate-api/services/aws"
+	"boilerplate-api/services/firebase"
+	"boilerplate-api/services/gcp"
 	"go.uber.org/fx"
 )
 

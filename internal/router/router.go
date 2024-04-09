@@ -1,9 +1,10 @@
 package router
 
 import (
-	"boilerplate-api/internal/config"
 	"fmt"
 	"net/http"
+
+	"boilerplate-api/internal/config"
 
 	"github.com/getsentry/sentry-go"
 	sentrygin "github.com/getsentry/sentry-go/gin"

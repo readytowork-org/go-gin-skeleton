@@ -1,15 +1,15 @@
-package controllers
+package auth
 
 import (
 	"fmt"
 	"net/http"
 	"time"
 
-	"boilerplate-api/api/services"
-	"boilerplate-api/dtos"
+	"boilerplate-api/api/user"
 	"boilerplate-api/internal/api_errors"
 	"boilerplate-api/internal/auth"
 	"boilerplate-api/internal/config"
+	"boilerplate-api/internal/constants"
 	"boilerplate-api/internal/json_response"
 	"boilerplate-api/internal/request_validator"
 	"boilerplate-api/internal/types"
@@ -19,10 +19,12 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
+// FIXME :: refactor
+
 // JwtAuthController struct
 type JwtAuthController struct {
 	logger      config.Logger
-	userService services.UserService
+	userService user.Service
 	jwtService  auth.JWTAuthService
 	env         config.Env
 	validator   request_validator.Validator
@@ -31,7 +33,7 @@ type JwtAuthController struct {
 // NewJwtAuthController constructor
 func NewJwtAuthController(
 	logger config.Logger,
-	userService services.UserService,
+	userService user.Service,
 	jwtService auth.JWTAuthService,
 	env config.Env,
 	validator request_validator.Validator,
@@ -46,7 +48,7 @@ func NewJwtAuthController(
 }
 
 func (cc JwtAuthController) LoginUserWithJWT(c *gin.Context) {
-	reqData := dtos.JWTLoginRequestData{}
+	reqData := JWTLoginRequestData{}
 	// Bind the request payload to a reqData struct
 	if err := c.ShouldBindJSON(&reqData); err != nil {
 		cc.logger.Error("Error [ShouldBindJSON] : ", err.Error())
@@ -137,7 +139,10 @@ func (cc JwtAuthController) LoginUserWithJWT(c *gin.Context) {
 }
 
 func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
-	tokenString, err := cc.jwtService.GetTokenFromHeader(c)
+	// Get the token from the request header
+	header := c.GetHeader(constants.Headers.Authorization.ToString())
+
+	tokenString, err := cc.jwtService.GetTokenFromHeader(header)
 	if err != nil {
 		cc.logger.Error("Error getting token from header: ", err.Error())
 		err = api_errors.Unauthorized.Wrap(err, "Something went wrong")

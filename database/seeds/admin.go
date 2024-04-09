@@ -3,13 +3,14 @@ package seeds
 import (
 	"context"
 
-	"boilerplate-api/external_services/firebase"
 	"boilerplate-api/internal/config"
 	"boilerplate-api/internal/constants"
+	"boilerplate-api/services/firebase"
 )
 
 // AdminSeed  Admin seeding
 type AdminSeed struct {
+	Seed
 	logger          config.Logger
 	firebaseService firebase.AuthService
 	env             config.Env
@@ -28,14 +29,13 @@ func NewAdminSeed(
 	}
 }
 
-// Run the seed data
-func (c AdminSeed) Run() {
-
+// RunSeed the seed data
+func (c AdminSeed) RunSeed() {
 	email := c.env.AdminEmail
 	password := c.env.AdminPass
 	name := c.env.AdminName
 
-	c.logger.Info("🌱 seeding  admin data...")
+	c.logger.Info("🌱 seeding admin data...")
 
 	_, err := c.firebaseService.GetUserByEmail(context.Background(), email)
 

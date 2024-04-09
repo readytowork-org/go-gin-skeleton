@@ -1,7 +1,6 @@
-package routes
+package auth
 
 import (
-	"boilerplate-api/api/controllers"
 	"boilerplate-api/internal/config"
 	"boilerplate-api/internal/constants"
 	"boilerplate-api/internal/middlewares"
@@ -12,7 +11,7 @@ import (
 type JwtAuthRoutes struct {
 	logger              config.Logger
 	router              router.Router
-	jwtController       controllers.JwtAuthController
+	jwtController       JwtAuthController
 	rateLimitMiddleware middlewares.RateLimitMiddleware
 }
 
@@ -20,7 +19,7 @@ type JwtAuthRoutes struct {
 func NewJwtAuthRoutes(
 	logger config.Logger,
 	router router.Router,
-	jwtController controllers.JwtAuthController,
+	jwtController JwtAuthController,
 	rateLimitMiddleware middlewares.RateLimitMiddleware,
 ) JwtAuthRoutes {
 	return JwtAuthRoutes{
@@ -31,12 +30,17 @@ func NewJwtAuthRoutes(
 	}
 }
 
-// Setup Obtain Jwt Token Routes
-func (i JwtAuthRoutes) Setup() {
-	i.logger.Info(" Setting up jwt routes")
-	jwt := i.router.V1.Group("/login").Use(i.rateLimitMiddleware.HandleRateLimit(constants.LoginRateLimit, constants.LoginPeriod))
+// SetupRoutes Obtain Jwt Token Routes
+func SetupRoutes(
+	logger config.Logger,
+	router router.Router,
+	jwtController JwtAuthController,
+	rateLimitMiddleware middlewares.RateLimitMiddleware,
+) {
+	logger.Info(" Setting up jwt routes")
+	jwt := router.V1.Group("/login").Use(rateLimitMiddleware.HandleRateLimit(constants.LoginRateLimit, constants.LoginPeriod))
 	{
-		jwt.POST("", i.jwtController.LoginUserWithJWT)
-		jwt.POST("/refresh", i.jwtController.RefreshJwtToken)
+		jwt.POST("", jwtController.LoginUserWithJWT)
+		jwt.POST("/refresh", jwtController.RefreshJwtToken)
 	}
 }

@@ -1,13 +1,16 @@
 package request_validator
 
 import (
-	"boilerplate-api/internal/api_errors"
-	"boilerplate-api/internal/constants"
 	"fmt"
 	"regexp"
 
+	"boilerplate-api/internal/api_errors"
+	"boilerplate-api/internal/constants"
+
 	"github.com/go-playground/validator/v10"
 )
+
+// FIXME :: refactor validator | use one validator for all
 
 // Validator structure
 type Validator struct {
