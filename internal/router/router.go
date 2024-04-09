@@ -14,6 +14,7 @@ import (
 // Router Gin Router
 type Router struct {
 	*gin.Engine
+	V1 *gin.RouterGroup
 }
 
 // NewRouter : all the routes are defined here
@@ -54,7 +55,11 @@ func NewRouter(env config.Env, logger config.Logger) Router {
 		c.JSON(http.StatusOK, gin.H{"data": "Golf Simulation 📺 API Up and Running"})
 	})
 
+	api := httpRouter.Group("/api")
+	v1 := api.Group("/v1")
+
 	return Router{
-		httpRouter,
+		Engine: httpRouter,
+		V1:     v1,
 	}
 }

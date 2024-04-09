@@ -13,6 +13,8 @@ import (
 	"github.com/ulule/limiter/v3/drivers/store/memory"
 )
 
+// TODO :: refactor
+
 // Global store
 // using in-memory store with goroutine which clears expired keys.
 var store = memory.NewStore()

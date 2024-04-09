@@ -28,7 +28,7 @@ func NewUtilityRoutes(
 
 // Setup sets up route for util entities
 func (u UtilityRoutes) Setup() {
-	utils := u.router.Group("/utils")
+	utils := u.router.V1.Group("/utils")
 	{
 		utils.POST("/file-upload", u.UtilityController.FileUploadHandler)
 		utils.POST("/s3-file-upload", u.UtilityController.FileUploadS3Handler)

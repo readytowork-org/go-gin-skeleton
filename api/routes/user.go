@@ -44,7 +44,7 @@ func NewUserRoutes(
 // Setup user routes
 func (i UserRoutes) Setup() {
 	i.logger.Info(" Setting up user routes")
-	users := i.router.Group("/users").Use(i.rateLimitMiddleware.HandleRateLimit(constants.BasicRateLimit, constants.BasicPeriod))
+	users := i.router.V1.Group("/users").Use(i.rateLimitMiddleware.HandleRateLimit(constants.BasicRateLimit, constants.BasicPeriod))
 	{
 		users.GET("", i.userController.GetAllUsers)
 		users.POST("", i.trxMiddleware.DBTransactionHandle(), i.userController.CreateUser)

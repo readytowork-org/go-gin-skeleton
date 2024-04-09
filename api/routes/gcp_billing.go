@@ -28,7 +28,7 @@ func NewGCPBillingRoutes(
 
 // Setup -> sets up route for util entities
 func (u GCPBillingRoutes) Setup() {
-	gcpBilling := u.router.Group("/gcp-billing")
+	gcpBilling := u.router.V1.Group("/gcp-billing")
 	{
 		gcpBilling.GET("", u.GCPBillingController.GetCost)
 		gcpBilling.GET("budget", u.GCPBillingController.GetBudgetInfo)

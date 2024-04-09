@@ -29,7 +29,7 @@ func (c DocsRoutes) Setup() {
 	if c.env.Environment != "production" {
 		c.logger.Info(" Setting up Docs routes")
 
-		swagger := c.router.Group("/docs")
+		swagger := c.router.V1.Group("/docs")
 		{
 			swagger.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		}

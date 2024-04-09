@@ -34,7 +34,7 @@ func NewJwtAuthRoutes(
 // Setup Obtain Jwt Token Routes
 func (i JwtAuthRoutes) Setup() {
 	i.logger.Info(" Setting up jwt routes")
-	jwt := i.router.Group("/login").Use(i.rateLimitMiddleware.HandleRateLimit(constants.LoginRateLimit, constants.LoginPeriod))
+	jwt := i.router.V1.Group("/login").Use(i.rateLimitMiddleware.HandleRateLimit(constants.LoginRateLimit, constants.LoginPeriod))
 	{
 		jwt.POST("", i.jwtController.LoginUserWithJWT)
 		jwt.POST("/refresh", i.jwtController.RefreshJwtToken)
