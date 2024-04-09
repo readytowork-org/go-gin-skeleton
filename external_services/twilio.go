@@ -1,8 +1,6 @@
-package services
+package external_services
 
 import (
-	"boilerplate-api/internal/config"
-	"boilerplate-api/models"
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
@@ -10,7 +8,14 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+
+	"boilerplate-api/internal/config"
 )
+
+type PhoneMessage struct {
+	Phone   string
+	Message string
+}
 
 // ErrorResponse twilio error response
 type ErrorResponse struct {
@@ -140,7 +145,7 @@ func (t TwilioService) getBasicToken() string {
 	return base64.StdEncoding.EncodeToString([]byte(token))
 }
 
-func (t TwilioService) MessageSuccess(payload models.PhoneMessage) error {
+func (t TwilioService) MessageSuccess(payload PhoneMessage) error {
 	_, twilioErr, err := t.SendSMS(SMSInput{
 		From: t.smsFrom,
 		To:   payload.Phone,

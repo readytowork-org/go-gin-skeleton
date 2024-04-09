@@ -13,4 +13,5 @@ var Module = fx.Options(
 	gcp.Module,
 	fx.Provide(NewStripeService),
 	fx.Provide(NewGmailService),
+	fx.Provide(NewTwilioService),
 )
