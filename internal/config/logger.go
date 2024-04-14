@@ -2,7 +2,9 @@ package config
 
 import (
 	"context"
+	"fmt"
 	"io"
+	"os"
 	"time"
 
 	"go.uber.org/fx/fxevent"
@@ -37,24 +39,29 @@ type GinLogger struct {
 }
 
 // GetLogger gets the global instance of the logger
-func GetLogger(env Env) Logger {
+func GetLogger() Logger {
 	if globalLog != nil {
 		return *globalLog
 	}
-	globalLog := newLogger(env)
+	globalLog := newLogger()
 	return *globalLog
 }
 
 // newLogger sets up logger the main logger
-func newLogger(env Env) *Logger {
+func newLogger() *Logger {
 	config := zap.NewDevelopmentConfig()
 
-	if env.Environment == "local" {
+	environment := os.Getenv("ENVIRONMENT")
+	logLevel := os.Getenv("LOG_LEVEL")
+	fmt.Printf("environment %v\n", environment)
+	fmt.Printf("logLevel %v\n", logLevel)
+
+	if environment == "local" {
 		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	}
 
 	var level zapcore.Level
-	switch env.LogLevel {
+	switch logLevel {
 	case "debug":
 		level = zapcore.DebugLevel
 	case "info":

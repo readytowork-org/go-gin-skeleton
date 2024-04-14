@@ -10,6 +10,7 @@ import (
 // Env has environment stored
 type Env struct {
 	HOST        string `mapstructure:"HOST"`
+	TimeZone    string `mapstructure:"TZ"`
 	ServerPort  string `mapstructure:"SERVER_PORT"`
 	Environment string `mapstructure:"ENVIRONMENT"`
 	LogOutput   string `mapstructure:"LOG_OUTPUT"`
@@ -85,6 +86,9 @@ func NewEnv(envPath EnvPath) Env {
 		log.Fatalf("☠️ environment can't be loaded: %+v", err)
 	}
 
-	log.Printf("ENV :: %+v\n", env)
+	if env.TimeZone == "" {
+		env.TimeZone = "UTC"
+	}
+
 	return env
 }

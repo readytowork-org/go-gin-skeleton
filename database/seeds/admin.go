@@ -29,8 +29,8 @@ func NewAdminSeed(
 	}
 }
 
-// RunSeed the seed data
-func (c AdminSeed) RunSeed() {
+// Run the seed data
+func (c AdminSeed) Run() {
 	email := c.env.AdminEmail
 	password := c.env.AdminPass
 	name := c.env.AdminName

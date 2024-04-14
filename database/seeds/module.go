@@ -7,7 +7,7 @@ import (
 
 // Seed db seed
 type Seed interface {
-	RunSeed()
+	Run()
 }
 
 // Module exports seed module
@@ -28,6 +28,6 @@ func SetupSeeds(
 	budgetSeed ProjectBudgetSeed,
 ) {
 	logger.Info("🌱 seeding data...")
-	adminSeed.RunSeed()
+	adminSeed.Run()
 	budgetSeed.Run()
 }

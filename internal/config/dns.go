@@ -23,6 +23,8 @@ func NewDSNConfig(env Env) DSNConfig {
 		address = fmt.Sprintf("/cloudsql/%s", env.DBHost)
 	}
 
+	location, _ := time.LoadLocation(env.TimeZone)
+
 	return DSNConfig{
 		UserName:     env.DBUsername,
 		Password:     env.DBPassword,
@@ -30,6 +32,6 @@ func NewDSNConfig(env Env) DSNConfig {
 		Address:      address,
 		DBName:       env.DBName,
 		ParseTime:    true,
-		TimeLocation: time.Local,
+		TimeLocation: location,
 	}
 }
