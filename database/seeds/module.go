@@ -14,20 +14,32 @@ type Seed interface {
 var Module = fx.Module("seeds",
 	fx.Options(
 		fx.Provide(
-			NewAdminSeed,
-			NewProjectBudgetSeed,
+			fx.Annotate(
+				NewAdminSeed,
+				fx.As(new(Seed)),
+				fx.ResultTags(`group:"seeds"`),
+			),
 		),
-		fx.Invoke(SetupSeeds),
+		fx.Provide(
+			fx.Annotate(
+				NewProjectBudgetSeed,
+				fx.As(new(Seed)),
+				fx.ResultTags(`group:"seeds"`),
+			),
+		),
+		fx.Invoke(
+			fx.Annotate(
+				SetupSeeds,
+				fx.ParamTags(`group:"seeds"`),
+			),
+		),
 	),
 )
 
 // SetupSeeds creates new seeds
-func SetupSeeds(
-	logger config.Logger,
-	adminSeed AdminSeed,
-	budgetSeed ProjectBudgetSeed,
-) {
+func SetupSeeds(seeds []Seed, logger config.Logger) {
 	logger.Info("🌱 seeding data...")
-	adminSeed.Run()
-	budgetSeed.Run()
+	for _, seed := range seeds {
+		seed.Run()
+	}
 }

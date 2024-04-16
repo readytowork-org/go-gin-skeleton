@@ -2,6 +2,7 @@ package main
 
 import (
 	"boilerplate-api/bootstrap"
+	"github.com/joho/godotenv"
 	"go.uber.org/fx"
 )
 
@@ -14,5 +15,6 @@ import (
 //	@name						Authorization
 //	@description				Description for what is this security definition being used
 func main() {
+	_ = godotenv.Load()
 	fx.New(bootstrap.Module).Run()
 }
