@@ -126,7 +126,7 @@ host: localhost:8000
 info:
   contact: {}
   description: An API in Go using Gin framework
-  title: Golf Simulation API
+  title: Demo  API
   version: "1.0"
 paths:
   /api/v1/profile:

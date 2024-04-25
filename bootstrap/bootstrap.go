@@ -46,8 +46,8 @@ func bootstrap(
 	if utils.IsCli() {
 		lifecycle.Append(fx.Hook{
 			OnStart: func(context.Context) error {
-				logger.Info("Starting Golf Simulation cli Application")
-				logger.Info("------ 🤖 Golf Simulation 🤖 (CLI) ------")
+				logger.Info("Starting cli Application")
+				logger.Info("------- (CLI) ------")
 				go cliApp.Start()
 				return nil
 			},

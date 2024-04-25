@@ -1,6 +1,6 @@
-# Golf Simulation API
+# Demo API
 
-Golf Simulation API template includes all the common packages and setup used for API development in this Company.
+Demo API template includes all the common packages and setup used for API development in this Company.
 
 ## Development
 
@@ -42,7 +42,7 @@ Golf Simulation API template includes all the common packages and setup used for
       - ``// @Tags UserManagementApi`` for endpoints under /users restricted to administrative access.
 
 
-## Run Golf Simulation CLI 🖥
+## Run CLI 🖥
 
 - Run `docker-compose exec web sh`
 - After running type `./__debug_bin cli` you will start cli application.

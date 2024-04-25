@@ -6,7 +6,7 @@ import (
 	"go.uber.org/fx"
 )
 
-//	@title						Golf Simulation API
+//	@title						Demo API
 //	@version					1.0
 //	@description				An API in Go using Gin framework
 //	@host						localhost:8000

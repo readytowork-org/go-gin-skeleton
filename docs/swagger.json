@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "description": "An API in Go using Gin framework",
-        "title": "Golf Simulation API",
+        "title": "Demo API",
         "contact": {},
         "version": "1.0"
     },

@@ -25,7 +25,7 @@ func NewRouter(env config.Env, logger config.Logger) Router {
 	if appEnv != "local" {
 		if err := sentry.Init(sentry.ClientOptions{
 			Dsn:              env.SentryDSN,
-			Environment:      `golf-simulation-backend-` + env.Environment,
+			Environment:      `Demo-backend-` + env.Environment,
 			AttachStacktrace: true,
 		}); err != nil {
 			fmt.Printf("Sentry initialization failed: %v\n", err)
@@ -53,7 +53,7 @@ func NewRouter(env config.Env, logger config.Logger) Router {
 	}))
 
 	httpRouter.GET("/health-check", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"data": "Golf Simulation 📺 API Up and Running"})
+		c.JSON(http.StatusOK, gin.H{"data": "Demo  📺 API Up and Running"})
 	})
 
 	api := httpRouter.Group("/api")
