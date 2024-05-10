@@ -35,9 +35,9 @@ drop:
 create:
 		@read -p  "What is the name of migration?" NAME; \
 		if [ "$(env)" = "local" ]; then \
-			$(MIGRATE_LOCAL) create -ext sql -seq -dir migration $$NAME; \
+			$(MIGRATE_LOCAL) create -ext sql -dir migration $$NAME; \
 		else \
-			$(MIGRATE) create -ext sql -seq -dir migration $$NAME; \
+			$(MIGRATE) create -ext sql -dir migration $$NAME; \
 		fi
 
 swag:
