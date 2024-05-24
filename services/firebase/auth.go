@@ -1,14 +1,15 @@
 package firebase
 
 import (
+	"context"
+	"fmt"
+	"strings"
+
 	"boilerplate-api/internal/api_errors"
 	"boilerplate-api/internal/config"
 	"boilerplate-api/internal/constants"
 	"boilerplate-api/internal/types"
-	"context"
 	"firebase.google.com/go"
-	"fmt"
-	"strings"
 
 	"firebase.google.com/go/auth"
 )

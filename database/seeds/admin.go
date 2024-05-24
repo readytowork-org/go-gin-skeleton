@@ -19,12 +19,12 @@ type AdminSeed struct {
 // NewAdminSeed creates admin seed
 func NewAdminSeed(
 	logger config.Logger,
-	firebaseSerivce firebase.AuthService,
+	authService firebase.AuthService,
 	env config.Env,
 ) AdminSeed {
 	return AdminSeed{
 		logger:          logger,
-		firebaseService: firebaseSerivce,
+		firebaseService: authService,
 		env:             env,
 	}
 }

@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"net/http"
 
 	"boilerplate-api/internal/api_errors"
@@ -37,17 +36,17 @@ func NewController(
 	}
 }
 
-//	@Tags			UserApi
-//	@Summary		Create User
-//	@Description	Create one user
-//	@Security		Bearer
-//	@Produce		application/json
-//	@Param			data	body		CreateUserRequestData	true	"Enter JSON"
-//	@Success		200		{object}	json_response.Message	"OK"
-//	@Failure		400		{object}	json_response.Error
-//	@Failure		500		{object}	json_response.Error
-//	@Router			/api/v1/users [post]
-//	@Id				CreateUser
+// @Tags			UserManagementApi
+// @Summary		Create User
+// @Description	Create one user
+// @Security		Bearer
+// @Produce		application/json
+// @Param			data	body		CreateUserRequestData	true	"Enter JSON"
+// @Success		200		{object}	json_response.Message	"OK"
+// @Failure		400		{object}	json_response.Error
+// @Failure		500		{object}	json_response.Error
+// @Router			/api/v1/users [post]
+// @Id				CreateUser
 func (cc Controller) CreateUser(c *gin.Context) {
 	reqData := CreateUserRequestData{}
 	trx := c.MustGet(constants.DBTransaction).(*gorm.DB)
@@ -105,16 +104,16 @@ func (cc Controller) CreateUser(c *gin.Context) {
 	})
 }
 
-//	@Tags			UserApi
-//	@Summary		All users
-//	@Description	get all users
-//	@Security		Bearer
-//	@Produce		application/json
-//	@Param			pagination	query		Pagination	false	"query param"
-//	@Success		200			{object}	json_response.DataCount[GetUserResponse]
-//	@Failure		500			{object}	json_response.Error
-//	@Router			/api/v1/users [get]
-//	@Id				GetAllUsers
+// @Tags			UserManagementApi
+// @Summary		All users
+// @Description	get all users
+// @Security		Bearer
+// @Produce		application/json
+// @Param			pagination	query		Pagination	false	"query param"
+// @Success		200			{object}	json_response.DataCount[GetUserResponse]
+// @Failure		500			{object}	json_response.Error
+// @Router			/api/v1/users [get]
+// @Id				GetAllUsers
 func (cc Controller) GetAllUsers(c *gin.Context) {
 	pagination := utils.BuildPagination[*Pagination](c)
 
@@ -133,22 +132,22 @@ func (cc Controller) GetAllUsers(c *gin.Context) {
 	})
 }
 
-//	@Tags			UserApi
-//	@Summary		User Profile
-//	@Description	get user profile
-//	@Security		Bearer
-//	@Produce		application/json
-//	@Success		200	{object}	json_response.Data[GetUserResponse]
-//	@Failure		500	{object}	json_response.Error
-//	@Router			/api/v1/profile [get]
-//	@Id				GetUserProfile
-func (cc Controller) GetUserProfile(c *gin.Context) {
-	userID := fmt.Sprintf("%v", c.MustGet(constants.UserID))
+// @Tags			UserManagementApi
+// @Summary		User Profile
+// @Description	get user profile
+// @Security		Bearer
+// @Produce		application/json
+// @Success		200	{object}	json_response.Data[GetUserResponse]
+// @Failure		500	{object}	json_response.Error
+// @Router			/api/v1/{id} [get]
+// @Id				GetOneUser
+func (cc Controller) GetOneUser(c *gin.Context) {
+	userID, err := utils.StringToInt64(c.Param("id"))
 
 	user, err := cc.userService.GetOneUser(userID)
 	if err != nil {
-		cc.logger.Error("Error finding user profile", err.Error())
-		err := api_errors.InternalError.Wrap(err, "Failed to get users profile data")
+		cc.logger.Error("Error finding user", err.Error())
+		err := api_errors.InternalError.Wrap(err, "Failed to get user")
 		status, errM := api_errors.HandleError(err)
 		c.JSON(status, json_response.Error{Error: errM})
 		return

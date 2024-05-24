@@ -17,10 +17,11 @@ func SetupRoutes(
 	rateLimitMiddleware middlewares.RateLimitMiddleware,
 ) {
 	logger.Info(" Setting up user routes")
-	users := router.V1.Group("/users").Use(rateLimitMiddleware.HandleRateLimit(constants.BasicRateLimit, constants.BasicPeriod))
+	users := router.V1.Group("/users").
+		Use(rateLimitMiddleware.HandleRateLimit(constants.BasicRateLimit, constants.BasicPeriod))
 	{
 		users.GET("", userController.GetAllUsers)
 		users.POST("", trxMiddleware.DBTransactionHandle(), userController.CreateUser)
+		users.GET("/:id", jwtMiddleware.Handle(), userController.GetOneUser)
 	}
-	router.V1.GET("/profile", jwtMiddleware.Handle(), userController.GetUserProfile)
 }

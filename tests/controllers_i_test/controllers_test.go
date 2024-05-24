@@ -1,16 +1,15 @@
 package controllers_i_test
 
 import (
-	"boilerplate-api/api/controllers"
-	"boilerplate-api/api/repository"
-	"boilerplate-api/api/services"
-	"boilerplate-api/internal/config"
-	"boilerplate-api/internal/router"
-	"boilerplate-api/tests"
-	"go.uber.org/fx"
 	"os"
 	"reflect"
 	"testing"
+
+	"boilerplate-api/internal/config"
+	"boilerplate-api/internal/router"
+	"boilerplate-api/services"
+	"boilerplate-api/tests"
+	"go.uber.org/fx"
 )
 
 type ControllerTest interface {
@@ -37,9 +36,7 @@ func NewControllerTests() ControllerTests {
 var ControllerIntegrationTestModules = fx.Options(
 	config.TestENVModule,
 	config.BaseModule,
-	repository.Module,
 	services.Module,
-	controllers.Module,
 	fx.Supply(config.EnvPath("../../.test.env")),
 	fx.Provide(router.NewRouter),
 	fx.Provide(NewControllerTests),

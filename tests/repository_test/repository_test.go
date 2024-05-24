@@ -1,13 +1,13 @@
 package repository_test
 
 import (
-	"boilerplate-api/api/repository"
-	"boilerplate-api/internal/config"
-	"boilerplate-api/tests"
-	"go.uber.org/fx"
 	"os"
 	"reflect"
 	"testing"
+
+	"boilerplate-api/internal/config"
+	"boilerplate-api/tests"
+	"go.uber.org/fx"
 )
 
 type RepoTests []RepoTest
@@ -33,7 +33,6 @@ func NewRepoTests() RepoTests {
 var RepoTestModules = fx.Options(
 	config.TestENVModule,
 	config.BaseModule,
-	repository.Module,
 	fx.Supply(config.EnvPath("../../.test.env")),
 	fx.Provide(NewRepoTests),
 	fx.Invoke(bootstrapRepoTest),

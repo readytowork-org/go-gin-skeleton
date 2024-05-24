@@ -9,7 +9,6 @@ import (
 	"go.uber.org/fx/fxevent"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-
 	gormlogger "gorm.io/gorm/logger"
 )
 
@@ -48,10 +47,11 @@ func GetLogger() Logger {
 
 // newLogger sets up logger the main logger
 func newLogger() *Logger {
-	config := zap.NewDevelopmentConfig()
 
 	environment := os.Getenv("ENVIRONMENT")
 	logLevel := os.Getenv("LOG_LEVEL")
+
+	config := zap.NewDevelopmentConfig()
 
 	if environment == "local" {
 		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
@@ -101,7 +101,6 @@ func (l *Logger) GetGormLogger() gormlogger.Interface {
 		Logger: newSugaredLogger(logger),
 		Config: gormlogger.Config{
 			LogLevel: gormlogger.Info,
-			Colorful: true,
 		},
 	}
 }
@@ -200,14 +199,14 @@ func (l *GormLogger) LogMode(level gormlogger.LogLevel) gormlogger.Interface {
 }
 
 // Info prints info
-func (l *GormLogger) Info(_ context.Context, str string, args ...any) {
+func (l GormLogger) Info(_ context.Context, str string, args ...any) {
 	if l.LogLevel >= gormlogger.Info {
 		l.Debugf(str, args...)
 	}
 }
 
 // Warn prints warn messages
-func (l *GormLogger) Warn(_ context.Context, str string, args ...any) {
+func (l GormLogger) Warn(_ context.Context, str string, args ...any) {
 	if l.LogLevel >= gormlogger.Warn {
 		l.Warnf(str, args...)
 	}
@@ -215,14 +214,14 @@ func (l *GormLogger) Warn(_ context.Context, str string, args ...any) {
 }
 
 // Error prints error messages
-func (l *GormLogger) Error(_ context.Context, str string, args ...any) {
+func (l GormLogger) Error(_ context.Context, str string, args ...any) {
 	if l.LogLevel >= gormlogger.Error {
 		l.Errorf(str, args...)
 	}
 }
 
 // Trace prints trace messages
-func (l *GormLogger) Trace(_ context.Context, begin time.Time, fc func() (string, int64), _ error) {
+func (l GormLogger) Trace(_ context.Context, begin time.Time, fc func() (string, int64), _ error) {
 	if l.LogLevel <= 0 {
 		return
 	}

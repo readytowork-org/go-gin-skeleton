@@ -1,17 +1,19 @@
 package gcp
 
 import (
+	"context"
+
 	"boilerplate-api/internal/config"
 	"cloud.google.com/go/billing/budgets/apiv1"
-	"context"
+	"google.golang.org/api/option"
 )
 
 type BudgetClient struct {
 	*budgets.BudgetClient
 }
 
-func NewGCPBudgetClient(logger config.Logger, clientOption config.GCPClientOption) BudgetClient {
-	budgetClient, err := budgets.NewBudgetClient(context.Background(), clientOption)
+func NewGCPBudgetClient(logger config.Logger, clientOption *option.ClientOption) BudgetClient {
+	budgetClient, err := budgets.NewBudgetClient(context.Background(), *clientOption)
 
 	if err != nil {
 		logger.Panic("Failed to create cloud budget api client: %v \n", err)

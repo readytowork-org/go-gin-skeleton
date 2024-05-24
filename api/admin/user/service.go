@@ -34,7 +34,7 @@ func (c Service) GetAllUsers(pagination Pagination) ([]GetUserResponse, int64, e
 }
 
 // GetOneUser one user
-func (c Service) GetOneUser(Id string) (GetUserResponse, error) {
+func (c Service) GetOneUser(Id int64) (GetUserResponse, error) {
 	return c.repository.GetOneUser(Id)
 }
 

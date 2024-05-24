@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"boilerplate-api/api/user"
+	"boilerplate-api/api/admin/user"
 	"boilerplate-api/internal/api_errors"
 	"boilerplate-api/internal/auth"
 	"boilerplate-api/internal/config"

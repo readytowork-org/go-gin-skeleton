@@ -3,14 +3,15 @@ package config
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"os"
+	"time"
+
 	"github.com/DATA-DOG/go-sqlmock"
 	goMySql "github.com/go-sql-driver/mysql"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"log"
-	"os"
-	"time"
 )
 
 // Database modal
@@ -41,7 +42,7 @@ func NewDatabase(logger Logger, dsnConfig DSNConfig) Database {
 	}
 
 	logger.Info("creating database if it doesn't exist")
-	if err = db.Exec("CREATE DATABASE IF NOT EXISTS " + dsnConfig.DBName).Error; err != nil {
+	if err = db.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", dsnConfig.DBName)).Error; err != nil {
 		logger.Info("couldn't create database")
 		logger.Panic(err)
 	}

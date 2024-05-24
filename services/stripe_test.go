@@ -91,7 +91,7 @@ func TestCreateCustomer(t *testing.T) {
 	)
 	stripeService := NewStripeService(
 		env,
-		config.GetLogger(env),
+		config.GetLogger(),
 	)
 	stripeBackendMock.On("Call",
 		mock.Anything,
@@ -140,7 +140,7 @@ func TestCreateSubscription(t *testing.T) {
 	)
 	stripeService := NewStripeService(
 		env,
-		config.GetLogger(env),
+		config.GetLogger(),
 	)
 	stripeBackendMock.On("Call",
 		mock.Anything,
@@ -176,7 +176,7 @@ func TestCreatePrices(t *testing.T) {
 	)
 	stripeService := NewStripeService(
 		env,
-		config.GetLogger(env),
+		config.GetLogger(),
 	)
 
 	stripeBackendMock.On("Call",
@@ -211,7 +211,7 @@ func TestPaymentIntent(t *testing.T) {
 	)
 	stripeService := NewStripeService(
 		env,
-		config.GetLogger(env),
+		config.GetLogger(),
 	)
 
 	stripeBackendMock.On("Call",

@@ -1,21 +1,17 @@
 package config
 
 import (
-	"google.golang.org/api/option"
 	"path/filepath"
+
+	"google.golang.org/api/option"
 )
 
-type GCPClientOption struct {
-	option.ClientOption
-}
-
-func NewGCPClientOption(logger Logger) GCPClientOption {
+func NewGCPClientOption(logger Logger) *option.ClientOption {
 	serviceAccountKeyFilePath, err := filepath.Abs("./serviceAccountKey.json")
 	if err != nil {
 		logger.Panic("Unable to load serviceAccountKey.json file")
 	}
 
-	return GCPClientOption{
-		option.WithCredentialsFile(serviceAccountKeyFilePath),
-	}
+	options := option.WithCredentialsFile(serviceAccountKeyFilePath)
+	return &options
 }

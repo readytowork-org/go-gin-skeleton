@@ -26,8 +26,6 @@ func NewMigrations(
 	path := getMigrationFolder(envPath.ToString())
 	path = fmt.Sprintf("file://%s/", path)
 
-	fmt.Printf("migration path %+v", path)
-
 	mysqlDSNConfig := goMySql.Config{
 		User:                 dsnConfig.UserName,
 		Passwd:               dsnConfig.Password,
@@ -61,11 +59,12 @@ func (m Migrations) MigrateUp() {
 }
 
 /*
-	getMigrationFolder path from env path.
+getMigrationFolder path from env path.
 
-	e.g:
-		../../<.test.env/.env> => ../../migration
-		<.test.env/.env> => migration
+e.g:
+
+	../../<.test.env/.env> => ../../migration
+	<.test.env/.env> => migration
 */
 func getMigrationFolder(envPath string) string {
 	m1 := regexp.MustCompile(`(\.(\w+))+`)

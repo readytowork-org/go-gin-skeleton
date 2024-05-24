@@ -1,10 +1,12 @@
 package gcp
 
 import (
-	"boilerplate-api/internal/config"
-	"cloud.google.com/go/storage"
 	"context"
 	"errors"
+
+	"boilerplate-api/internal/config"
+	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
 )
 
 type BucketClient struct {
@@ -12,13 +14,13 @@ type BucketClient struct {
 }
 
 // NewGCPBucketClient creates a new gcp bucket api client
-func NewGCPBucketClient(logger config.Logger, env config.Env, clientOption config.GCPClientOption) BucketClient {
+func NewGCPBucketClient(logger config.Logger, env config.Env, clientOption *option.ClientOption) BucketClient {
 	bucketName := env.StorageBucketName
 	ctx := context.Background()
 	if bucketName == "" {
 		logger.Error("Please check your env file for STORAGE_BUCKET_NAME")
 	}
-	client, err := storage.NewClient(ctx, clientOption)
+	client, err := storage.NewClient(ctx, *clientOption)
 	if err != nil {
 		logger.Fatal(err.Error())
 	}

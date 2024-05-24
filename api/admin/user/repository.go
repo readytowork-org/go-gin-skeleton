@@ -53,7 +53,7 @@ func (c Repository) GetAllUsers(pagination Pagination) (users []GetUserResponse,
 		Error
 }
 
-func (c Repository) GetOneUser(Id string) (userModel GetUserResponse, err error) {
+func (c Repository) GetOneUser(Id int64) (userModel GetUserResponse, err error) {
 	return userModel, c.db.DB.
 		Model(&userModel).
 		Where("id = ?", Id).

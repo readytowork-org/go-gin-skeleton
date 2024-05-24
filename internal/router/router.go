@@ -32,13 +32,15 @@ func NewRouter(env config.Env, logger config.Logger) Router {
 		}
 	}
 
+	// TODO :: after cli config
+	// gin.DefaultWriter = logger.GetGinLogger()
+
 	if appEnv == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
 		gin.SetMode(gin.DebugMode)
 	}
 
-	gin.DefaultWriter = logger.GetGinLogger()
 	httpRouter := gin.Default()
 
 	httpRouter.Use(cors.New(cors.Config{

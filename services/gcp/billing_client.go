@@ -1,8 +1,10 @@
 package gcp
 
 import (
-	"boilerplate-api/internal/config"
 	"context"
+
+	"boilerplate-api/internal/config"
+	"google.golang.org/api/option"
 
 	"google.golang.org/api/cloudbilling/v1"
 )
@@ -12,8 +14,8 @@ type BillingClient struct {
 }
 
 // NewGCPBillingClient creates a new gcp billing api client
-func NewGCPBillingClient(logger config.Logger, clientOption config.GCPClientOption) BillingClient {
-	billingClient, err := cloudbilling.NewService(context.Background(), clientOption)
+func NewGCPBillingClient(logger config.Logger, clientOption *option.ClientOption) BillingClient {
+	billingClient, err := cloudbilling.NewService(context.Background(), *clientOption)
 	if err != nil {
 		logger.Panic("Failed to create cloud billing api client: %v \n", err)
 	}
