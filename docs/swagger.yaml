@@ -126,9 +126,29 @@ host: localhost:8000
 info:
   contact: {}
   description: An API in Go using Gin framework
-  title: Demo  API
+  title: Demo API
   version: "1.0"
 paths:
+  /api/v1/{id}:
+    get:
+      description: get user profile
+      operationId: GetOneUser
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Data-user_GetUserResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      security:
+      - Bearer: []
+      summary: User Profile
+      tags:
+      - UserManagementApi
   /api/v1/profile:
     get:
       description: get user profile
@@ -184,7 +204,7 @@ paths:
       - Bearer: []
       summary: All users
       tags:
-      - UserApi
+      - UserManagementApi
     post:
       description: Create one user
       operationId: CreateUser
@@ -214,7 +234,7 @@ paths:
       - Bearer: []
       summary: Create User
       tags:
-      - UserApi
+      - UserManagementApi
 securityDefinitions:
   Bearer:
     description: Description for what is this security definition being used

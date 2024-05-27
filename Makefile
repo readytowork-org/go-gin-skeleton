@@ -1,9 +1,10 @@
 include .env
-MIGRATE_LOCAL=migrate -path=database/migration -database "mysql://${DB_USERNAME}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}" -verbose
+
+DB_DSN="${DB_USERNAME}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}"
+
+MIGRATE_LOCAL=migrate -path=database/migration -database "mysql://"${DB_DSN} -verbose
 
 MIGRATE=docker-compose exec web ${MIGRATE_LOCAL}
-
-.PHONY: migrate-up migrate-down force goto drop create auto-create swag test-repo
 
 dev:
 		bash automate/scripts/gin-watch.sh ${SERVER_PORT}
@@ -58,6 +59,10 @@ start: install
 run:
 	docker-compose up
 
+generate-dao:
+	@command -v gentool >/dev/null 2>&1 || (echo "Installing gentool..." && go install gorm.io/gen/tools/gentool@latest)
+	gentool -dsn ${DB_DSN} -fieldNullable -fieldWithIndexTag -fieldSignable -onlyModel -outPath "./database/dao" -modelPkgName "dao"
+
 test-repo: TEST_NAME=$(filter-out $@,$(MAKECMDGOALS))
 test-repo:
 	go test ./tests/repository_test -v -run $(TEST_NAME)
@@ -69,4 +74,6 @@ i-test-controller:
 test-controller: TEST_NAME=$(filter-out $@,$(MAKECMDGOALS))
 test-controller:
 	go test ./tests/controllers_test -v -run $(TEST_NAME)
+
+.PHONY: generate-dao migrate-up migrate-down force goto drop create auto-create swag test-repo
 

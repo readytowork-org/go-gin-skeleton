@@ -59,7 +59,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "UserApi"
+                    "UserManagementApi"
                 ],
                 "summary": "All users",
                 "operationId": "GetAllUsers",
@@ -116,7 +116,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "UserApi"
+                    "UserManagementApi"
                 ],
                 "summary": "Create User",
                 "operationId": "CreateUser",
@@ -142,6 +142,38 @@ const docTemplate = `{
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "get user profile",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserManagementApi"
+                ],
+                "summary": "User Profile",
+                "operationId": "GetOneUser",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Data-user_GetUserResponse"
                         }
                     },
                     "500": {
