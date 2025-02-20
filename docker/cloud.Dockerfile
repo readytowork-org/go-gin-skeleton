@@ -13,4 +13,3 @@ EXPOSE 3306
 
 # Start Cloud SQL Proxy
 CMD cloud_sql_proxy -instances=${DB_HOST_NAME}=tcp:0.0.0.0:3306 -credential_file=/secrets/cloudsql/serviceAccountKey.json
-

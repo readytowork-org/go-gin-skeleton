@@ -20,31 +20,31 @@ jobs:
     steps:
       - uses: mshick/add-pr-comment@v2
         with:
-          message: |  
+          message: |
             **swagger comments**
-  
+
             - [ ]  route
             - [ ] method type
             - [ ] request body
             - [ ] query params
             - [ ] response data
-  
+
             **Code Quality**
-  
+
             - [ ] Naming Convention
             - [ ] Consistency
-            
+
             * [ ] receiver name of method must be same in all methods
-  
+
             :x:
             ```go
             func (c AdminController) ValidateEmail(ctx *gin.Context)
-  
+
             func (cc AdminController) CreateAdmin(ctx *gin.Context)
             ```
             :white_check_mark:
             ```go
             func (c AdminController) ValidateEmail(ctx *gin.Context)
-  
+
             func (c AdminController) CreateAdmin(ctx *gin.Context)
             ```
