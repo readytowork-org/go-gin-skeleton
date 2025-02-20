@@ -43,7 +43,7 @@ services:
         "--default-authentication-plugin=mysql_native_password",
       ]
     ports:
-      - 33069:3306
+      - 33066:3306
     volumes:
       - boilerplate_db:/var/lib/mysql
 
