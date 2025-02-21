@@ -20,17 +20,12 @@ type Migrations struct {
 func NewMigrations(
 	logger Logger,
 	envPath EnvPath,
-	db *Database,
+	db DBDialect,
 ) *Migrations {
 	path := getMigrationFolder(envPath.ToString())
 	path = fmt.Sprintf("file://%s/", path)
 
-	if db.ConnectionError != nil {
-		logger.Info("!!! Skipping Migrations !!!")
-		return &Migrations{}
-	}
-
-	migrator, err := migrate.New(path, fmt.Sprintf("%v://%v", db.Type(), db.DSN()))
+	migrator, err := migrate.New(path, fmt.Sprintf("%v://%v", db.Name(), db.DSN))
 	if err != nil {
 		logger.Panic("Error in migration: ", err)
 	}
@@ -42,12 +37,18 @@ func NewMigrations(
 }
 
 // MigrateUp migrates all table
-func (m Migrations) MigrateUp() {
+func (m Migrations) MigrateUp() error {
 	m.logger.Info("--- Running Migration Up ---")
 	err := m.migrator.Up()
 	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		m.logger.Info("Error in migration steps: ", err.Error())
+		return err
 	}
+	version, _, err := m.migrator.Version()
+	if err != nil {
+		return err
+	}
+	m.logger.Infof("--- Migration Success; Current Version: %v ---\n", version)
+	return nil
 }
 
 /*

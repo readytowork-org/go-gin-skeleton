@@ -10,7 +10,7 @@ import (
 // ENVModule config dependency
 var ENVModule = fx.Options(
 	fx.Provide(NewEnv),
-	fx.Provide(NewDSNConfig),
+	fx.Provide(NewSqlDialect),
 )
 
 // BaseModule base config
@@ -24,13 +24,13 @@ var BaseModule = fx.Options(
 var Module = fx.Options(
 	ENVModule,
 	BaseModule,
-	fx.Provide(NewGCPClientOption),
 )
 
 // TestENVModule required for test env
 var TestENVModule = fx.Module(
 	"ENV", fx.Options(
 		ENVModule,
+		BaseModule,
 		fx.Invoke(validateTestEnv),
 	),
 )
