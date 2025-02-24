@@ -155,7 +155,7 @@ jobs:
           name: Retrieve Commit Message
           command: |
             # Try to extract the second line of the commit message
-            COMMIT_MESSAGE=$(git log -1 --pretty=%B | sed -n '2p')
+            COMMIT_MESSAGE=$(git log -1 --pretty=%B | sed -n '3p')
             # Fallback to the first line if the second is empty
             if [ -z "$COMMIT_MESSAGE" ]; then
               COMMIT_MESSAGE=$(git log -1 --pretty=%B | head -n 1)
