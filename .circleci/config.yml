@@ -307,7 +307,9 @@ workflows:
   workflow:
     jobs:
       - build:
-          context: boilerplate_dev
+          context:
+            - boilerplate_dev
+            - rtw_basic
           filters:
             branches:
               only:
@@ -315,7 +317,9 @@ workflows:
                 - main
 
       - deploy_to_develop:
-          context: boilerplate_dev
+          context:
+            - boilerplate_dev
+            - rtw_basic
           filters:
             branches:
               only:
@@ -324,7 +328,9 @@ workflows:
             - build
 
       - deploy_to_production:
-          context: boilerplate_production
+          context:
+            - boilerplate_production
+            - rtw_basic
           filters:
             tags:
               only:
