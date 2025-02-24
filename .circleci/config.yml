@@ -154,11 +154,11 @@ jobs:
       - run:
           name: Retrieve Commit Message
           command: |
-            # Try to extract the second line of the commit message
-            COMMIT_MESSAGE=$(git log -1 --pretty=%B | sed -n '3p')
-            # Fallback to the first line if the second is empty
+            # Try to extract the body of the commit message
+            COMMIT_MESSAGE=$(git log -1 --pretty=%b)
+            # Fallback to the subject if the second is empty
             if [ -z "$COMMIT_MESSAGE" ]; then
-              COMMIT_MESSAGE=$(git log -1 --pretty=%B | head -n 1)
+              COMMIT_MESSAGE=$(git log -1 --pretty=%s)
             fi
             echo "export COMMIT_MESSAGE='${COMMIT_MESSAGE}'" >> $BASH_ENV
 
@@ -167,78 +167,69 @@ jobs:
           custom: |
             {
               "blocks": [
-                  {
-                      "type": "header",
-                      "text": {
-                          "type": "plain_text",
-                          "text": "Job Succeeded. :white_check_mark:",
-                          "emoji": true
-                      }
-                  },
-                  {
-                      "type": "section",
-                      "fields": [
-                          {
-                              "type": "mrkdwn",
-                              "text": "*Job*: ${CIRCLE_JOB}"
-                          },
-                          {
-                              "type": "mrkdwn",
-                              "text": "*Project*: ${CIRCLE_PROJECT_REPONAME}"
-                          }
-                      ]
-                  },
-                  {
-                      "type": "section",
-                      "fields": [
-                          {
-                              "type": "mrkdwn",
-                              "text": "*Commit*: ${CIRCLE_SHA1}"
-                          },
-                          {
-                              "type": "mrkdwn",
-                              "text": "*Author*: ${CIRCLE_USERNAME}"
-                          }
-                      ]
-                  },
-                  {
-                      "type": "section",
-                      "fields": [
-                          {
-                              "type": "mrkdwn",
-                              "text": "*Branch*: ${CIRCLE_BRANCH}"
-                          },
-                          {
-                              "type": "mrkdwn",
-                              "text": "*Title*: ${COMMIT_MESSAGE}"
-                          }
-                      ]
-                  },
-                  {
-                      "type": "section",
-                      "fields": [
-                          {
-                              "type": "mrkdwn",
-                              "text": "*Mentions*: @min-driver-qa"
-                          }
-                      ]
-                  },
-                  {
-                      "type": "actions",
-                      "elements": [
-                          {
-                              "type": "button",
-                              "text": {
-                                  "type": "plain_text",
-                                  "text": "View Job",
-                                  "emoji": true
-                              },
-                              "url": "${CIRCLE_BUILD_URL}"
-                          }
-                      ]
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Job Succeeded. :white_check_mark:",
+                    "emoji": true
                   }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Job*: ${CIRCLE_JOB}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Project*: ${CIRCLE_PROJECT_REPONAME}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Commit*: ${CIRCLE_SHA1}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Author*: ${CIRCLE_USERNAME}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Branch*: ${CIRCLE_BRANCH}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Title*: ${COMMIT_MESSAGE}"
+                    }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Job",
+                        "emoji": true
+                      },
+                      "url": "${CIRCLE_BUILD_URL}"
+                    }
+                  ]
+                }
               ]
-            }
+              }
 
       - slack/notify:
           event: fail
