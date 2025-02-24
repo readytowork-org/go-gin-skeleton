@@ -167,69 +167,69 @@ jobs:
           custom: |
             {
               "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "Job Succeeded. :white_check_mark:",
-                    "emoji": true
-                  }
-                },
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Job*: ${CIRCLE_JOB}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Project*: ${CIRCLE_PROJECT_REPONAME}"
-                    }
-                  ]
-                },
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Commit*: ${CIRCLE_SHA1}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Author*: ${CIRCLE_USERNAME}"
-                    }
-                  ]
-                },
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Branch*: ${CIRCLE_BRANCH}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Title*: ${COMMIT_MESSAGE}"
-                    }
-                  ]
-                },
-                {
-                  "type": "actions",
-                  "elements": [
-                    {
-                      "type": "button",
+                  {
+                      "type": "header",
                       "text": {
-                        "type": "plain_text",
-                        "text": "View Job",
-                        "emoji": true
-                      },
-                      "url": "${CIRCLE_BUILD_URL}"
-                    }
-                  ]
-                }
+                          "type": "plain_text",
+                          "text": "Job Succeeded. :white_check_mark:",
+                          "emoji": true
+                      }
+                  },
+                  {
+                      "type": "section",
+                      "fields": [
+                          {
+                              "type": "mrkdwn",
+                              "text": "*Job*: ${CIRCLE_JOB}"
+                          },
+                          {
+                              "type": "mrkdwn",
+                              "text": "*Project*: ${CIRCLE_PROJECT_REPONAME}"
+                          }
+                      ]
+                  },
+                  {
+                      "type": "section",
+                      "fields": [
+                          {
+                              "type": "mrkdwn",
+                              "text": "*Commit*: ${CIRCLE_SHA1}"
+                          },
+                          {
+                              "type": "mrkdwn",
+                              "text": "*Author*: ${CIRCLE_USERNAME}"
+                          }
+                      ]
+                  },
+                  {
+                      "type": "section",
+                      "fields": [
+                          {
+                              "type": "mrkdwn",
+                              "text": "*Branch*: ${CIRCLE_BRANCH}"
+                          },
+                          {
+                              "type": "mrkdwn",
+                              "text": "*Title*: ${COMMIT_MESSAGE}"
+                          }
+                      ]
+                  },
+                  {
+                      "type": "actions",
+                      "elements": [
+                          {
+                              "type": "button",
+                              "text": {
+                                  "type": "plain_text",
+                                  "text": "View Job",
+                                  "emoji": true
+                              },
+                              "url": "${CIRCLE_BUILD_URL}"
+                          }
+                      ]
+                  }
               ]
-              }
+            }
 
       - slack/notify:
           event: fail
