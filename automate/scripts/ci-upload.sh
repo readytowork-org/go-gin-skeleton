@@ -23,7 +23,7 @@ if [ -f "$env_file_path" ]; then
             echo "Invalid environment variable name: '$key'"
             continue
         fi
-        
+
         # Export the key-value pair as an environment variable
         export "$key=$value"
     done < "$env_file_path"
@@ -53,7 +53,7 @@ if [[ -z "$env_file_path" || -z "$context_name" ]]; then
     exit 1
 fi
 
-CONTEXT_NAME=$context_name  
+CONTEXT_NAME=$context_name
 
 
 
