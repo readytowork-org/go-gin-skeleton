@@ -14,7 +14,7 @@ echo "Using package name: $last_folder"
 cat <<EOF > "$folder/repository.go"
 package $last_folder
 
-import "minnanodriver-api/lib/config"
+import "boilerplate-api/lib/config"
 
 type IRepository interface{}
 
@@ -53,8 +53,8 @@ cat <<EOF > "$folder/controller.go"
 package $last_folder
 
 import (
-	"minnanodriver-api/lib/config"
-	"minnanodriver-api/lib/request_validator"
+	"boilerplate-api/lib/config"
+	"boilerplate-api/lib/request_validator"
 )
 
 type Controller struct {
@@ -84,9 +84,9 @@ cat <<EOF > "$folder/routes.go"
 package $last_folder
 
 import (
-	"minnanodriver-api/lib/config"
-	"minnanodriver-api/lib/middlewares"
-	"minnanodriver-api/lib/router"
+	"boilerplate-api/lib/config"
+	"boilerplate-api/lib/middlewares"
+	"boilerplate-api/lib/router"
 )
 
 // SetupRoutes user routes
