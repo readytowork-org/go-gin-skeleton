@@ -10,11 +10,13 @@ mkdir -p "$folder"
 last_folder=$(basename "$folder")
 echo "Using package name: $last_folder"
 
+module_name=$(grep '^module ' go.mod | awk '{print $2}')
+
 # Create repository.go with its template
 cat <<EOF > "$folder/repository.go"
 package $last_folder
 
-import "boilerplate-api/lib/config"
+import "$module_name/lib/config"
 
 type IRepository interface{}
 
@@ -53,8 +55,8 @@ cat <<EOF > "$folder/controller.go"
 package $last_folder
 
 import (
-	"boilerplate-api/lib/config"
-	"boilerplate-api/lib/request_validator"
+	"$module_name/lib/config"
+	"$module_name/lib/request_validator"
 )
 
 type Controller struct {
@@ -84,9 +86,9 @@ cat <<EOF > "$folder/routes.go"
 package $last_folder
 
 import (
-	"boilerplate-api/lib/config"
-	"boilerplate-api/lib/middlewares"
-	"boilerplate-api/lib/router"
+	"$module_name/lib/config"
+	"$module_name/lib/middlewares"
+	"$module_name/lib/router"
 )
 
 // SetupRoutes user routes
