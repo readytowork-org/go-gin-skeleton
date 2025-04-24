@@ -1,115 +1,123 @@
 #!/bin/bash
 
-set -e
+# Prompt the user for the target folder
+read -p "Enter the target folder: " folder
 
-os_name=$(uname)
+# Create the folder if it doesn't exist
+mkdir -p "$folder"
 
-first_lower() {
-  echo $(echo $1 | awk '{$1=tolower(substr($1,0,1))substr($1,2)}1')
+# Extract the last folder name (e.g., "jobs" from "api/admin/jobs")
+last_folder=$(basename "$folder")
+echo "Using package name: $last_folder"
+
+# Create repository.go with its template
+cat <<EOF > "$folder/repository.go"
+package $last_folder
+
+import "minnanodriver-api/lib/config"
+
+type IRepository interface{}
+
+type Repository struct {
+	db     config.Database
+	logger config.Logger
 }
 
-dash_case() {
-  echo $(echo $1 | sed -e 's/_\([a-z]\)/-\1/g')
+func NewRepository(db config.Database, logger config.Logger) Repository {
+	return Repository{
+		db:     db,
+		logger: logger,
+	}
+}
+EOF
+
+# Create service.go with its template
+cat <<EOF > "$folder/service.go"
+package $last_folder
+
+type IService interface{}
+
+type Service struct {
+	repo IRepository
 }
 
-printf "\n *** Go Gin GORM Scaffold Generator *** \n"
-printf "This scaffolder assumes that you are using RTW clean-gin template.\n"
-echo "Enter resource name(eg: ProductCategory):"
-read uc_resource
-echo "Enter resource table name(eg: product_category):"
-read resource_table
-echo "Enter plural resource table name(eg: product_categories):"
-read plural_resource_table
-echo "Enter plural resource name(eg: ProductCategories):"
-read plural_resource
+func NewService(repo IRepository) Service {
+	return Service{
+		repo: repo,
+	}
+}
+EOF
 
-lc_resource=$(first_lower $uc_resource)
-plc_resource=$(first_lower $plural_resource)
-route_name=$(dash_case $plural_resource_table)
-ROOT=$(pwd)
+# Create controller.go with its template
+cat <<EOF > "$folder/controller.go"
+package $last_folder
 
-printf "\n* Generating Scaffold for ${uc_resource} *\n\n"
-
-# getting project name from go.mod file
-# this code will grab second word of first line from file go.mod and store value to the project name
-read -r _ project_name _ <go.mod
-project_name=$(echo $project_name | tr -d '\r')
-
-placeholder_value_hash=(
-  "{{uc_resource}}:$uc_resource"
-  "{{plc_resource}}:$plc_resource"
-  "{{lc_resource}}:$lc_resource"
-  "{{project_name}}:$project_name"
-  "{{resource_table}}:$resource_table"
-  "{{plural_resource_table}}:$plural_resource_table"
-  "{{route_name}}:$route_name"
-)
-entity_path_hash=(
-  "models:${ROOT}/models"
-  "routes:${ROOT}/api/routes"
-  "controllers:${ROOT}/api/controllers"
-  "services:${ROOT}/api/services"
-  "repository:${ROOT}/api/repository"
+import (
+	"minnanodriver-api/lib/config"
+	"minnanodriver-api/lib/request_validator"
 )
 
-# if files already exists then terminate the process
-for str in ${entity_path_hash[@]}; do
-  FILE="${entity##*:}/${resource_table}.go"
-  if test -f "$FILE"; then
-    echo "${str}/${fileName} exists."
-    exit
-  fi
-done
+type Controller struct {
+	logger    config.Logger
+	env       config.Env
+	validator request_validator.Validator
+	service   IService
+}
 
-for entity in "${entity_path_hash[@]}"; do
-  entity_name="${entity%%:*}"
-  entity_path="${entity##*:}"
-  file_to_write="$entity_path/${resource_table}.go"
+func NewController(
+	logger config.Logger,
+	env config.Env,
+	validator request_validator.Validator,
+	service IService,
+) Controller {
+	return Controller{
+		logger:    logger,
+		env:       env,
+		validator: validator,
+		service:   service,
+	}
+}
+EOF
 
-  cat "${ROOT}/automate/automate-templates/${entity_name}.txt" >>$file_to_write
-  for item in "${placeholder_value_hash[@]}"; do
-    placeholder="${item%%:*}"
-    value="${item##*:}"
+# Create routes.go with its template
+cat <<EOF > "$folder/routes.go"
+package $last_folder
 
-    if [[ $os_name == "Darwin" ]]; then
-      sed -i "" "s/$placeholder/$value/g" $file_to_write
-      continue
-    fi
-    sed -i "s/$placeholder/$value/g" $file_to_write
-
-  done
-  echo $file_to_write "created."
-done
-
-# inject fx deps
-fx_path_hash=(
-  "Controller:${ROOT}/api/controllers/controllers.go"
-  "Service:${ROOT}/api/services/services.go"
-  "Repository:${ROOT}/api/repository/repository.go"
+import (
+	"minnanodriver-api/lib/config"
+	"minnanodriver-api/lib/middlewares"
+	"minnanodriver-api/lib/router"
 )
-fx_init_string="var Module = fx.Options("
-for deps_value in "${fx_path_hash[@]}"; do
-  deps_name="${deps_value%%:*}"
-  deps_path="${deps_value##*:}"
-  if [[ $os_name == "Darwin" ]]; then
-    sed -i "" "s/${fx_init_string}/${fx_init_string}\n\t  fx.Provide(New${uc_resource}${deps_name}),/g" $deps_path
-    continue
-  fi
-  sed -i "s/${fx_init_string}/${fx_init_string}\n\t  fx.Provide(New${uc_resource}${deps_name}),/g" $deps_path
-  echo $deps_path "updated."
-done
 
-# fx routes
-fx_route_path="${ROOT}/api/routes/routes.go"
-if [[ $os_name == "Darwin" ]]; then
-  sed -i "" "s/func NewRoutes(/func NewRoutes(\n\t ${lc_resource}Routes ${uc_resource}Routes,/g" $fx_route_path
-  sed -i "" "s/return Routes{/return Routes{\n\t ${lc_resource}Routes,/g" $fx_route_path
-  sed -i "" "s/fx.Provide(NewRoutes),/fx.Provide(NewRoutes),\n  fx.Provide(New${uc_resource}Routes),/g" $fx_route_path
-else
-  sed -i "s/func NewRoutes(/func NewRoutes(\n\t ${lc_resource}Routes ${uc_resource}Routes,/g" $fx_route_path
-  sed -i "s/return Routes{/return Routes{\n\t ${lc_resource}Routes,/g" $fx_route_path
-  sed -i "s/fx.Provide(NewRoutes),/fx.Provide(NewRoutes),\n  fx.Provide(New${uc_resource}Routes),/g" $fx_route_path
-fi
-echo $fx_route_path "updated."
+// SetupRoutes user routes
+func SetupRoutes(
+	logger config.Logger,
+	router router.Router,
+	controller Controller,
+	rateLimitMiddleware middlewares.RateLimitMiddleware,
+) {
+	logger.Info(" Setting up pic routes")
+}
+EOF
 
-printf "\n\n*** Scaffolding Completely Successfully ***\n"
+# Create modules.go with its template
+cat <<EOF > "$folder/modules.go"
+package $last_folder
+
+import "go.uber.org/fx"
+
+var Module = fx.Module(
+	"$last_folder",
+	fx.Options(
+		fx.Provide(
+			fx.Annotate(NewRepository, fx.As(new(IRepository))),
+			fx.Annotate(NewService, fx.As(new(IService))),
+			NewController,
+		),
+		fx.Invoke(SetupRoutes),
+	),
+)
+
+EOF
+
+echo "Files created in folder: $folder"
