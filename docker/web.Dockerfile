@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine
+FROM golang:1.23.3-alpine
 
 # add user group
 # RUN addgroup -S nonroot \
@@ -13,7 +13,7 @@ RUN apk add inotify-tools
 
 RUN echo $GOPATH
 
-RUN go install github.com/go-delve/delve/cmd/dlv@latest
+RUN go install github.com/go-delve/delve/cmd/dlv@v1.25.2
 
 COPY . /clean_web
 
