@@ -12,6 +12,7 @@ import (
 	"boilerplate-api/lib/utils"
 	"boilerplate-api/services"
 	"boilerplate-api/swagger"
+
 	"go.uber.org/fx"
 )
 
@@ -73,8 +74,8 @@ func bootstrap(
 						swagger.SwaggerInfo.Host = env.HOST
 					}
 
-					if database.ConnectionError != nil {
-						logger.Error(*database.ConnectionError)
+					if err := database.ConnectionError(); err != nil {
+						logger.Error(err)
 					}
 
 					if env.Environment == "development" || env.Environment == "production" {
