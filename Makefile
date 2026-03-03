@@ -5,25 +5,46 @@ DB_DSN="${DB_USERNAME}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}"
 # host and port used are based on docker config
 DB_DSN_DOCKER="${DB_USERNAME}:${DB_PASSWORD}@tcp(localhost:33066)/${DB_NAME}"
 
+# Traditional migrate CLI for create subcommand (unchanged)
 MIGRATE_LOCAL=migrate -path=database/migration -database ${DB_TYPE}"://"${DB_DSN} -verbose
-
 MIGRATE=docker-compose exec web ${MIGRATE_LOCAL}
+
+# Go-based migrate CLI for up/down with gap filling
+GO_MIGRATE_CLI=go run ./cmd/migrate-cli/main.go
+GO_MIGRATE_CLI_DOCKER=docker-compose exec web go run ./cmd/migrate-cli/main.go
 
 GEN_TOOL=gentool -fieldNullable -fieldWithIndexTag -fieldWithTypeTag -fieldSignable -onlyModel -outPath './database/dao' -modelPkgName 'dao'
 
 migrate:
          ifeq (migrate,$(firstword $(MAKECMDGOALS)))
            RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-           # ...and turn them into do-nothing targets
            $(eval $(RUN_ARGS):;@:)
          endif
          ifeq (create,$(firstword $(RUN_ARGS)))
            ARGS := $(wordlist 2,$(words $(RUN_ARGS)),$(RUN_ARGS))
            RUN_ARGS=create -ext sql -dir database/migration $(ARGS)
          endif
+         ifeq (up,$(firstword $(RUN_ARGS)))
+           RUN_ARGS=up
+         endif
+         ifeq (down,$(firstword $(RUN_ARGS)))
+           RUN_ARGS=down
+         endif
 migrate:
-		@echo "using database: ${DB_NAME}"
-		@if [ "$(env)" = "local" ]; then $(MIGRATE_LOCAL) $(RUN_ARGS); else $(MIGRATE) $(RUN_ARGS); fi
+	@echo "using database: ${DB_NAME}"
+	@if [ "$(RUN_ARGS)" = "up" ] || [ "$(RUN_ARGS)" = "down" ]; then \
+	   if [ "$(env)" = "local" ]; then \
+	     $(GO_MIGRATE_CLI) $(RUN_ARGS); \
+	   else \
+	     $(GO_MIGRATE_CLI_DOCKER) $(RUN_ARGS); \
+	   fi \
+	 else \
+	   if [ "$(env)" = "local" ]; then \
+	     $(MIGRATE_LOCAL) $(RUN_ARGS); \
+	   else \
+	     $(MIGRATE) $(RUN_ARGS); \
+	   fi \
+	 fi
 
 dao:
 		@command -v gentool >/dev/null 2>&1 || (echo "Installing gentool..." && go install gorm.io/gen/tools/gentool@latest)
