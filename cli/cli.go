@@ -7,5 +7,6 @@ import (
 // Module exports modules
 var Module = fx.Options(
 	fx.Provide(NewCreateSeedData),
+	fx.Provide(NewMigrate),
 	fx.Provide(NewApplication),
 )
