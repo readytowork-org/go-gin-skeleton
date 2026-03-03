@@ -8,7 +8,7 @@
 - Dependency Injection: [fx](https://github.com/uber-go/fx)
 - Routing: [gin web framework](https://gin-gonic.com)
 - Logging: [zap](https://github.com/uber-go/zap)
-- Database: ([mysql](https://gorm.io/driver/mysql) / [sqlmock](https://github.com/DATA-DOG/go-sqlmock))
+- Database: [mysql](https://gorm.io/driver/mysql) (tested with sqlmock for unit tests)
 - ORM: [gorm](https://gorm.io/docs)
 - API documentation: [gin-swagger](https://github.com/swaggo/gin-swagger)
 - Middlewares
@@ -38,7 +38,7 @@ debugger to remote application.
 | ------------------------ | -------------------------------------------------------------------------------------------- |
 | `make install`           | installs goalngci-lint and change the hooks config                                           |
 | `make run`               | runs the project using gin watcher                                                           |
-| `make migrate <options>` | runs [migrate](https://github.com/golang-migrate/migrate) command with env configs from .env |
+| `make migrate <options>` | The `up` and `down` subcommands use a custom Go-based migration runner (`cmd/migrate-cli/main.go`). The `up` command wraps the standard migrate library and automatically fills gaps left by out-of-order merges. The `down` command uses a custom rollback implementation that handles out-of-order applied migrations: it queries schema_migrations, sorts versions in descending order, and applies each .down.sql file manually. This ensures correct rollback even when migrations were applied non-sequentially. The `create` subcommand still uses the standard migrate CLI. |
 | `make crud`              | Create crud template                                                                         |
 | `make swagger`           | Run this command to generate swag docs                                                       |
 | `make dao`               | Generates go structs from database                                                           |

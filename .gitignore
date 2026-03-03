@@ -25,5 +25,3 @@ __debug_bin*
 
 
 .gcloudignore
-cmd
-cmd/*
