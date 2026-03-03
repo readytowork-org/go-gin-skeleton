@@ -2,6 +2,7 @@ package cli
 
 import (
 	"boilerplate-api/lib/config"
+
 	"github.com/manifoldco/promptui"
 )
 
@@ -21,10 +22,12 @@ type Application struct {
 func NewApplication(
 	logger config.Logger,
 	createSeedData CreateSeedData,
+	migrateCmd Migrate,
 ) Application {
 	return Application{
 		logger: logger,
 		commands: []Command{
+			migrateCmd,
 			createSeedData,
 		},
 	}
