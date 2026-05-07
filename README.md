@@ -30,7 +30,8 @@ debugger to remote application.
 - ### using Docker
   - run `docker-compose up` (with default configuration will run at `5000` and adminer runs at `5001`)
 - ### using Gin Watch
-  - run `make run`
+  - ### make sure to add go/bin path to your .bashrc/.zshrc file
+    - run `make run`
 
 ## Commands 🛳
 
