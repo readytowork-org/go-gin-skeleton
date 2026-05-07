@@ -44,13 +44,25 @@ func (f FirebaseAuthMiddleware) HandleAuth(setClaims ...SetClaims) gin.HandlerFu
 			},
 		)
 
+		var claimsError *api_errors.ErrorResponse
+		authorized := false
 		for _, setClaim := range setClaims {
-			err = setClaim(c, token.Claims)
-			if err != nil {
-				c.JSON(err.ErrorType.ToInt(), json_response.Error[string]{Error: err.Message})
-				c.Abort()
-				return
+			if err := setClaim(c, token.Claims); err == nil {
+				authorized = true
+				break
+			} else {
+				claimsError = err
 			}
+		}
+
+		if !authorized {
+			if claimsError != nil {
+				c.JSON(claimsError.ErrorType.ToInt(), json_response.Error[string]{Error: claimsError.Message})
+			} else {
+				c.JSON(http.StatusUnauthorized, json_response.Error[string]{Error: "unauthorized request"})
+			}
+			c.Abort()
+			return
 		}
 
 		c.Set(constants.UID, token.UID)
