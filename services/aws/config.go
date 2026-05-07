@@ -15,10 +15,10 @@ type AuthConfig struct {
 	secretKey string
 }
 
-// NewAWSConfig creates new config instance from default aws profile in ~/.aws/credentials file
+// NewAWSConfig creates a new config instance from the default aws profile in ~/.aws/credentials file
 func NewAWSConfig(config AuthConfig) aws.Config {
 	cfg, err := awsConfig.LoadDefaultConfig(
-		context.TODO(),
+		context.Background(),
 		awsConfig.WithCredentialsProvider(
 			credentials.NewStaticCredentialsProvider(
 				config.accessKey,
