@@ -1,4 +1,4 @@
-package aws
+package aws_services
 
 import (
 	"boilerplate-api/lib/config"

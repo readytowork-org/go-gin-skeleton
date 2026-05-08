@@ -1,4 +1,4 @@
-package aws
+package aws_services
 
 import (
 	"github.com/aws/aws-sdk-go-v2/aws"

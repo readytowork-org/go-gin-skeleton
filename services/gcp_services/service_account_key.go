@@ -1,4 +1,4 @@
-package services
+package gcp_services
 
 import (
 	"fmt"

@@ -5,7 +5,7 @@ import (
 
 	"boilerplate-api/lib/config"
 	"boilerplate-api/lib/json_response"
-	"boilerplate-api/services/gcp"
+	"boilerplate-api/services/gcp_services"
 	"cloud.google.com/go/billing/budgets/apiv1/budgetspb"
 	"google.golang.org/api/cloudbilling/v1"
 
@@ -16,14 +16,14 @@ import (
 type Controller struct {
 	logger  config.Logger
 	env     config.Env
-	service gcp.BillingService
+	service gcp_services.BillingService
 }
 
 // NewController -> constructor
 func NewController(
 	logger config.Logger,
 	env config.Env,
-	service gcp.BillingService,
+	service gcp_services.BillingService,
 ) Controller {
 	return Controller{
 		logger:  logger,

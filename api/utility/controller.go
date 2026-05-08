@@ -7,19 +7,19 @@ import (
 	"boilerplate-api/lib/config"
 	"boilerplate-api/lib/json_response"
 	"boilerplate-api/lib/utils"
-	"boilerplate-api/services/aws"
+	"boilerplate-api/services/aws_services"
 	"github.com/gin-gonic/gin"
 )
 
 type Controller struct {
 	logger   config.Logger
-	s3Bucket aws.S3BucketService
+	s3Bucket aws_services.S3BucketService
 	service  Service
 }
 
 func NewController(
 	logger config.Logger,
-	s3Bucket aws.S3BucketService,
+	s3Bucket aws_services.S3BucketService,
 	service Service,
 ) Controller {
 	return Controller{
