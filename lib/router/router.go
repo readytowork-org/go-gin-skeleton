@@ -66,7 +66,7 @@ func NewRouter(env config.Env, logger config.Logger) Router {
 
 	httpRouter.GET(
 		"/health-check", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{"data": "Demo  📺 API Up and Running"})
+			c.JSON(http.StatusOK, gin.H{"data": " 📺 API Up and Running"})
 		},
 	)
 
