@@ -32,7 +32,7 @@ func IntervalGreaterThanCondition(reqStartDate time.Time, condition time.Duratio
 	currentDate := GetCurrentTimeInJP().Truncate(24 * time.Hour)
 	requestedDate := reqStartDate.Truncate(24 * time.Hour)
 
-	if currentDate.After(requestedDate){
+	if currentDate.After(requestedDate) {
 		return false
 	}
 	if currentDate.Before(requestedDate) {

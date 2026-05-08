@@ -32,7 +32,7 @@ dao:
 swagger:
 		@command -v swag >/dev/null 2>&1 || (echo "Installing swag..." && go install github.com/swaggo/swag/cmd/swag@latest)
 		swag fmt
-		swag init --output ./swagger --parseDependency --parseInternal
+		swag init --output ./swagger --parseDependency --parseInternal --requiredByDefault
 
 crud:
 		bash automate/scripts/crud.sh
@@ -45,19 +45,7 @@ run:
 		@command -v gin >/dev/null 2>&1 || (go install github.com/codegangsta/gin@latest);
 		gin -a $(SERVER_PORT) -i -p $$(($(SERVER_PORT) + 1)) run .
 
-test-repo: TEST_NAME=$(filter-out $@,$(MAKECMDGOALS))
-test-repo:
-	go test ./tests/repository_test -v -run $(TEST_NAME)
-
-i-test-controller: TEST_NAME=$(filter-out $@,$(MAKECMDGOALS))
-i-test-controller:
-	go test ./tests/controllers_i_test -v -run $(TEST_NAME)
-
-test-controller: TEST_NAME=$(filter-out $@,$(MAKECMDGOALS))
-test-controller:
-	go test ./tests/controllers_test -v -run $(TEST_NAME)
-
-.PHONY: dao migrate create swagger test-repo lint-install
-
 context-upload:
 	bash automate/scripts/ci-upload.sh
+
+.PHONY: dao migrate create swagger test-repo lint-install context-upload
