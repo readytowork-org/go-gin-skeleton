@@ -28,7 +28,10 @@ func NewFirebaseAuthMiddleware(
 	}
 }
 
-// HandleAuth Handle handles auth requests
+// HandleAuth Handle handles auth requests.
+//
+//	 Args:
+//		SetClaims is a function that sets claims on the context
 func (f FirebaseAuthMiddleware) HandleAuth(setClaims ...SetClaims) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, err := f.getTokenFromHeader(c.GetHeader(constants.Headers.Authorization.ToString()))
