@@ -13,13 +13,13 @@ import (
 // DBTransactionMiddleware struct for transaction
 type DBTransactionMiddleware struct {
 	logger config.Logger
-	db     *config.Database
+	db     config.Database
 }
 
 // NewDBTransactionMiddleware new instance of transaction
 func NewDBTransactionMiddleware(
 	logger config.Logger,
-	db *config.Database,
+	db config.Database,
 ) DBTransactionMiddleware {
 	return DBTransactionMiddleware{
 		logger: logger,
@@ -39,9 +39,8 @@ func (m DBTransactionMiddleware) DBTransactionHandle() gin.HandlerFunc {
 			if r := recover(); r != nil {
 				if err := txHandle.Error; err != nil {
 					m.logger.Error("trx commit error: ", err)
-					_ = txHandle.Rollback()
-					panic(r)
 				}
+				txHandle.Rollback()
 			}
 		}()
 
@@ -54,7 +53,11 @@ func (m DBTransactionMiddleware) DBTransactionHandle() gin.HandlerFunc {
 				m.logger.Error("trx commit error: ", err)
 			}
 		} else {
-			m.logger.Info("rolling back transaction due to status code: ", c.Writer.Status())
+			if err := txHandle.Error; err != nil {
+				m.logger.Error("trx rollback error: ", err.Error())
+			} else {
+				m.logger.Info("rolling back transaction due to status code: ", c.Writer.Status())
+			}
 			txHandle.Rollback()
 		}
 	}
