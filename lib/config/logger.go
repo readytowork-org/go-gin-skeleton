@@ -69,7 +69,7 @@ func newLogger() *Logger {
 	case "fatal":
 		level = zapcore.FatalLevel
 	default:
-		level = zap.PanicLevel
+		level = zap.InfoLevel
 	}
 	config.Level.SetLevel(level)
 	zapLogger, _ = config.Build()
