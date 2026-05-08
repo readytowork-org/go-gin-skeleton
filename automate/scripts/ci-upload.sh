@@ -32,6 +32,9 @@ else
     exit 1
 fi
 
+echo $ORG_ID
+echo $CIRCLECI_TOKEN
+
 # Check if ORG_ID or CIRCLECI_TOKEN is empty
 if [[ -z "$CIRCLECI_TOKEN" || -z "$ORG_ID"  ]]; then
     echo "ERROR: CIRCLECI_TOKEN or ORG_ID is missing in .env."
