@@ -44,3 +44,20 @@ func MonthDate(dateString string) (time.Time, time.Time) {
 		0, 0, 0, 0, nil)
 	return firstDay, firstDay.AddDate(0, 1, 0)
 }
+
+func JPStringDateToUTC(date string, isEndTime bool) (time.Time, error) {
+	loc, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		return time.Time{}, err
+	}
+	parsedDate, err := time.ParseInLocation("2006-01-02", date, loc)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	if isEndTime {
+		parsedDate = parsedDate.Add(24 * time.Hour)
+	}
+
+	return parsedDate.UTC(), nil
+}
