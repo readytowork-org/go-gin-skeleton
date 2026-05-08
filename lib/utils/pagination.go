@@ -18,11 +18,11 @@ func BuildPagination[T IPagination](c *gin.Context) (m T) {
 
 // Pagination struct for Pagination
 type Pagination struct {
-	Sort     string `form:"sort"`
-	Keyword  string `form:"keyword"`
+	Sort     string `form:"sort" validate:"optional"`
+	Keyword  string `form:"keyword" validate:"optional"`
 	Offset   int    `form:"page,default=1"`
-	All      bool   `form:"all"`
-	PageSize int    `form:"page_size,default=10"`
+	All      bool   `form:"all" validate:"optional"`
+	PageSize int    `form:"page_size,default=10" validate:"optional"`
 }
 
 // Build builds the pagination
