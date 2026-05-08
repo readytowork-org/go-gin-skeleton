@@ -21,8 +21,8 @@ type Database struct {
 }
 
 // NewDatabase creates a new database instance
-func NewDatabase(logger Logger, dbDialect DBDialect) *Database {
-	database := &Database{}
+func NewDatabase(logger Logger, dbDialect DBDialect) Database {
+	database := Database{}
 	db, err := gorm.Open(dbDialect, &gorm.Config{Logger: logger.GetGormLogger()})
 	if err != nil {
 		_err := errors.New(

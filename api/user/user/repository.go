@@ -8,12 +8,12 @@ import (
 
 // Repository database structure
 type Repository struct {
-	db     *config.Database
+	db     config.Database
 	logger config.Logger
 }
 
 // NewRepository creates a new CUser repository
-func NewRepository(db *config.Database, logger config.Logger) Repository {
+func NewRepository(db config.Database, logger config.Logger) Repository {
 	return Repository{
 		db:     db,
 		logger: logger,
@@ -26,7 +26,7 @@ func (c Repository) WithTrx(trxHandle *gorm.DB) Repository {
 		c.logger.Error("Transaction Database not found in gin context. ")
 		return c
 	}
-	c.db = &config.Database{DB: trxHandle}
+	c.db.DB = trxHandle
 	return c
 }
 
