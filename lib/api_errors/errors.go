@@ -28,10 +28,16 @@ func (h HttpErrorType) ToInt() int {
 type ValidationError struct {
 	Field   string `json:"field"`
 	Message string `json:"message"`
-}
+} //	@name	ValidationError
 
 // ErrorResponse struct
 type ErrorResponse struct {
-	Message   string        `json:"message"`
-	ErrorType HttpErrorType `json:"error_type"`
+	Err            error              `json:"-"`
+	Message        string             `json:"message"`
+	ErrorType      HttpErrorType      `json:"error_type"`
+	ValidationErrs *[]ValidationError `json:"validation_errors,omitempty"`
+}
+
+func (r ErrorResponse) Error() string {
+	return r.Message
 }
