@@ -1,8 +1,8 @@
 package utility
 
 import (
+	"boilerplate-api/services"
 	"context"
-	"io"
 	"mime/multipart"
 	"net/http"
 	"path/filepath"
@@ -11,10 +11,6 @@ import (
 	"boilerplate-api/lib/constants"
 	"boilerplate-api/lib/utils"
 )
-
-type GcpStorageBucketService interface {
-	UploadFile(ctx context.Context, file io.Reader, fileName string) (string, error)
-}
 
 type UploadResponse struct {
 	Message    string
@@ -33,13 +29,13 @@ type Response struct {
 type Service struct {
 	logger config.Logger
 	env    config.Env
-	bucket GcpStorageBucketService
+	bucket services.GcpStorageBucketService
 }
 
 func NewService(
 	logger config.Logger,
 	env config.Env,
-	bucket GcpStorageBucketService,
+	bucket services.GcpStorageBucketService,
 ) Service {
 	return Service{
 		logger: logger,
