@@ -99,7 +99,7 @@ jobs:
       - run:
           name: Append GAR beta settings app yml
           command: |
-            echo -e "beta_settings:\n  cloud_sql_instances: $DB_HOST" >> app.yml
+            echo -e "beta_settings:\n  cloud_sql_instances: $DB_HOST" >> app.yaml
 
       - run:
           name: Initialize the environment variable file
@@ -120,7 +120,7 @@ jobs:
       - run:
           name: Initialize firebase service account key file
           command: |
-            echo "$FIREBASE_SERVICE_ACCOUNT_KEY" > serviceAccountKey.json
+            echo $FIREBASE_SERVICE_ACCOUNT_KEY | base64 --decode > serviceAccountKey.json
 
       - run:
           name: Authenticating and configuring the Google Cloud Platform
@@ -129,15 +129,15 @@ jobs:
             gcloud --quiet config set project ${GCLOUD_PROJECT_ID}
             gcloud --quiet config set compute/zone ${GCLOUD_ZONE}
 
-      - deploy:
+      - run:
           name: Deploy to Google App Engine
           command: |
             gcloud app deploy app.yaml --project $GCLOUD_PROJECT_ID  --quiet
 
-      - deploy:
-          name: Deploy CRON to Google App Engine Cloud Scheduler
+      - run:
+          name: Deploy cron job
           command: |
-            gcloud app deploy cron.yaml --quiet
+            gcloud app deploy --project ${GCLOUD_PROJECT_ID} cron.yaml --quiet
 
       - run:
           name: Delete Old versions of App Engine
@@ -151,6 +151,19 @@ jobs:
                 --service default \
                 --quiet
             done
+
+      - run:
+          name: Health check
+          command: |
+            sleep 15
+            echo "Checking health of $HOST/health-check"
+            STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$HOST/health-check")
+            if [ "$STATUS_CODE" -eq 200 ]; then
+              echo "Site is up and running."
+            else
+              echo "Site is down. Received status code: $STATUS_CODE"
+              exit 1
+            fi
 
       - slack/notify:
           event: pass
@@ -179,7 +192,7 @@ jobs:
       - run:
           name: Append GAR beta settings app yml
           command: |
-            echo -e "beta_settings:\n  cloud_sql_instances: $DB_HOST" >> app.yml
+            echo -e "beta_settings:\n  cloud_sql_instances: $DB_HOST" >> app.yaml
 
       - run:
           name: Initialize the environment variable file
@@ -200,7 +213,7 @@ jobs:
       - run:
           name: Initialize firebase service account key file
           command: |
-            echo "$FIREBASE_SERVICE_ACCOUNT_KEY" > serviceAccountKey.json
+            echo $FIREBASE_SERVICE_ACCOUNT_KEY | base64 --decode > serviceAccountKey.json
 
       - run:
           name: Authenticating and configuring the Google Cloud Platform
@@ -209,15 +222,28 @@ jobs:
             gcloud --quiet config set project ${GCLOUD_PROJECT_ID}
             gcloud --quiet config set compute/zone ${GCLOUD_ZONE}
 
-      - deploy:
+      - run:
           name: Deploy to Google App Engine
           command: |
             gcloud app deploy app.yaml --project $GCLOUD_PROJECT_ID --quiet
 
-      - deploy:
-          name: Deploy CRON to Google App Engine Cloud Scheduler
+      - run:
+          name: Deploy cron job
           command: |
-            gcloud app deploy cron.yaml --quiet
+            gcloud app deploy --project ${GCLOUD_PROJECT_ID} cron.yaml --quiet
+
+      - run:
+          name: Health check
+          command: |
+            sleep 15
+            echo "Checking health of $HOST/health-check"
+            STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$HOST/health-check")
+            if [ "$STATUS_CODE" -eq 200 ]; then
+              echo "Site is up and running."
+            else
+              echo "Site is down. Received status code: $STATUS_CODE"
+              exit 1
+            fi
 
       - slack/notify:
           event: pass
@@ -230,8 +256,8 @@ jobs:
       - jq/install
 
       - jira/notify:
-          environment: development
-          environment_type: development
+          environment: production
+          environment_type: production
           job_type: deployment
           pipeline_id: << pipeline.id >>
           pipeline_number: << pipeline.number >>
