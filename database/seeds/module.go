@@ -1,7 +1,6 @@
 package seeds
 
 import (
-	"boilerplate-api/lib/config"
 	"go.uber.org/fx"
 )
 
@@ -28,19 +27,5 @@ var Module = fx.Module(
 		//		fx.ResultTags(`group:"seeds"`),
 		//	),
 		//),
-		fx.Invoke(
-			fx.Annotate(
-				SetupSeeds,
-				fx.ParamTags(`group:"seeds"`),
-			),
-		),
 	),
 )
-
-// SetupSeeds creates new seeds
-func SetupSeeds(seeds []Seed, logger config.Logger) {
-	logger.Info("🌱 seeding data...")
-	for _, seed := range seeds {
-		seed.Run()
-	}
-}

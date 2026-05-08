@@ -24,15 +24,16 @@ var Module = fx.Options(
 	services.Module,
 	api.Module,
 	fx.Supply(config.EnvPath(".env")),
-	fx.Invoke(bootstrap),
+	fx.Invoke(fx.Annotate(bootstrap, fx.ParamTags(`group:"seeds"`))),
 )
 
 func bootstrap(
+	seeds []seeds.Seed,
 	lifecycle fx.Lifecycle,
-	handler router.Router,
+	router router.Router,
 	env config.Env,
 	logger config.Logger,
-	database *config.Database,
+	database config.Database,
 	cliApp cli.Application,
 	migrations *config.Migrations,
 ) {
@@ -74,18 +75,29 @@ func bootstrap(
 						swagger.SwaggerInfo.Host = env.HOST
 					}
 
-					if err := database.ConnectionError(); err != nil {
-						logger.Error(err)
+					if database.ConnectionError() != nil {
+						logger.Error(database.ConnectionError())
+						return
 					}
 
 					if env.Environment == "development" || env.Environment == "production" {
 						logger.Info("Migrating DB schema...")
-						migrations.MigrateUp()
+						err := migrations.MigrateUp()
+						if err != nil {
+							logger.Error("Error in migration steps: ", err.Error())
+							return
+						}
 					}
+
+					logger.Info("🌱 seeding data...")
+					for _, seed := range seeds {
+						seed.Run()
+					}
+
 					if env.ServerPort == "" {
-						_ = handler.Run()
+						_ = router.Run()
 					} else {
-						_ = handler.Run(":" + env.ServerPort)
+						_ = router.Run(":" + env.ServerPort)
 					}
 				}()
 				return nil
