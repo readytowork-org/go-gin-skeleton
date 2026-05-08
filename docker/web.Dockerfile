@@ -13,7 +13,7 @@ RUN apk add inotify-tools
 
 RUN echo $GOPATH
 
-RUN go install github.com/go-delve/delve/cmd/dlv@v1.25.2
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
 
 COPY . /clean_web
 
@@ -32,6 +32,9 @@ RUN set -x \
 RUN cp /tmp/go-migrate/migrate /usr/bin/migrate
 
 WORKDIR /clean_web
+
+RUN go install github.com/swaggo/swag/cmd/swag@latest && \
+    export PATH=$PATH:$(go env GOPATH)/bin
 
 ENV GOFLAGS -buildvcs=false
 
