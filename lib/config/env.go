@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/joho/godotenv"
 	"log"
 	"time"
 
@@ -26,6 +27,7 @@ type Env struct {
 	SentryDSN string `mapstructure:"SENTRY_DSN"`
 
 	StorageBucketName string `mapstructure:"STORAGE_BUCKET_NAME"`
+	ServiceAccountKey string `mapstructure:"SERVICE_ACCOUNT_KEY"`
 
 	AdminEmail string `mapstructure:"ADMIN_EMAIL"`
 	AdminPass  string `mapstructure:"ADMIN_PASS"`
@@ -74,6 +76,7 @@ func (p EnvPath) ToString() string {
 // NewEnv creates a new environment
 func NewEnv(envPath EnvPath) Env {
 	env := Env{}
+	_ = godotenv.Load(envPath.ToString())
 	viper.SetConfigFile(envPath.ToString())
 
 	if err := viper.ReadInConfig(); err != nil {
