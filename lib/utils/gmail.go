@@ -14,6 +14,8 @@ import (
 	"golang.org/x/text/transform"
 )
 
+const templateBasePath = "templates/emails"
+
 // ToISO2022JP Convert UTF-8 to ISO2022JP
 func ToISO2022JP(str string) ([]byte, error) {
 	reader := strings.NewReader(str)
@@ -24,7 +26,7 @@ func ToISO2022JP(str string) ([]byte, error) {
 
 // ParseTemplate to parse the template with given data
 func ParseTemplate(templateFileName string, data interface{}) (string, error) {
-	templatePath, err := filepath.Abs(fmt.Sprintf("templates/emails/%s", templateFileName))
+	templatePath, err := filepath.Abs(fmt.Sprintf("%s/%s", templateBasePath, templateFileName))
 	if err != nil {
 		return "", errors.New("invalid template name")
 	}

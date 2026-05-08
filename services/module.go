@@ -26,16 +26,16 @@ var Module = fx.Options(
 	//	func(
 	//		env config.Env,
 	//		logger config.Logger,
-	//	) GmailService {
+	//	) *GmailService {
 	//		return NewGmailService(
 	//			GmailConfig{
-	//				clientID:     env.MailClientID,
-	//				clientSecret: env.MailClientSecret,
-	//				accessToken:  env.MailAccesstoken,
-	//				refreshToken: env.MailRefreshToken,
-	//				hostURL:      env.HOST,
-	//				logger:       logger.SugaredLogger,
+	//				ClientID:     env.MailClientID,
+	//				ClientSecret: env.MailClientSecret,
+	//				AccessToken:  env.MailAccesstoken,
+	//				RefreshToken: env.MailRefreshToken,
+	//				HostURL:      env.HOST,
 	//			},
+	//			logger,
 	//		)
 	//	},
 	//),
