@@ -1,29 +1,28 @@
 include .env
 
+# DSN for Go's database driver (used by gentool)
 DB_DSN="${DB_USERNAME}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}"
-
-# host and port used are based on docker config
 DB_DSN_DOCKER="${DB_USERNAME}:${DB_PASSWORD}@tcp(localhost:33066)/${DB_NAME}"
 
-MIGRATE_LOCAL=migrate -path=database/migration -database ${DB_TYPE}"://"${DB_DSN} -verbose
-
-MIGRATE=docker-compose exec web ${MIGRATE_LOCAL}
+# Standard URL for Atlas (for use inside docker network)
+DATABASE_URL="${DB_TYPE}://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+# Standard URL for Atlas (for local connection to docker db)
+DATABASE_URL_LOCAL="${DB_TYPE}://${DB_USERNAME}:${DB_PASSWORD}@localhost:33066/${DB_NAME}"
 
 GEN_TOOL=gentool -fieldNullable -fieldWithIndexTag -fieldWithTypeTag -fieldSignable -onlyModel -outPath './database/dao' -modelPkgName 'dao'
 
+# Capture arguments passed after `migrate` target. Defaults to `apply`.
+migrate_args = $(filter-out migrate,$(MAKECMDGOALS))
+
 migrate:
-         ifeq (migrate,$(firstword $(MAKECMDGOALS)))
-           RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-           # ...and turn them into do-nothing targets
-           $(eval $(RUN_ARGS):;@:)
-         endif
-         ifeq (create,$(firstword $(RUN_ARGS)))
-           ARGS := $(wordlist 2,$(words $(RUN_ARGS)),$(RUN_ARGS))
-           RUN_ARGS=create -ext sql -dir database/migration $(ARGS)
-         endif
-migrate:
-		@echo "using database: ${DB_NAME}"
-		@if [ "$(env)" = "local" ]; then $(MIGRATE_LOCAL) $(RUN_ARGS); else $(MIGRATE) $(RUN_ARGS); fi
+		 @echo "using database: ${DB_NAME}"
+		 @if [ "$(env)" = "local" ]; then \
+			atlas migrate $(or $(migrate_args),apply) --env mysql \
+				--var "DATABASE_URL=${DATABASE_URL}"; \
+		 else \
+			docker-compose exec web atlas migrate $(or $(migrate_args),apply) --env mysql \
+				--var "DATABASE_URL=${DATABASE_URL_LOCAL}"; \
+		 fi
 
 dao:
 		@command -v gentool >/dev/null 2>&1 || (echo "Installing gentool..." && go install gorm.io/gen/tools/gentool@latest)
@@ -47,5 +46,12 @@ run:
 
 context-upload:
 	bash automate/scripts/ci-upload.sh
+
+# This is a catch-all target to prevent make from complaining
+# when we pass additional arguments to our targets, like `make migrate diff`.
+# It assumes that the extra arguments are for the script and not other make targets.
+.PHONY: %
+%:
+	@# This is a deliberate empty recipe
 
 .PHONY: dao migrate create swagger test-repo lint-install context-upload

@@ -16,7 +16,7 @@
   - Rate Limit
   - DB Transaction
 - CLI tools
-  - [migrate](https://github.com/golang-migrate/migrate): for DB migrations
+    - [atlas](https://atlasgo.io/): for DB migrations
   - [gentool](https://gorm.io/gen/): to generate dao objects from database
   - [swag](https://github.com/swaggo/swag): to generate swagger docs
   - [gin](https://github.com/codegangsta/gin): hot-reload
@@ -35,15 +35,15 @@ debugger to remote application.
 
 ## Commands 🛳
 
-| Command                  | Desc                                                                                         |
-| ------------------------ | -------------------------------------------------------------------------------------------- |
-| `make install`           | installs goalngci-lint and change the hooks config                                           |
-| `make run`               | runs the project using gin watcher                                                           |
-| `make migrate <options>` | runs [migrate](https://github.com/golang-migrate/migrate) command with env configs from .env |
-| `make crud`              | Create crud template                                                                         |
-| `make swagger`           | Run this command to generate swag docs                                                       |
-| `make dao`               | Generates go structs from database                                                           |
-| `make context-upload`    | Upload Context to Circle CI Directly                                                         |
+| Command               | Desc                                                                         |
+|-----------------------|------------------------------------------------------------------------------|
+| `make install`        | installs goalngci-lint and change the hooks config                           |
+| `make run`            | runs the project using gin watcher                                           |
+| `make migrate`        | runs [atlas](https://atlasgo.io/) migrate command with env configs from .env |
+| `make crud`           | Create crud template                                                         |
+| `make swagger`        | Run this command to generate swag docs                                       |
+| `make dao`            | Generates go structs from database                                           |
+| `make context-upload` | Upload Context to Circle CI Directly                                         |
 
 [//]: # "TODO :: Need a proper name ⬇️"
 
