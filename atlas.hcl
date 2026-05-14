@@ -31,6 +31,8 @@ env "gorm" {
 
 env "mysql" {
   url = var.DATABASE_URL
+  src = "file://database/schema.sql"
+  dev = "docker://mysql/8/dev"
   migration {
     dir = "file://database/migration"
   }

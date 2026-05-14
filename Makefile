@@ -1,5 +1,11 @@
 include .env
 
+# NOTE :: do not add new targets without discussion with the team
+# Watch out for ::
+# .PHONY: %
+    #%:
+    #	@# This is a deliberate empty recipe
+
 # DSN for Go's database driver (used by gentool)
 DB_DSN="${DB_USERNAME}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}"
 DB_DSN_DOCKER="${DB_USERNAME}:${DB_PASSWORD}@tcp(localhost:33066)/${DB_NAME}"
@@ -11,16 +17,31 @@ DATABASE_URL_LOCAL="${DB_TYPE}://${DB_USERNAME}:${DB_PASSWORD}@localhost:33066/$
 
 GEN_TOOL=gentool -fieldNullable -fieldWithIndexTag -fieldWithTypeTag -fieldSignable -onlyModel -outPath './database/dao' -modelPkgName 'dao'
 
-# Capture arguments passed after `migrate` target. Defaults to `apply`.
+# Extract all arguments passed after the 'migrate' target.
+# This allows for `make migrate apply -- --exec-order` syntax.
+# The '--' is optional but good practice.
 migrate_args = $(filter-out migrate,$(MAKECMDGOALS))
 
 migrate:
+		 @echo "NOTE: To pass options to Atlas, add them after the command. Example: make migrate apply -- --exec-order"
 		 @echo "using database: ${DB_NAME}"
 		 @if [ "$(env)" = "local" ]; then \
 			atlas migrate $(or $(migrate_args),apply) --env mysql \
 				--var "DATABASE_URL=${DATABASE_URL}"; \
 		 else \
 			docker-compose exec web atlas migrate $(or $(migrate_args),apply) --env mysql \
+				--var "DATABASE_URL=${DATABASE_URL_LOCAL}"; \
+		 fi
+
+schema_args = $(filter-out schema,$(MAKECMDGOALS))
+schema:
+		 @echo "NOTE: To pass options to Atlas, add them after the command. Example: make migrate apply -- --exec-order"
+		 @echo "using database: ${DB_NAME}"
+		 @if [ "$(env)" = "local" ]; then \
+			atlas schema $(or $(schema_args),apply) --env mysql \
+				--var "DATABASE_URL=${DATABASE_URL}"; \
+		 else \
+			docker-compose exec web atlas schema $(or $(schema_args),apply) --env mysql \
 				--var "DATABASE_URL=${DATABASE_URL_LOCAL}"; \
 		 fi
 
