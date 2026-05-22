@@ -23,7 +23,12 @@ type Router struct {
 }
 
 // NewRouter : all the routes are defined here
-func NewRouter(env config.Env, logger config.Logger, database config.Database) Router {
+func NewRouter(
+	env config.Env,
+	logger config.Logger,
+	database config.Database,
+	idempotency middlewares.IdempotencyMiddleware,
+) Router {
 	appEnv := env.Environment
 
 	if appEnv != "local" {
@@ -54,6 +59,10 @@ func NewRouter(env config.Env, logger config.Logger, database config.Database) R
 	httpRouter.Use(middlewares.RequestID())
 	httpRouter.Use(cors.New(buildCorsConfig(env)))
 	httpRouter.Use(middlewares.ErrorHandler(logger))
+	// Idempotency is mounted globally and self-gates: it only acts on POST
+	// requests carrying an Idempotency-Key header, so non-POST and untagged
+	// requests pay only a tiny method/header check.
+	httpRouter.Use(idempotency.Handle())
 
 	httpRouter.Use(
 		sentrygin.New(

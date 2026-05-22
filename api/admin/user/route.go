@@ -15,7 +15,6 @@ func SetupRoutes(
 	jwtMiddleware middlewares.JWTAuthMiddleWare,
 	trxMiddleware middlewares.DBTransactionMiddleware,
 	rateLimitMiddleware middlewares.RateLimitMiddleware,
-	idempotencyMiddleware middlewares.IdempotencyMiddleware,
 ) {
 	logger.Info(" Setting up user routes")
 	users := router.V1.Group("/users").
@@ -23,11 +22,7 @@ func SetupRoutes(
 		Use(jwtMiddleware.Handle())
 	{
 		users.GET("", userController.GetAllUsers)
-		users.POST("",
-			idempotencyMiddleware.Handle(),
-			trxMiddleware.DBTransactionHandle(),
-			userController.CreateUser,
-		)
+		users.POST("", trxMiddleware.DBTransactionHandle(), userController.CreateUser)
 		users.GET("/:id", userController.GetOneUser)
 	}
 }

@@ -115,12 +115,16 @@ and registering it in the `seeds.Module`.
 
 ## Idempotency
 
-POST endpoints can be made safely retryable by mounting
-`middlewares.IdempotencyMiddleware.Handle()` (see
-`api/admin/user/route.go` for an example). When a client sends the
-`Idempotency-Key` header, the first response is cached for `IDEMPOTENCY_TTL`
-and replayed for any subsequent request with the same key — duplicates are
-flagged with the response header `Idempotent-Replay: true`.
+The Idempotency middleware is mounted globally in `lib/router/router.go`
+so every POST route is automatically retry-safe — no per-route wiring
+required. The middleware self-gates: it only acts on POST requests that
+carry the `Idempotency-Key` header. Non-POST and untagged requests pay
+only a cheap method/header check.
+
+When a client sends `Idempotency-Key`, the first response is cached for
+`IDEMPOTENCY_TTL` and replayed for any subsequent request with the same
+key — duplicates are flagged with the response header
+`Idempotent-Replay: true`.
 
 Backend is chosen by `IDEMPOTENCY_STORE`:
 
