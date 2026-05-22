@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"boilerplate-api/lib/config"
+	"boilerplate-api/lib/middlewares"
 
 	"github.com/getsentry/sentry-go"
 	sentrygin "github.com/getsentry/sentry-go/gin"
@@ -48,7 +49,11 @@ func NewRouter(env config.Env, logger config.Logger, database config.Database) R
 
 	httpRouter := gin.Default()
 
+	// RequestID must run before anything that might log or emit errors so the
+	// request id is available in error envelopes and Sentry events.
+	httpRouter.Use(middlewares.RequestID())
 	httpRouter.Use(cors.New(buildCorsConfig(env)))
+	httpRouter.Use(middlewares.ErrorHandler(logger))
 
 	httpRouter.Use(
 		sentrygin.New(

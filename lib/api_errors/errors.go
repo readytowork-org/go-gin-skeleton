@@ -36,6 +36,9 @@ type ErrorResponse struct {
 	Message        string             `json:"message"`
 	ErrorType      HttpErrorType      `json:"error_type"`
 	ValidationErrs *[]ValidationError `json:"validation_errors,omitempty"`
+	// code is the stable machine-readable code emitted in the response envelope.
+	// Unexported so callers go through New/Wrap/WithValidation.
+	code string `json:"-"`
 }
 
 func (r ErrorResponse) Error() string {

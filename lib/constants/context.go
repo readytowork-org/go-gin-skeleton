@@ -16,6 +16,11 @@ const (
 )
 
 const (
+	// RequestID is the per-request correlation id set by the RequestID middleware.
+	RequestID = "request_id"
+)
+
+const (
 	BucketName = "bucket_name"
 )
 
