@@ -37,9 +37,22 @@ func NewRateLimitMiddleware(logger config.Logger) RateLimitMiddleware {
 	}
 }
 
+// rateLimitKey returns a stable identifier for the requester.
+// Authenticated requests are keyed by the JWT user id (set by JWTAuthMiddleWare),
+// so a single user can't dodge limits by rotating IPs (and shared NATs don't
+// punish multiple users behind one IP). Anonymous requests fall back to IP.
+func rateLimitKey(c *gin.Context) string {
+	if v, ok := c.Get(constants.UserID); ok {
+		if id, ok := v.(string); ok && id != "" {
+			return "user:" + id
+		}
+	}
+	return "ip:" + c.ClientIP()
+}
+
 func (rl RateLimitMiddleware) HandleRateLimit(limit int64, period time.Duration) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		key := c.ClientIP() // Gets cient IP Address
+		key := rateLimitKey(c)
 
 		rl.logger.Info("Setting up rate limit middleware...")
 
