@@ -11,6 +11,9 @@ server.log
 clean-gin
 __debug_bin
 gin-bin
+*.test
+coverage.out
+coverage.html
 
 #editor based
 .idea
