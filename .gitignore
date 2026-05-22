@@ -11,9 +11,12 @@ server.log
 clean-gin
 __debug_bin
 gin-bin
+q.tsv
 *.test
 coverage.out
 coverage.html
+tmp/
+build-errors.log
 
 #editor based
 .idea

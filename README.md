@@ -19,7 +19,7 @@
     - [atlas](https://atlasgo.io/): for DB migrations
   - [gentool](https://gorm.io/gen/): to generate dao objects from database
   - [swag](https://github.com/swaggo/swag): to generate swagger docs
-  - [gin](https://github.com/codegangsta/gin): hot-reload
+  - [air](https://github.com/air-verse/air): hot-reload
 
 **For Debugging 🐞** Debugger runs at `5002`. Vs code configuration is at `.vscode/launch.json` which will attach
 debugger to remote application.
@@ -67,12 +67,48 @@ debugger to remote application.
 
 ## Run CLI 🖥
 
-- Run `docker-compose exec web sh`
-- After running type `./__debug_bin cli` you will start cli application.
-- Choose the commands to run afterwards.
-- To run `docker-compose up` ( with default configuration will run at 5000 and adminer runs at 5001)
-- To run with setting up pre-commit hook `make start` ( with default configuration will run at 5000 and adminer runs at
-  5001`)
+The CLI mode is gated by `os.Args[1] == "cli"` (see `lib/utils/isCli.go`). Any
+binary built from this project enters interactive CLI mode when launched with
+that argument; otherwise it serves HTTP.
+
+### Local
+
+```sh
+go run . cli
+```
+
+### Inside Docker
+
+```sh
+docker-compose exec web sh
+./tmp/main cli       # if built via `make run` (air)
+# or
+go run . cli
+```
+
+You'll get an interactive menu (powered by `promptui`) listing available
+commands. Currently:
+
+- `CREATE_SEED_DATA` — runs the seed registry defined in `database/seeds/`.
+- `EXIT_APPLICATION` — quit.
+
+### Adding a new CLI command
+
+1. Implement the `cli.Command` interface (`Run()` + `Name()`) in a file under
+   `cli/`.
+2. Provide it via `fx.Provide(NewYourCommand)` in `cli/cli.go`.
+3. Add it to the `commands` slice in `NewApplication` (`cli/app.go`).
+
+### Seeds (non-interactive)
+
+Seeds in `database/seeds/` are also run automatically at HTTP server startup
+(see `bootstrap/bootstrap.go`). Add a new seed by implementing `seeds.Seed`
+and registering it in the `seeds.Module`.
+
+## Hot reload
+
+`make run` uses [air](https://github.com/air-verse/air); config is in
+`.air.toml`. The `tmp/` directory holds the dev binary and is gitignored.
 
 ## Implements Google Cloud Proxy by default
 

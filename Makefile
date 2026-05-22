@@ -62,8 +62,8 @@ lint-install:
 		git config core.hooksPath hooks
 
 run:
-		@command -v gin >/dev/null 2>&1 || (go install github.com/codegangsta/gin@latest);
-		gin -a $(SERVER_PORT) -i -p $$(($(SERVER_PORT) + 1)) run .
+		@command -v air >/dev/null 2>&1 || (echo "Installing air..." && go install github.com/air-verse/air@latest)
+		air
 
 context-upload:
 	bash automate/scripts/ci-upload.sh
