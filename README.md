@@ -12,9 +12,12 @@
 - ORM: [gorm](https://gorm.io/docs)
 - API documentation: [gin-swagger](https://github.com/swaggo/gin-swagger)
 - Middlewares
-  - CORS
-  - Rate Limit
-  - DB Transaction
+  - CORS (env-driven allowlist via `CORS_ALLOWED_ORIGINS`)
+  - Rate Limit (per-user when authenticated, per-IP otherwise)
+  - DB Transaction (scoped to write methods only)
+  - Request ID (`X-Request-ID`, surfaces in error envelope `trace_id`)
+  - Structured error envelope + central handler (`lib/api_errors`)
+  - Idempotency-Key (replays POST responses; MySQL or Redis backend, see below)
 - CLI tools
     - [atlas](https://atlasgo.io/): for DB migrations
   - [gentool](https://gorm.io/gen/): to generate dao objects from database
@@ -109,6 +112,43 @@ and registering it in the `seeds.Module`.
 
 `make run` uses [air](https://github.com/air-verse/air); config is in
 `.air.toml`. The `tmp/` directory holds the dev binary and is gitignored.
+
+## Idempotency
+
+POST endpoints can be made safely retryable by mounting
+`middlewares.IdempotencyMiddleware.Handle()` (see
+`api/admin/user/route.go` for an example). When a client sends the
+`Idempotency-Key` header, the first response is cached for `IDEMPOTENCY_TTL`
+and replayed for any subsequent request with the same key — duplicates are
+flagged with the response header `Idempotent-Replay: true`.
+
+Backend is chosen by `IDEMPOTENCY_STORE`:
+
+| Value     | Backend                                  | Notes                                  |
+|-----------|------------------------------------------|----------------------------------------|
+| (empty)   | Noop                                     | Disabled — middleware passes through.  |
+| `mysql`   | `idempotency_keys` table (existing DB)   | Durable; survives restarts.            |
+| `redis`   | `REDIS_ADDR`                             | Fast; native TTL. Compose includes a redis service. |
+
+The MySQL backend uses the `idempotency_keys` table created by
+`database/schema.sql` — run `make migrate` after switching to `mysql`.
+
+## Auth
+
+- `POST /api/v1/login` — issues an access/refresh token pair and persists the
+  refresh token (hashed) in `refresh_tokens`.
+- `POST /api/v1/login/refresh` — rotates the refresh token; reuse of a
+  revoked refresh token revokes all sessions for the user.
+- `POST /api/v1/logout` — revokes the supplied refresh token. Always returns
+  `200` to avoid leaking token validity.
+
+## Health probes
+
+| Path            | Behaviour                                       |
+|-----------------|-------------------------------------------------|
+| `/livez`        | Process is up — always `200`.                   |
+| `/health-check` | Pings the DB with a 2 s timeout.                |
+| `/readyz`       | Alias for `/health-check` for k8s-style probes. |
 
 ## Implements Google Cloud Proxy by default
 
