@@ -2,6 +2,9 @@ package bootstrap
 
 import (
 	"context"
+	"errors"
+	"net/http"
+	"time"
 
 	"boilerplate-api/api"
 	"boilerplate-api/cli"
@@ -15,6 +18,8 @@ import (
 
 	"go.uber.org/fx"
 )
+
+const shutdownTimeout = 15 * time.Second
 
 // Module exported for initializing application
 var Module = fx.Options(
@@ -61,6 +66,17 @@ func bootstrap(
 		return
 	}
 
+	addr := ":8080"
+	if env.ServerPort != "" {
+		addr = ":" + env.ServerPort
+	}
+
+	server := &http.Server{
+		Addr:              addr,
+		Handler:           router.Engine,
+		ReadHeaderTimeout: 10 * time.Second,
+	}
+
 	lifecycle.Append(
 		fx.Hook{
 			OnStart: func(context.Context) error {
@@ -94,15 +110,22 @@ func bootstrap(
 						seed.Run()
 					}
 
-					if env.ServerPort == "" {
-						_ = router.Run()
-					} else {
-						_ = router.Run(":" + env.ServerPort)
+					logger.Info("HTTP server listening on ", server.Addr)
+					if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+						logger.Error("HTTP server error: ", err.Error())
 					}
 				}()
 				return nil
 			},
-			OnStop: appStop,
+			OnStop: func(ctx context.Context) error {
+				logger.Info("Shutting down HTTP server...")
+				shutdownCtx, cancel := context.WithTimeout(ctx, shutdownTimeout)
+				defer cancel()
+				if err := server.Shutdown(shutdownCtx); err != nil {
+					logger.Error("HTTP server shutdown error: ", err.Error())
+				}
+				return appStop(ctx)
+			},
 		},
 	)
 }
