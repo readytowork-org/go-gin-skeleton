@@ -1,8 +1,11 @@
 package router
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"strings"
+	"time"
 
 	"boilerplate-api/lib/config"
 
@@ -45,16 +48,7 @@ func NewRouter(env config.Env, logger config.Logger) Router {
 
 	httpRouter := gin.Default()
 
-	httpRouter.Use(
-		cors.New(
-			cors.Config{
-				AllowOrigins:     []string{"*"},
-				AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "OPTIONS", "DELETE"},
-				AllowHeaders:     []string{"*"},
-				AllowCredentials: true,
-			},
-		),
-	)
+	httpRouter.Use(cors.New(buildCorsConfig(env)))
 
 	httpRouter.Use(
 		sentrygin.New(
@@ -77,4 +71,39 @@ func NewRouter(env config.Env, logger config.Logger) Router {
 		Engine: httpRouter,
 		V1:     v1,
 	}
+}
+
+// buildCorsConfig produces a CORS policy from CORS_ALLOWED_ORIGINS.
+// A wildcard cannot be combined with credentials per the CORS spec, so when no
+// origins are configured we fall back to AllowAllOrigins without credentials.
+func buildCorsConfig(env config.Env) cors.Config {
+	cfg := cors.Config{
+		AllowMethods: []string{"PUT", "PATCH", "GET", "POST", "OPTIONS", "DELETE"},
+		AllowHeaders: []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
+	}
+
+	origins := splitAndTrim(env.CorsAllowedOrigins)
+	if len(origins) == 0 {
+		cfg.AllowAllOrigins = true
+		cfg.AllowCredentials = false
+		return cfg
+	}
+
+	cfg.AllowOrigins = origins
+	cfg.AllowCredentials = true
+	return cfg
+}
+
+func splitAndTrim(s string) []string {
+	if s == "" {
+		return nil
+	}
+	parts := strings.Split(s, ",")
+	out := make([]string, 0, len(parts))
+	for _, p := range parts {
+		if t := strings.TrimSpace(p); t != "" {
+			out = append(out, t)
+		}
+	}
+	return out
 }

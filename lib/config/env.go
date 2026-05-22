@@ -26,6 +26,8 @@ type Env struct {
 
 	SentryDSN string `mapstructure:"SENTRY_DSN"`
 
+	CorsAllowedOrigins string `mapstructure:"CORS_ALLOWED_ORIGINS"`
+
 	StorageBucketName string `mapstructure:"STORAGE_BUCKET_NAME"`
 	ServiceAccountKey string `mapstructure:"SERVICE_ACCOUNT_KEY"`
 
