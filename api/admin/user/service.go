@@ -6,11 +6,11 @@ import (
 )
 
 type Service struct {
-	repository Repository
+	repository UserRepository
 }
 
 // NewService Creates New user service
-func NewService(repository Repository) Service {
+func NewService(repository UserRepository) Service {
 	return Service{
 		repository: repository,
 	}
