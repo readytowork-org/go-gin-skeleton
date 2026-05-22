@@ -13,5 +13,4 @@ type CreateUserRequestData struct {
 // GetUserResponse Dtos for CUser model
 type GetUserResponse struct {
 	user.CUser
-	Password string
 }
