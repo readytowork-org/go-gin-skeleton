@@ -1,8 +1,10 @@
 package auth
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"boilerplate-api/api/admin/user"
@@ -19,15 +21,14 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-// FIXME :: refactor
-
 // JwtAuthController struct
 type JwtAuthController struct {
-	logger      config.Logger
-	userService user.Service
-	jwtService  auth.JWTAuthService
-	env         config.Env
-	validator   request_validator.Validator
+	logger       config.Logger
+	userService  user.Service
+	jwtService   auth.JWTAuthService
+	env          config.Env
+	validator    request_validator.Validator
+	refreshTokens RefreshTokenRepository
 }
 
 // NewJwtAuthController constructor
@@ -37,185 +38,156 @@ func NewJwtAuthController(
 	jwtService auth.JWTAuthService,
 	env config.Env,
 	validator request_validator.Validator,
+	refreshTokens RefreshTokenRepository,
 ) JwtAuthController {
 	return JwtAuthController{
-		logger:      logger,
-		userService: userService,
-		jwtService:  jwtService,
-		env:         env,
-		validator:   validator,
+		logger:        logger,
+		userService:   userService,
+		jwtService:    jwtService,
+		env:           env,
+		validator:     validator,
+		refreshTokens: refreshTokens,
 	}
+}
+
+// issueAccessAndRefresh signs a fresh access+refresh pair for the given user
+// and persists the refresh token. Callers MUST treat any error here as a 500.
+func (cc JwtAuthController) issueAccessAndRefresh(userID uint32) (accessTok, refreshTok string, accessExpiresAt time.Time, err error) {
+	idStr := fmt.Sprintf("%v", userID)
+	accessExpiresAt = time.Now().Add(time.Minute * time.Duration(cc.env.JwtAccessTokenExpiresAt))
+	refreshExpiresAt := time.Now().Add(time.Hour * time.Duration(cc.env.JwtRefreshTokenExpiresAt))
+
+	accessClaims := auth.JWTClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(accessExpiresAt),
+			ID:        idStr,
+		},
+	}
+	if accessTok, err = cc.jwtService.GenerateToken(accessClaims, cc.env.JwtAccessSecret); err != nil {
+		return
+	}
+
+	refreshClaims := auth.JWTClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(refreshExpiresAt),
+			ID:        idStr,
+		},
+	}
+	if refreshTok, err = cc.jwtService.GenerateToken(refreshClaims, cc.env.JwtRefreshSecret); err != nil {
+		return
+	}
+
+	if err = cc.refreshTokens.Store(userID, refreshTok, refreshExpiresAt); err != nil {
+		return
+	}
+	return
 }
 
 func (cc JwtAuthController) LoginUserWithJWT(c *gin.Context) {
 	reqData := JWTLoginRequestData{}
-	// Bind the request payload to a reqData struct
 	if err := c.ShouldBindJSON(&reqData); err != nil {
-		cc.logger.Error("Error [ShouldBindJSON] : ", err.Error())
-		c.JSON(
-			http.StatusBadRequest, json_response.Error[string]{
-				Error:   err.Error(),
-				Message: "Failed to bind request data",
-			},
-		)
+		api_errors.RespondError(c, api_errors.Wrap(err, http.StatusBadRequest, api_errors.CodeBadRequest, "Failed to bind request data"))
 		return
 	}
 
-	// validating using custom validator
 	if validationErr := cc.validator.Struct(reqData); validationErr != nil {
-		cc.logger.Error("[Validate Struct] Validation error: ", validationErr.Error())
-		c.JSON(
-			http.StatusUnprocessableEntity, json_response.Error[[]api_errors.ValidationError]{
-				Message: "Invalid input information",
-				Error:   cc.validator.GenerateValidationResponse(validationErr),
-			},
-		)
+		api_errors.RespondError(c, api_errors.WithValidation(cc.validator.GenerateValidationResponse(validationErr), "Invalid input information"))
 		return
 	}
 
-	// Check if the user exists with provided email address
 	userData, err := cc.userService.GetOneUserWithEmail(reqData.Email)
 	if err != nil {
-		c.JSON(
-			http.StatusBadRequest, json_response.Error[string]{
-				Error:   "Failed to Login",
-				Message: "Invalid user credentials",
-			},
-		)
+		api_errors.RespondError(c, api_errors.New(http.StatusUnauthorized, api_errors.CodeUnauthorized, "Invalid user credentials"))
 		return
 	}
 
-	// Check if the password is correct
-	// Thus password is encrypted and saved in DB, comparing plain text with its hash
-	isValidPassword := utils.CompareHashAndPlainPassword(userData.Password, reqData.Password)
-	if !isValidPassword {
-		cc.logger.Error("[CompareHashAndPassword] hash and plain password does not match")
-		c.JSON(
-			http.StatusBadRequest, json_response.Error[string]{
-				Error:   "Failed to Login",
-				Message: "Invalid user credentials",
-			},
-		)
+	if !utils.CompareHashAndPlainPassword(userData.Password, reqData.Password) {
+		api_errors.RespondError(c, api_errors.New(http.StatusUnauthorized, api_errors.CodeUnauthorized, "Invalid user credentials"))
 		return
 	}
 
-	// Create a new JWT access claims object
-	accessClaims := auth.JWTClaims{
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(cc.env.JwtAccessTokenExpiresAt))),
-			ID:        fmt.Sprintf("%v", userData.ID),
-		},
-		//Add other claims
-	}
-
-	// Create a new JWT Access token using the claims and the secret key
-	accessToken, tokenErr := cc.jwtService.GenerateToken(accessClaims, cc.env.JwtAccessSecret)
-	if tokenErr != nil {
-		cc.logger.Error("[SignedString] Error getting token: ", tokenErr.Error())
-		c.JSON(
-			http.StatusInternalServerError, json_response.Error[string]{
-				Error:   tokenErr.Error(),
-				Message: "Failed to Login",
-			},
-		)
+	accessTok, refreshTok, _, issueErr := cc.issueAccessAndRefresh(userData.ID)
+	if issueErr != nil {
+		api_errors.RespondError(c, api_errors.Wrap(issueErr, http.StatusInternalServerError, api_errors.CodeInternal, "Failed to issue tokens"))
 		return
 	}
 
-	// Create a new JWT refresh claims object
-	refreshClaims := auth.JWTClaims{
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * time.Duration(cc.env.JwtRefreshTokenExpiresAt))),
-			ID:        fmt.Sprintf("%v", userData.ID),
-		},
-	}
-
-	// Create a new JWT Refresh token using the claims and the secret key
-	refreshToken, refreshTokenErr := cc.jwtService.GenerateToken(refreshClaims, cc.env.JwtRefreshSecret)
-	if refreshTokenErr != nil {
-		cc.logger.Error("[SignedString] Error getting token: ", refreshTokenErr.Error())
-		c.JSON(
-			http.StatusInternalServerError, json_response.Error[string]{
-				Error:   refreshTokenErr.Error(),
-				Message: "Failed to Login",
-			},
-		)
-		return
-	}
-
-	data := types.MapString{
+	c.JSON(http.StatusOK, json_response.Data[types.MapString]{Data: types.MapString{
 		"user":          userData,
-		"access_token":  accessToken,
-		"refresh_token": refreshToken,
-	}
-
-	c.JSON(http.StatusOK, json_response.Data[types.MapString]{Data: data})
+		"access_token":  accessTok,
+		"refresh_token": refreshTok,
+	}})
 }
 
+// RefreshJwtToken rotates the caller's refresh token: the supplied token is
+// validated and revoked, and a fresh access+refresh pair is issued and stored.
+// Re-use of a revoked token is rejected with 401 (defence against token theft).
 func (cc JwtAuthController) RefreshJwtToken(c *gin.Context) {
-	// Get the token from the request header
 	header := c.GetHeader(constants.Headers.Authorization.ToString())
 
 	tokenString, err := cc.jwtService.GetTokenFromHeader(header)
 	if err != nil {
-		cc.logger.Error("Error getting token from header: ", err.Message)
-		c.JSON(
-			http.StatusUnauthorized, json_response.Error[string]{
-				Error:   err.Message,
-				Message: "Something went wrong",
-			},
-		)
+		api_errors.RespondError(c, api_errors.New(http.StatusUnauthorized, api_errors.CodeUnauthorized, err.Message))
 		return
 	}
 
 	parsedToken, parseErr := cc.jwtService.ParseAndVerifyToken(tokenString, cc.env.JwtRefreshSecret)
 	if parseErr != nil {
-		cc.logger.Error("Error parsing token: ", parseErr.Message)
-		c.JSON(
-			http.StatusUnauthorized, json_response.Error[string]{
-				Error:   parseErr.Message,
-				Message: "Something went wrong",
-			},
-		)
+		api_errors.RespondError(c, api_errors.New(http.StatusUnauthorized, api_errors.CodeUnauthorized, parseErr.Message))
 		return
 	}
 
 	claims, verifyErr := cc.jwtService.RetrieveClaims(parsedToken)
 	if verifyErr != nil {
-		cc.logger.Error("Error verifying token: ", verifyErr.Message)
-		c.JSON(
-			http.StatusUnauthorized, json_response.Error[string]{
-				Error:   verifyErr.Message,
-				Message: "Something went wrong",
-			},
-		)
+		api_errors.RespondError(c, api_errors.New(http.StatusUnauthorized, api_errors.CodeUnauthorized, verifyErr.Message))
 		return
 	}
 
-	// Create a new JWT Access claims
-	accessClaims := auth.JWTClaims{
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(cc.env.JwtAccessTokenExpiresAt))),
-			ID:        fmt.Sprintf("%v", claims.ID),
-		},
-		// Add other claims
-	}
-
-	// Create a new JWT token using the claims and the secret key
-	accessToken, tokenErr := cc.jwtService.GenerateToken(accessClaims, cc.env.JwtAccessSecret)
-	if tokenErr != nil {
-		cc.logger.Error("[SignedString] Error getting token: ", tokenErr.Error())
-		c.JSON(
-			http.StatusInternalServerError, json_response.Error[string]{
-				Message: tokenErr.Error(),
-			},
-		)
+	stored, lookupErr := cc.refreshTokens.FindActive(tokenString)
+	if lookupErr != nil {
+		if errors.Is(lookupErr, ErrRefreshTokenNotFound) || errors.Is(lookupErr, ErrRefreshTokenRevoked) {
+			// If the token parsed but isn't in the active set, treat it as
+			// compromise: revoke every refresh token for the claimed user.
+			if userID, convErr := strconv.ParseUint(claims.ID, 10, 32); convErr == nil {
+				_ = cc.refreshTokens.RevokeAllForUser(uint32(userID))
+			}
+			api_errors.RespondError(c, api_errors.New(http.StatusUnauthorized, api_errors.CodeUnauthorized, "Invalid refresh token"))
+			return
+		}
+		api_errors.RespondError(c, api_errors.Wrap(lookupErr, http.StatusInternalServerError, api_errors.CodeInternal, "Failed to validate refresh token"))
 		return
 	}
 
-	data := types.MapString{
-		"access_token": accessToken,
-		"expires_at":   accessClaims.ExpiresAt,
+	if err := cc.refreshTokens.Revoke(stored.ID); err != nil {
+		api_errors.RespondError(c, api_errors.Wrap(err, http.StatusInternalServerError, api_errors.CodeInternal, "Failed to rotate refresh token"))
+		return
 	}
 
-	c.JSON(http.StatusOK, json_response.Data[types.MapString]{Data: data})
+	accessTok, refreshTok, accessExp, issueErr := cc.issueAccessAndRefresh(stored.UserID)
+	if issueErr != nil {
+		api_errors.RespondError(c, api_errors.Wrap(issueErr, http.StatusInternalServerError, api_errors.CodeInternal, "Failed to issue tokens"))
+		return
+	}
+
+	c.JSON(http.StatusOK, json_response.Data[types.MapString]{Data: types.MapString{
+		"access_token":  accessTok,
+		"refresh_token": refreshTok,
+		"expires_at":    accessExp,
+	}})
+}
+
+// Logout revokes the refresh token supplied in the Authorization header.
+// Always returns 200 to avoid leaking token validity to clients.
+func (cc JwtAuthController) Logout(c *gin.Context) {
+	header := c.GetHeader(constants.Headers.Authorization.ToString())
+	tokenString, err := cc.jwtService.GetTokenFromHeader(header)
+	if err != nil {
+		c.JSON(http.StatusOK, json_response.Message{Msg: "Logged out"})
+		return
+	}
+
+	if stored, lookupErr := cc.refreshTokens.FindActive(tokenString); lookupErr == nil {
+		_ = cc.refreshTokens.Revoke(stored.ID)
+	}
+	c.JSON(http.StatusOK, json_response.Message{Msg: "Logged out"})
 }

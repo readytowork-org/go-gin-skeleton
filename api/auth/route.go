@@ -47,4 +47,6 @@ func SetupRoutes(
 		jwt.POST("", jwtController.LoginUserWithJWT)
 		jwt.POST("/refresh", jwtController.RefreshJwtToken)
 	}
+
+	router.V1.POST("/logout", jwtController.Logout)
 }
