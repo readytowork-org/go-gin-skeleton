@@ -22,7 +22,7 @@ type Router struct {
 }
 
 // NewRouter : all the routes are defined here
-func NewRouter(env config.Env, logger config.Logger) Router {
+func NewRouter(env config.Env, logger config.Logger, database config.Database) Router {
 	appEnv := env.Environment
 
 	if appEnv != "local" {
@@ -59,10 +59,31 @@ func NewRouter(env config.Env, logger config.Logger) Router {
 	)
 
 	httpRouter.GET(
-		"/health-check", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{"data": " 📺 API Up and Running"})
+		"/livez", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{"data": "alive"})
 		},
 	)
+
+	healthCheck := func(c *gin.Context) {
+		if database.DB == nil {
+			c.JSON(http.StatusServiceUnavailable, gin.H{"status": "unavailable", "error": "db not initialized"})
+			return
+		}
+		sqlDB, err := database.DB.DB()
+		if err != nil {
+			c.JSON(http.StatusServiceUnavailable, gin.H{"status": "unavailable", "error": err.Error()})
+			return
+		}
+		ctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Second)
+		defer cancel()
+		if err := sqlDB.PingContext(ctx); err != nil {
+			c.JSON(http.StatusServiceUnavailable, gin.H{"status": "unavailable", "error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"data": " 📺 API Up and Running", "db": "ok"})
+	}
+	httpRouter.GET("/health-check", healthCheck)
+	httpRouter.GET("/readyz", healthCheck)
 
 	api := httpRouter.Group("/api")
 	v1 := api.Group("/v1")
