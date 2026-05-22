@@ -9,5 +9,6 @@ var Module = fx.Options(
 	fx.Provide(NewDBTransactionMiddleware),
 	fx.Provide(NewRateLimitMiddleware),
 	fx.Provide(NewJWTAuthMiddleWare),
+	fx.Provide(NewIdempotencyMiddleware),
 	//fx.Provide(NewFirebaseAuthMiddleware),
 )

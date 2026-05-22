@@ -15,6 +15,23 @@ CREATE TABLE IF NOT EXISTS `users`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
+-- Idempotency cache for replaying responses to retried writes. The middleware
+-- reads/writes this table; an out-of-band sweeper should purge rows where
+-- expires_at < NOW() to bound table size.
+CREATE TABLE IF NOT EXISTS `idempotency_keys`
+(
+    `route`      VARCHAR(255) NOT NULL,
+    `key`        VARCHAR(255) NOT NULL,
+    `status`     INT          NOT NULL,
+    `headers`    TEXT         NULL,
+    `body`       BLOB         NULL,
+    `expires_at` DATETIME     NOT NULL,
+    `created_at` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`route`, `key`),
+    INDEX `IDX_idem_expires` (`expires_at`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
 -- Refresh tokens are stored as SHA-256 hashes so a DB leak doesn't yield
 -- usable tokens. Rotation: each /auth/refresh issues a new pair and marks the
 -- previous row revoked_at = NOW(). Logout marks revoked_at on a single row.

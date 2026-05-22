@@ -3,6 +3,7 @@ package lib
 import (
 	"boilerplate-api/lib/auth"
 	"boilerplate-api/lib/config"
+	"boilerplate-api/lib/idempotency"
 	"boilerplate-api/lib/middlewares"
 	"boilerplate-api/lib/request_validator"
 	"boilerplate-api/lib/router"
@@ -13,6 +14,7 @@ var Module = fx.Module(
 	"internal",
 	config.Module,
 	middlewares.Module,
+	idempotency.Module,
 	fx.Options(
 		fx.Provide(
 			router.NewRouter,

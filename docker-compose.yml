@@ -52,5 +52,15 @@ services:
     ports:
       - ${ADMINER_PORT}:8080
 
+  # Optional: only needed when IDEMPOTENCY_STORE=redis. Comment out if unused.
+  redis:
+    image: redis:7-alpine
+    container_name: boilerplate-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - boilerplate_redis:/data
+
 volumes:
   boilerplate_db:
+  boilerplate_redis:
