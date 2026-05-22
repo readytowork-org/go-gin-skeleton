@@ -27,11 +27,26 @@ func NewDBTransactionMiddleware(
 	}
 }
 
+// isWriteMethod reports whether the HTTP method mutates state and therefore
+// warrants a DB transaction. GET/HEAD/OPTIONS are pure reads and skip Begin.
+func isWriteMethod(method string) bool {
+	switch method {
+	case http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete:
+		return true
+	}
+	return false
+}
+
 // DBTransactionHandle It setup the database transaction middleware
 func (m DBTransactionMiddleware) DBTransactionHandle() gin.HandlerFunc {
 	m.logger.Info("setting up database transaction middleware")
 
 	return func(c *gin.Context) {
+		if !isWriteMethod(c.Request.Method) {
+			c.Next()
+			return
+		}
+
 		txHandle := m.db.DB.Begin()
 		m.logger.Info("beginning database transaction")
 
