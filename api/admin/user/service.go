@@ -2,7 +2,15 @@ package user
 
 import (
 	"boilerplate-api/api/user/user"
+	"errors"
+
 	"gorm.io/gorm"
+)
+
+var (
+	ErrPasswordMismatch   = errors.New("password and confirm password do not match")
+	ErrEmailAlreadyExists = errors.New("user with this email already exists")
+	ErrPhoneAlreadyExists = errors.New("user with this phone already exists")
 )
 
 type Service struct {
@@ -22,10 +30,25 @@ func (c Service) WithTrx(trxHandle *gorm.DB) Service {
 	return c
 }
 
-// CreateUser to create the CreateUser
-func (c Service) CreateUser(user user.CUser) error {
-	err := c.repository.Create(user)
-	return err
+// CreateUser validates the request and creates a new user. Duplicate email or phone and password mismatches are reported via sentinel errors so callers can distinguish them with errors.Is.
+func (c Service) CreateUser(req CreateUserRequestData) error {
+	if req.Password != req.ConfirmPassword {
+		return ErrPasswordMismatch
+	}
+
+	if _, err := c.repository.GetOneUserWithEmail(req.Email); err == nil {
+		return ErrEmailAlreadyExists
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return err
+	}
+
+	if _, err := c.repository.GetOneUserWithPhone(req.Phone); err == nil {
+		return ErrPhoneAlreadyExists
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return err
+	}
+
+	return c.repository.Create(req.CUser)
 }
 
 // GetAllUsers to get all the CreateUser
