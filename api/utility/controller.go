@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"boilerplate-api/lib/api_errors"
 	"boilerplate-api/lib/config"
-	"boilerplate-api/lib/json_response"
 	"boilerplate-api/lib/utils"
 	"boilerplate-api/services/aws_services"
 	"github.com/gin-gonic/gin"
@@ -36,31 +36,19 @@ func NewController(
 //	@Produce		application/json
 //	@Param			file	formData	file		true	"Upload File"
 //	@Success		200		{object}	Response	"File Uploaded Successfully"
-//	@Failure		400		{object}	json_response.Error[string]
+//	@Failure		400		{object}	api_errors.Envelope
 //	@Router			/api/v1/utils/file-upload [post]
 //	@Id				FileUpload
 func (uc Controller) FileUploadHandler(ctx *gin.Context) {
 	file, uploadFile, err := ctx.Request.FormFile("file")
 	if err != nil {
-		uc.logger.Error("Error Get File from request :: ", err.Error())
-		ctx.JSON(
-			http.StatusBadRequest, json_response.Error[string]{
-				Error:   err.Error(),
-				Message: "Failed to get file from request",
-			},
-		)
+		api_errors.RespondError(ctx, api_errors.Wrap(err, http.StatusBadRequest, api_errors.CodeBadRequest, "Failed to get file from request"))
 		return
 	}
 
 	message, response, err := uc.service.UploadImage(file, uploadFile)
 	if err != nil {
-		uc.logger.Error("Error Upload File from request :: ", err.Error())
-		ctx.JSON(
-			message.StatusCode, json_response.Error[string]{
-				Error:   err.Error(),
-				Message: message.Message,
-			},
-		)
+		api_errors.RespondError(ctx, api_errors.Wrap(err, message.StatusCode, api_errors.CodeInternal, message.Message))
 		return
 	}
 
@@ -80,21 +68,13 @@ func (uc Controller) FileUploadHandler(ctx *gin.Context) {
 func (uc Controller) GetSignedUrl(ctx *gin.Context) {
 	imageUrl := ctx.Query("image_url")
 	if imageUrl == "" {
-		ctx.JSON(
-			http.StatusBadRequest, json_response.Error[string]{
-				Message: "Image Url is invalid",
-			},
-		)
+		api_errors.RespondError(ctx, api_errors.New(http.StatusBadRequest, api_errors.CodeBadRequest, "Image Url is invalid"))
+		return
 	}
 
 	signedUrl, err := uc.service.GetSignedUrl(imageUrl)
 	if err != nil {
-		uc.logger.Error("Error Failed to convert signed url:", err.Error())
-		ctx.JSON(
-			http.StatusOK, json_response.Error[string]{
-				Message: "Error Failed to convert signed url",
-			},
-		)
+		api_errors.RespondError(ctx, api_errors.Wrap(err, http.StatusInternalServerError, api_errors.CodeInternal, "Failed to convert signed url"))
 		return
 	}
 
@@ -110,25 +90,12 @@ type Input struct {
 func (uc Controller) FileUploadS3Handler(ctx *gin.Context) {
 	file, fileHeader, err := ctx.Request.FormFile("file")
 	if err != nil {
-		uc.logger.Error("Error Get File from request: ", err.Error())
-		ctx.JSON(
-			http.StatusBadRequest, json_response.Error[string]{
-				Error:   err.Error(),
-				Message: "Failed to get file from request",
-			},
-		)
+		api_errors.RespondError(ctx, api_errors.Wrap(err, http.StatusBadRequest, api_errors.CodeBadRequest, "Failed to get file from request"))
 		return
 	}
 	var input Input
-	err = ctx.ShouldBind(&input)
-	if err != nil {
-		uc.logger.Error("Error Failed to bind input:: ", err.Error())
-		ctx.JSON(
-			http.StatusBadRequest, json_response.Error[string]{
-				Error:   err.Error(),
-				Message: "Failed to bind",
-			},
-		)
+	if err := ctx.ShouldBind(&input); err != nil {
+		api_errors.RespondError(ctx, api_errors.Wrap(err, http.StatusBadRequest, api_errors.CodeBadRequest, "Failed to bind"))
 		return
 	}
 
@@ -138,13 +105,7 @@ func (uc Controller) FileUploadS3Handler(ctx *gin.Context) {
 
 	uploadedFileURL, err := uc.s3Bucket.UploadToS3(file, fileHeader, originalFileNamePath)
 	if err != nil {
-		uc.logger.Error("Error Failed to upload File:: ", err.Error())
-		ctx.JSON(
-			http.StatusBadRequest, json_response.Error[string]{
-				Error:   err.Error(),
-				Message: "Failed to upload file to s3 bucket",
-			},
-		)
+		api_errors.RespondError(ctx, api_errors.Wrap(err, http.StatusBadRequest, api_errors.CodeBadRequest, "Failed to upload file to s3 bucket"))
 		return
 	}
 

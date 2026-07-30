@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"net/http"
 
 	"boilerplate-api/lib/api_errors"
@@ -43,9 +44,10 @@ func NewController(
 // @Produce		application/json
 // @Param			data	body		CreateUserRequestData	true	"Enter JSON"
 // @Success		200		{object}	json_response.Message	"CUser Created Successfully"
-// @Failure		400		{object}	json_response.Error[string]
-// @Failure		422		{object}	json_response.Error[[]api_errors.ValidationError]
-// @Failure		500		{object}	json_response.Error[string]
+// @Failure		400		{object}	api_errors.Envelope
+// @Failure		409		{object}	api_errors.Envelope
+// @Failure		422		{object}	api_errors.Envelope
+// @Failure		500		{object}	api_errors.Envelope
 // @Router			/api/v1/users [post]
 // @Id				CreateUser
 func (cc Controller) CreateUser(c *gin.Context) {
@@ -53,66 +55,26 @@ func (cc Controller) CreateUser(c *gin.Context) {
 	trx := c.MustGet(constants.DBTransaction).(*gorm.DB)
 
 	if err := c.ShouldBindJSON(&reqData); err != nil {
-		cc.logger.Error("Error [CUser] (ShouldBindJson) : ", err)
-		c.JSON(
-			http.StatusBadRequest, json_response.Error[string]{
-				Error:   err.Error(),
-				Message: "Failed to bind user data",
-			},
-		)
+		api_errors.RespondError(c, api_errors.Wrap(err, http.StatusBadRequest, api_errors.CodeBadRequest, "Failed to bind user data"))
 		return
 	}
 	if validationErr := cc.validator.Struct(reqData); validationErr != nil {
-		c.JSON(
-			http.StatusUnprocessableEntity, json_response.Error[[]api_errors.ValidationError]{
-				Error:   cc.validator.GenerateValidationResponse(validationErr),
-				Message: "Invalid input information",
-			},
-		)
+		api_errors.RespondError(c, api_errors.WithValidation(cc.validator.GenerateValidationResponse(validationErr), "Invalid input information"))
 		return
 	}
 
-	if reqData.Password != reqData.ConfirmPassword {
-		cc.logger.Error("Password and confirm password not matching : ")
-		c.JSON(
-			http.StatusBadRequest, json_response.Error[string]{
-				Error:   "Failed to create CUser",
-				Message: "Password and confirm password should be same.",
-			},
-		)
-		return
-	}
-
-	if _, err := cc.userService.GetOneUserWithEmail(reqData.Email); err != nil {
-		cc.logger.Error("Error [CUser] [db CUser]: CUser with this email already exists")
-		c.JSON(
-			http.StatusBadRequest, json_response.Error[string]{
-				Error:   "Failed to create CUser",
-				Message: "CUser with this email already exists",
-			},
-		)
-		return
-	}
-
-	if _, err := cc.userService.GetOneUserWithPhone(reqData.Phone); err != nil {
-		cc.logger.Error("Error [db GetOneUserWithPhone]: CUser with this phone already exists")
-		c.JSON(
-			http.StatusBadRequest, json_response.Error[string]{
-				Error:   "Failed to create CUser",
-				Message: "CUser with this phone already exists",
-			},
-		)
-		return
-	}
-
-	if err := cc.userService.WithTrx(trx).CreateUser(reqData.CUser); err != nil {
-		cc.logger.Error("Error [CUser] [db CUser]: ", err.Error())
-		c.JSON(
-			http.StatusInternalServerError, json_response.Error[string]{
-				Error:   err.Error(),
-				Message: "Failed to create CUser",
-			},
-		)
+	if err := cc.userService.WithTrx(trx).CreateUser(reqData); err != nil {
+		switch {
+		case errors.Is(err, ErrPasswordMismatch):
+			api_errors.RespondError(c, api_errors.New(http.StatusBadRequest, api_errors.CodeBadRequest, "Password and confirm password should be same."))
+		case errors.Is(err, ErrEmailAlreadyExists):
+			api_errors.RespondError(c, api_errors.New(http.StatusConflict, api_errors.CodeConflict, "User with this email already exists"))
+		case errors.Is(err, ErrPhoneAlreadyExists):
+			api_errors.RespondError(c, api_errors.New(http.StatusConflict, api_errors.CodeConflict, "User with this phone already exists"))
+		default:
+			cc.logger.Error("Error [CreateUser]: ", err.Error())
+			api_errors.RespondError(c, api_errors.Wrap(err, http.StatusInternalServerError, api_errors.CodeInternal, "Failed to create user"))
+		}
 		return
 	}
 
@@ -130,7 +92,7 @@ func (cc Controller) CreateUser(c *gin.Context) {
 // @Produce		application/json
 // @Param			pagination	query		Pagination	false	"query param"
 // @Success		200			{object}	json_response.DataCount[GetUserResponse]
-// @Failure		500			{object}	json_response.Error[string]
+// @Failure		500			{object}	api_errors.Envelope
 // @Router			/api/v1/users [get]
 // @Id				GetAllUsers
 func (cc Controller) GetAllUsers(c *gin.Context) {
@@ -138,13 +100,7 @@ func (cc Controller) GetAllUsers(c *gin.Context) {
 
 	users, count, err := cc.userService.GetAllUsers(*pagination)
 	if err != nil {
-		cc.logger.Error("Error finding user records", err.Error())
-		c.JSON(
-			http.StatusInternalServerError, json_response.Error[string]{
-				Error:   err.Error(),
-				Message: "Failed to get users data",
-			},
-		)
+		api_errors.RespondError(c, api_errors.Wrap(err, http.StatusInternalServerError, api_errors.CodeInternal, "Failed to get users data"))
 		return
 	}
 
@@ -162,31 +118,19 @@ func (cc Controller) GetAllUsers(c *gin.Context) {
 // @Security		Bearer
 // @Produce		application/json
 // @Success		200	{object}	json_response.Data[GetUserResponse]
-// @Failure		500	{object}	json_response.Error[string]
+// @Failure		500	{object}	api_errors.Envelope
 // @Router			/api/v1/{id} [get]
 // @Id				GetOneUser
 func (cc Controller) GetOneUser(c *gin.Context) {
 	userID, errResponse := utils.StringToInt64(c.Param("id"))
 	if errResponse != nil {
-		cc.logger.Error("Error finding user", errResponse.Message)
-		c.JSON(
-			http.StatusInternalServerError, json_response.Error[string]{
-				Error:   errResponse.Message,
-				Message: "Failed to get user",
-			},
-		)
+		api_errors.RespondError(c, api_errors.New(http.StatusInternalServerError, api_errors.CodeInternal, errResponse.Message))
 		return
 	}
 
 	user, err := cc.userService.GetOneUser(userID)
 	if err != nil {
-		cc.logger.Error("Error finding user", err.Error())
-		c.JSON(
-			http.StatusInternalServerError, json_response.Error[string]{
-				Error:   err.Error(),
-				Message: "Failed to get user",
-			},
-		)
+		api_errors.RespondError(c, api_errors.Wrap(err, http.StatusInternalServerError, api_errors.CodeInternal, "Failed to get user"))
 		return
 	}
 
