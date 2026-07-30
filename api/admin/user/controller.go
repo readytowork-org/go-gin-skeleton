@@ -92,7 +92,7 @@ func (cc Controller) CreateUser(c *gin.Context) {
 // @Produce		application/json
 // @Param			pagination	query		Pagination	false	"query param"
 // @Success		200			{object}	json_response.DataCount[GetUserResponse]
-// @Failure		500			{object}	json_response.Error[string]
+// @Failure		500			{object}	api_errors.Envelope
 // @Router			/api/v1/users [get]
 // @Id				GetAllUsers
 func (cc Controller) GetAllUsers(c *gin.Context) {
@@ -100,13 +100,7 @@ func (cc Controller) GetAllUsers(c *gin.Context) {
 
 	users, count, err := cc.userService.GetAllUsers(*pagination)
 	if err != nil {
-		cc.logger.Error("Error finding user records", err.Error())
-		c.JSON(
-			http.StatusInternalServerError, json_response.Error[string]{
-				Error:   err.Error(),
-				Message: "Failed to get users data",
-			},
-		)
+		api_errors.RespondError(c, api_errors.Wrap(err, http.StatusInternalServerError, api_errors.CodeInternal, "Failed to get users data"))
 		return
 	}
 
@@ -124,31 +118,19 @@ func (cc Controller) GetAllUsers(c *gin.Context) {
 // @Security		Bearer
 // @Produce		application/json
 // @Success		200	{object}	json_response.Data[GetUserResponse]
-// @Failure		500	{object}	json_response.Error[string]
+// @Failure		500	{object}	api_errors.Envelope
 // @Router			/api/v1/{id} [get]
 // @Id				GetOneUser
 func (cc Controller) GetOneUser(c *gin.Context) {
 	userID, errResponse := utils.StringToInt64(c.Param("id"))
 	if errResponse != nil {
-		cc.logger.Error("Error finding user", errResponse.Message)
-		c.JSON(
-			http.StatusInternalServerError, json_response.Error[string]{
-				Error:   errResponse.Message,
-				Message: "Failed to get user",
-			},
-		)
+		api_errors.RespondError(c, api_errors.New(http.StatusInternalServerError, api_errors.CodeInternal, errResponse.Message))
 		return
 	}
 
 	user, err := cc.userService.GetOneUser(userID)
 	if err != nil {
-		cc.logger.Error("Error finding user", err.Error())
-		c.JSON(
-			http.StatusInternalServerError, json_response.Error[string]{
-				Error:   err.Error(),
-				Message: "Failed to get user",
-			},
-		)
+		api_errors.RespondError(c, api_errors.Wrap(err, http.StatusInternalServerError, api_errors.CodeInternal, "Failed to get user"))
 		return
 	}
 
