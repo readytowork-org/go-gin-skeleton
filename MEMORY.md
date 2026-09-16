@@ -26,6 +26,15 @@ done.
   will check out as broken plain-text files instead of directories. Fix
   forward if that ever bites a contributor rather than pre-emptively
   avoiding symlinks.
+- **2026-09-16**: The `.claude/skills` symlink disappeared from disk once
+  (working tree only; `.agents/skills` and `.codex/skills` were unaffected).
+  Cause: it was the only one of the three that was both untracked and
+  matched by this machine's global git ignore rule
+  (`~/.config/git/ignore`: `**/.claude/skills/`), so something doing an
+  ignored-file cleanup between sessions swept it. Fixed by
+  `git add -f .claude/skills` so it stays in the index. If it disappears
+  again, re-run `ln -s ../.agents/skills .claude/skills && git add -f
+  .claude/skills` (do not edit this repo's own `.gitignore` to fix it).
 - **2026-09-16**: New documentation (`AGENTS.md`, `CLAUDE.md`, `MEMORY.md`,
   skill files) avoids em dashes; existing docs (`README.md`, `SWAGGER.md`)
   are left as-is rather than reformatted for style.
