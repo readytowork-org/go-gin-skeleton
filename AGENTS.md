@@ -36,7 +36,8 @@ Module path: `boilerplate-api` (see `go.mod`). Go version: 1.23.
 | `SWAGGER.md`                                                | Rules for swag/gin-swagger annotations and DTO `validate` tags so the generated client types come out correct. |
 | `AGENTS.md` (this file)                                     | Agent-facing guide: architecture, conventions, commands, and workflows. |
 | `CLAUDE.md`                                                 | Points Claude Code at this file; do not duplicate content there. |
-| `.claude/skills/*/SKILL.md`                                 | Claude Code skills that turn sections below into guided, invokable workflows: `scaffolding-crud-resources`, `creating-database-migrations`, `adding-environment-variables`, `verifying-changes-before-commit`. |
+| `MEMORY.md`                                                 | Running log of progress, decisions, and next steps. Update it as you work; read it first to pick up where a previous session left off. |
+| `.agents/skills/*/SKILL.md`                                 | Canonical skill definitions, turning sections below into guided, invokable workflows: `scaffolding-crud-resources`, `creating-database-migrations`, `adding-environment-variables`, `verifying-changes-before-commit`. `.claude/skills` and `.codex/skills` are symlinks to this directory; edit skills only under `.agents/skills/`. |
 
 If you add a new documentation file to the repo, list it here too.
 
