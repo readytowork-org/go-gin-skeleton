@@ -3,9 +3,10 @@
 This file follows [AGENTS.md](https://agents.md), an open, tool-agnostic
 format for giving AI coding agents project context. It is read by agents
 including OpenAI Codex, Cursor, Windsurf, Aider, GitHub Copilot, Google
-Gemini CLI / Jules, Devin, Zed, and others. Claude Code reads `CLAUDE.md`
-instead, which imports this file, so all of the above stay in sync from one
-source.
+Gemini CLI / Jules, Devin, Zed, and others. This repo does not ship a
+`CLAUDE.md`, so a Claude Code session does not auto-load this file at
+startup; read it yourself at the start of a session, or ask the user to
+point you at it.
 
 It captures the conventions that are not obvious from a single file, so an
 agent can make a correct change on the first try instead of re-deriving the
@@ -35,7 +36,6 @@ Module path: `boilerplate-api` (see `go.mod`). Go version: 1.23.
 | `README.md`                                                 | Human-facing project overview: setup, running locally/Docker, `make` command reference, CLI usage, idempotency, auth endpoints, health probes, GCP Cloud SQL proxy notes. |
 | `SWAGGER.md`                                                | Rules for swag/gin-swagger annotations and DTO `validate` tags so the generated client types come out correct. |
 | `AGENTS.md` (this file)                                     | Agent-facing guide: architecture, conventions, commands, and workflows. |
-| `CLAUDE.md`                                                 | Points Claude Code at this file; do not duplicate content there. |
 | `MEMORY.md`                                                 | Running log of progress, decisions, and next steps. Update it as you work; read it first to pick up where a previous session left off. |
 | `.agents/skills/*/SKILL.md`                                 | Canonical skill definitions, turning sections below into guided, invokable workflows: `scaffolding-crud-resources`, `creating-database-migrations`, `adding-environment-variables`, `verifying-changes-before-commit`. `.claude/skills` and `.codex/skills` are symlinks to this directory; edit skills only under `.agents/skills/`. |
 
