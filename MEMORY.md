@@ -15,7 +15,7 @@ changes.
 
 ## Decisions
 
-- **2026-09-16**: Skills are authored once under `.agents/skills/` and
+- **2026-09-17**: Skills are authored once under `.agents/skills/` and
   exposed to individual agents via symlinks (`.claude/skills`,
   `.codex/skills`), instead of duplicating SKILL.md files per tool. One
   source of truth, no drift between what Claude Code and Codex see.
@@ -25,12 +25,12 @@ changes.
   Code does not auto-load `AGENTS.md` at session start here (an agent
   needs to read it itself). Skills still work regardless, via the
   `.claude/skills` symlink.
-- New documentation in this repo avoids em dashes; existing docs are not
-  reformatted to remove them.
+- **2026-09-17**: New documentation in this repo avoids em dashes; existing
+  docs are not reformatted to remove them.
 
 ## Progress log
 
-- **2026-09-16**: Added AI-agent documentation and tooling: `AGENTS.md`
+- **2026-09-17**: Added AI-agent documentation and tooling: `AGENTS.md`
   (architecture, conventions, commands), and four Claude Code skills under
   `.agents/skills/` (`scaffolding-crud-resources`,
   `creating-database-migrations`, `adding-environment-variables`,
