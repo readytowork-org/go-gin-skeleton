@@ -37,3 +37,8 @@ changes.
   `verifying-changes-before-commit`), exposed via `.claude/skills` and
   `.codex/skills` symlinks. No application code or existing documentation
   was modified.
+- **2026-09-17**: Added `make link-skills` (`automate/scripts/link-agent-skills.sh`)
+  to (re)create the agent skill symlinks on demand, e.g. after a fresh
+  clone or if one goes missing; accepts extra agent names as arguments
+  (e.g. `make link-skills cursor`) so a new agent's directory can be
+  linked without editing the script.

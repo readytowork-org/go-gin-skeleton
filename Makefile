@@ -57,6 +57,10 @@ swagger:
 crud:
 		bash automate/scripts/crud.sh
 
+link_skills_args = $(filter-out link-skills,$(MAKECMDGOALS))
+link-skills:
+	bash automate/scripts/link-agent-skills.sh $(link_skills_args)
+
 lint-install:
 		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.54.2
 		git config core.hooksPath hooks
@@ -75,4 +79,4 @@ context-upload:
 %:
 	@# This is a deliberate empty recipe
 
-.PHONY: dao migrate create swagger test-repo lint-install context-upload
+.PHONY: dao migrate create swagger test-repo lint-install context-upload link-skills
